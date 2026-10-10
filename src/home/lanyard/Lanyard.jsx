@@ -219,8 +219,7 @@ function Strap() {
     curve.points[3].copy(fixed.current.translation());
     // keep the strap running off the top of the screen even when the pin has been pulled down
     curve.points[4].copy(curve.points[3]).addScaledVector(dir.copy(curve.points[3]).sub(curve.points[2]).normalize(), 6);
-    band.current.geometry.setPoints(curve.getPoints(64));
-  });
+    band.current.geometry.setPoints(curve.getPoints(64));  });
 
   return (
     <mesh ref={band} frustumCulled={false}>
