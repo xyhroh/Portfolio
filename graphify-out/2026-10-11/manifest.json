@@ -1,0 +1,686 @@
+{
+  ".claude/settings.json": {
+    "mtime": 1790087000.8890452,
+    "seen": 1790259989.1827364,
+    "ast_hash": "d101be1b25476c94278364d6b63e0dce",
+    "semantic_hash": ""
+  },
+  "package.json": {
+    "mtime": 1790259152.8528194,
+    "seen": 1790259989.182741,
+    "ast_hash": "f1fd0714183359a50b4e40b99e857633",
+    "semantic_hash": ""
+  },
+  "src/home/home.js": {
+    "mtime": 1790259335.9465086,
+    "seen": 1790259989.1827428,
+    "ast_hash": "a2641b18615d2c87759331708f315c9f",
+    "semantic_hash": ""
+  },
+  "src/home/lanyard/Lanyard.jsx": {
+    "mtime": 1790304399.693989,
+    "seen": 1790304431.875971,
+    "ast_hash": "0a4147c529d4c7b5492b49406425c3ee",
+    "semantic_hash": ""
+  },
+  "src/home/projects/1 HealthBuddy Redesign/card.json": {
+    "mtime": 1790259347.3257382,
+    "seen": 1790259989.182745,
+    "ast_hash": "decaf28550de329013b0dd09fb203514",
+    "semantic_hash": ""
+  },
+  "src/main.js": {
+    "mtime": 1790139010.4905198,
+    "seen": 1790259989.1827462,
+    "ast_hash": "b1b9812d2bcecfd8c14fb522f47c5730",
+    "semantic_hash": ""
+  },
+  "vite.config.js": {
+    "mtime": 1790259160.548183,
+    "seen": 1790259989.1827471,
+    "ast_hash": "d1ab005c158dde481f336bab62ba26db",
+    "semantic_hash": ""
+  },
+  ".github/workflows/deploy.yml": {
+    "mtime": 1790087000.8913386,
+    "seen": 1790259989.1827478,
+    "ast_hash": "e0ec673933c31c0e60e737b9f1499fc8",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1790087000.8923392,
+    "seen": 1790259989.1827486,
+    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1790259993.7199225,
+    "seen": 1790262247.9421608,
+    "ast_hash": "4afc19dcda0856a9e72eceeaa183471b",
+    "semantic_hash": ""
+  },
+  "index.html": {
+    "mtime": 1790262011.4238403,
+    "seen": 1790262247.942162,
+    "ast_hash": "6189f46406eaf42786f60dbe4746fe33",
+    "semantic_hash": ""
+  },
+  "library.html": {
+    "mtime": 1790259160.6203096,
+    "seen": 1790259989.1827514,
+    "ast_hash": "3c567ace9566105c7350dcc2b3b138d3",
+    "semantic_hash": ""
+  },
+  "public/pages/README.md": {
+    "mtime": 1790087000.895511,
+    "seen": 1790259989.1827524,
+    "ast_hash": "13594c8557af9c5bdd665d708afb7544",
+    "semantic_hash": ""
+  },
+  "public/roles.txt": {
+    "mtime": 1790087000.895511,
+    "seen": 1790259989.182753,
+    "ast_hash": "19ff840dccf06e9edd36d94068963550",
+    "semantic_hash": ""
+  },
+  "src/home/lanyard/README.md": {
+    "mtime": 1790259347.3648105,
+    "seen": 1790259989.1827538,
+    "ast_hash": "cb9fd3ceb6263a115c1a4204a8f66d06",
+    "semantic_hash": ""
+  },
+  "src/home/projects/README.md": {
+    "mtime": 1790259347.3452852,
+    "seen": 1790259989.1827548,
+    "ast_hash": "03c84bbc377d4f835d9ae577a80e460a",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 1/info.txt": {
+    "mtime": 1790139010.496572,
+    "seen": 1790259989.1827555,
+    "ast_hash": "e1b164ab6c6f5fd562a05594ef85a3ca",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/info.txt": {
+    "mtime": 1790087000.8986292,
+    "seen": 1790259989.1827564,
+    "ast_hash": "e77faa69550953796f6ac10fba3898bb",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/cover/README.md": {
+    "mtime": 1790087000.9006424,
+    "seen": 1790259989.1827571,
+    "ast_hash": "ada772068593510f59d85138f85e7c34",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/README.md": {
+    "mtime": 1790087000.9501925,
+    "seen": 1790259989.1827579,
+    "ast_hash": "9f0bde8b08c1e99e45cfad70a8492a24",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HOOK/cover/README.md": {
+    "mtime": 1790087000.9512217,
+    "seen": 1790259989.1827588,
+    "ast_hash": "ada772068593510f59d85138f85e7c34",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HOOK/pages/README.md": {
+    "mtime": 1790087000.9530785,
+    "seen": 1790259989.1827598,
+    "ast_hash": "9f0bde8b08c1e99e45cfad70a8492a24",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/cover/README.md": {
+    "mtime": 1790087000.954082,
+    "seen": 1790259989.1827612,
+    "ast_hash": "ada772068593510f59d85138f85e7c34",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/README.md": {
+    "mtime": 1790087001.0882711,
+    "seen": 1790259989.182762,
+    "ast_hash": "9f0bde8b08c1e99e45cfad70a8492a24",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Project Four/cover/README.md": {
+    "mtime": 1790087001.089275,
+    "seen": 1790259989.1827629,
+    "ast_hash": "ada772068593510f59d85138f85e7c34",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Project Four/pages/README.md": {
+    "mtime": 1790087001.0903516,
+    "seen": 1790259989.1827638,
+    "ast_hash": "9f0bde8b08c1e99e45cfad70a8492a24",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Project Three/cover/README.md": {
+    "mtime": 1790087001.0923557,
+    "seen": 1790259989.1827645,
+    "ast_hash": "ada772068593510f59d85138f85e7c34",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Project Three/pages/README.md": {
+    "mtime": 1790087001.0934746,
+    "seen": 1790259989.1827652,
+    "ast_hash": "9f0bde8b08c1e99e45cfad70a8492a24",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Project Two/cover/README.md": {
+    "mtime": 1790087001.0944755,
+    "seen": 1790259989.1827664,
+    "ast_hash": "ada772068593510f59d85138f85e7c34",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Project Two/pages/README.md": {
+    "mtime": 1790087001.096477,
+    "seen": 1790259989.1827672,
+    "ast_hash": "9f0bde8b08c1e99e45cfad70a8492a24",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/papers/Paper One/README.md": {
+    "mtime": 1790087001.0974777,
+    "seen": 1790259989.1827679,
+    "ast_hash": "8f8a6c756bab64b13c080db4a0bf95b4",
+    "semantic_hash": ""
+  },
+  "src/home/lanyard/card-back.png": {
+    "mtime": 1790259187.7459233,
+    "seen": 1790259989.1827688,
+    "ast_hash": "7cb405cb3951e2e9a0ae861f80150328",
+    "semantic_hash": ""
+  },
+  "src/home/lanyard/card-front.png": {
+    "mtime": 1790263259.9033527,
+    "seen": 1790274713.9958053,
+    "ast_hash": "267d40bed5cdfd3db067b1415c1966b0",
+    "semantic_hash": ""
+  },
+  "src/home/lanyard/card-template.png": {
+    "mtime": 1790259188.9647543,
+    "seen": 1790259989.1827705,
+    "ast_hash": "bd75577751fb93021bdadb5e097965e6",
+    "semantic_hash": ""
+  },
+  "src/home/lanyard/strap.png": {
+    "mtime": 1790259190.039449,
+    "seen": 1790259989.1827712,
+    "ast_hash": "6100d0a83989f5c24fd1fb07e714193b",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-01.png": {
+    "mtime": 1790087000.902645,
+    "seen": 1790259989.1827722,
+    "ast_hash": "831e54b7355056d3b87e9c42111f9c72",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-02.png": {
+    "mtime": 1790087000.9056468,
+    "seen": 1790259989.1827729,
+    "ast_hash": "db07b9aa537ad7afbfdcc5cbd54ba5a1",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-03.png": {
+    "mtime": 1790087000.9082587,
+    "seen": 1790259989.182774,
+    "ast_hash": "5c2e2cd1576631963816e535fd3301c6",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-04.png": {
+    "mtime": 1790087000.9118304,
+    "seen": 1790259989.1827748,
+    "ast_hash": "07fad5549ca54faf34806c37d51b0c05",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-05.png": {
+    "mtime": 1790087000.9128344,
+    "seen": 1790259989.1827757,
+    "ast_hash": "219af0905fee2776c58f5e9da42be4ac",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-06.png": {
+    "mtime": 1790087000.914836,
+    "seen": 1790259989.1827767,
+    "ast_hash": "a17f807c499d5b126a24060a4f49fc60",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-07.png": {
+    "mtime": 1790087000.915848,
+    "seen": 1790259989.1827776,
+    "ast_hash": "b38a8c604ef359adf1b4793883de1561",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-08.png": {
+    "mtime": 1790087000.917223,
+    "seen": 1790259989.1827784,
+    "ast_hash": "04cc112a8a941e50522f8e9a4af55dbe",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-09.png": {
+    "mtime": 1790087000.91824,
+    "seen": 1790259989.1827796,
+    "ast_hash": "002ae3bb60c9908be37a11537575f46c",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-10.png": {
+    "mtime": 1790087000.9197466,
+    "seen": 1790259989.1827805,
+    "ast_hash": "f2ea3b82195c796f2fdf40092e21deaa",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-11.png": {
+    "mtime": 1790087000.921261,
+    "seen": 1790259989.1827812,
+    "ast_hash": "8655f9328aab0f0772d63719b9985834",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-12.png": {
+    "mtime": 1790087000.9234192,
+    "seen": 1790259989.1827822,
+    "ast_hash": "1871ec3b0d62d79f564de41a0e630bd0",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-13.png": {
+    "mtime": 1790087000.9254212,
+    "seen": 1790259989.182783,
+    "ast_hash": "4bba1047a96fb3ae4c581f11f112a301",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-14.png": {
+    "mtime": 1790087000.9264219,
+    "seen": 1790259989.1827838,
+    "ast_hash": "a8d4470733202f2e2fef3a9d0e8bb1cd",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-15.png": {
+    "mtime": 1790087000.9289236,
+    "seen": 1790259989.1827846,
+    "ast_hash": "0b1458fa96d1ff99be16c773f63a225e",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-16.png": {
+    "mtime": 1790087000.9320261,
+    "seen": 1790259989.1827855,
+    "ast_hash": "122b634f2114eaaa1a875a72adb5baef",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-17.png": {
+    "mtime": 1790087000.9332247,
+    "seen": 1790259989.1827862,
+    "ast_hash": "eddf9682fcea14ff104b4e027e47e7d8",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-18.png": {
+    "mtime": 1790087000.9342253,
+    "seen": 1790259989.1827872,
+    "ast_hash": "53dc0802a5c6a7220fd05d5d66e058d7",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-19.png": {
+    "mtime": 1790087000.9355724,
+    "seen": 1790259989.1827881,
+    "ast_hash": "fa1ecd1e0e3fe5b933b7d6c09bb0b857",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-20.png": {
+    "mtime": 1790087000.9375896,
+    "seen": 1790259989.1827888,
+    "ast_hash": "83fb01b0a3594fc6d8cb7f03aaca11a3",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-21.png": {
+    "mtime": 1790087000.938599,
+    "seen": 1790259989.1827898,
+    "ast_hash": "bfed3f1548fbf8c97d2182ad1b359aef",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-22.png": {
+    "mtime": 1790087000.9396112,
+    "seen": 1790259989.1827908,
+    "ast_hash": "524c02229bf5cae23f61a8c5f7f36782",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-23.png": {
+    "mtime": 1790087000.941738,
+    "seen": 1790259989.1827915,
+    "ast_hash": "f9d858e8e8a1eedd8f20f6cd02f509fc",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-24.png": {
+    "mtime": 1790087000.9427543,
+    "seen": 1790259989.1827922,
+    "ast_hash": "c17e62e367a3bc105aecd9fa8226c318",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-25.png": {
+    "mtime": 1790087000.9457572,
+    "seen": 1790259989.1827931,
+    "ast_hash": "c49e80093e9cfe9c001001aeba7628a6",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-26.png": {
+    "mtime": 1790087000.9467657,
+    "seen": 1790259989.182794,
+    "ast_hash": "77f87c2ac1189f78b0255cc20bb85237",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/Facebook/pages/Facebook_UX2570_Assignment1-27.png": {
+    "mtime": 1790087000.9501925,
+    "seen": 1790259989.182795,
+    "ast_hash": "0613e2438a9555e093e2fde10f2d47d8",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/cover/cover for healthbuddy.png": {
+    "mtime": 1790087000.9550881,
+    "seen": 1790259989.1827958,
+    "ast_hash": "49bf253c9343cf891514418d5e658fb7",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/1. Introduction/LowYuShengJavier_UX2570_Assignment4.pdf-01.png": {
+    "mtime": 1790087000.958976,
+    "seen": 1790259989.1827967,
+    "ast_hash": "e2372be3ec2e9df075671c466f8c4ea4",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/1. Introduction/LowYuShengJavier_UX2570_Assignment4.pdf-02.png": {
+    "mtime": 1790087000.9610906,
+    "seen": 1790259989.1827977,
+    "ast_hash": "ceabf51cb3a5b1e37fb6030067927143",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/1. Introduction/LowYuShengJavier_UX2570_Assignment4.pdf-03.png": {
+    "mtime": 1790087000.962489,
+    "seen": 1790259989.1827984,
+    "ast_hash": "64a0e0f4b4db630c8f2da2b71b8b74fd",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/1. Introduction/LowYuShengJavier_UX2570_Assignment4.pdf-04.png": {
+    "mtime": 1790087000.964586,
+    "seen": 1790259989.182799,
+    "ast_hash": "8567983350160e980143bb6d4362437f",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/1. Introduction/LowYuShengJavier_UX2570_Assignment4.pdf-05.png": {
+    "mtime": 1790087000.9678047,
+    "seen": 1790259989.1827998,
+    "ast_hash": "2df910970ca3264da2d06685d7997b93",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/1. Introduction/LowYuShengJavier_UX2570_Assignment4.pdf-06.png": {
+    "mtime": 1790087000.969809,
+    "seen": 1790259989.182801,
+    "ast_hash": "a72f9c8a7054e1dc57da3d21ad458b4e",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/1. Introduction/LowYuShengJavier_UX2570_Assignment4.pdf-07.png": {
+    "mtime": 1790087000.972034,
+    "seen": 1790259989.1828017,
+    "ast_hash": "ca7561e6b379e366626a324177a16338",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/1. Introduction/LowYuShengJavier_UX2570_Assignment4.pdf-08.png": {
+    "mtime": 1790087000.9750369,
+    "seen": 1790259989.1828024,
+    "ast_hash": "1ff4e915a5c114a1e7c0b8fb05839f4d",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/1. Introduction/LowYuShengJavier_UX2570_Assignment4.pdf-09.png": {
+    "mtime": 1790087000.9774756,
+    "seen": 1790259989.1828032,
+    "ast_hash": "684d8fe28f2579e6b4a609e3e2d48de8",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/1. Introduction/LowYuShengJavier_UX2570_Assignment4.pdf-10.png": {
+    "mtime": 1790087000.9794943,
+    "seen": 1790259989.182804,
+    "ast_hash": "af9c70dd7cc5cce26497bf616f31bd5b",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/2. Competitor Analysis/LowYuShengJavier_UX2570_Assignment4.pdf-11.png": {
+    "mtime": 1790087000.9809997,
+    "seen": 1790259989.182805,
+    "ast_hash": "286962c8c31eb6d42ce5dc02199af2d1",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/2. Competitor Analysis/LowYuShengJavier_UX2570_Assignment4.pdf-12.png": {
+    "mtime": 1790087000.9894104,
+    "seen": 1790259989.182806,
+    "ast_hash": "55ddcd3ca31d5b7e5e54eab6bd90324b",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/2. Competitor Analysis/LowYuShengJavier_UX2570_Assignment4.pdf-13.png": {
+    "mtime": 1790087000.9904158,
+    "seen": 1790259989.1828067,
+    "ast_hash": "c7361671027c4dd86a163976a0e7abd8",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/2. Competitor Analysis/LowYuShengJavier_UX2570_Assignment4.pdf-14.png": {
+    "mtime": 1790087000.9924295,
+    "seen": 1790259989.1828082,
+    "ast_hash": "d3f0e73cfeb3a2d58730ee8414e30c92",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/3. Survey Summary/LowYuShengJavier_UX2570_Assignment4.pdf-15.png": {
+    "mtime": 1790087000.9955559,
+    "seen": 1790259989.182809,
+    "ast_hash": "7b082641efb0cd4343f035ceea23100a",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/3. Survey Summary/LowYuShengJavier_UX2570_Assignment4.pdf-16.png": {
+    "mtime": 1790087000.9977026,
+    "seen": 1790259989.1828098,
+    "ast_hash": "7831301af83df66712978674987db62e",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/3. Survey Summary/LowYuShengJavier_UX2570_Assignment4.pdf-17.png": {
+    "mtime": 1790087000.9987054,
+    "seen": 1790259989.1828108,
+    "ast_hash": "78065d18339a556276482ecce8b6302e",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/3. Survey Summary/LowYuShengJavier_UX2570_Assignment4.pdf-18.png": {
+    "mtime": 1790087000.9997168,
+    "seen": 1790259989.1828117,
+    "ast_hash": "d43b478c8417a9d20d4f365fe6c6a1f7",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/3. Survey Summary/LowYuShengJavier_UX2570_Assignment4.pdf-19.png": {
+    "mtime": 1790087001.0007217,
+    "seen": 1790259989.1828127,
+    "ast_hash": "34586e3bf49425ab7d1728e50cfa1be3",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/3. Survey Summary/LowYuShengJavier_UX2570_Assignment4.pdf-20.png": {
+    "mtime": 1790087001.0028012,
+    "seen": 1790259989.1828134,
+    "ast_hash": "87413421b0678a1108377180c169b8a9",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/3. Survey Summary/LowYuShengJavier_UX2570_Assignment4.pdf-21.png": {
+    "mtime": 1790087001.0079305,
+    "seen": 1790259989.1828141,
+    "ast_hash": "93f98389221ef725bdc8974b3fcc2c9c",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/3. Survey Summary/LowYuShengJavier_UX2570_Assignment4.pdf-22.png": {
+    "mtime": 1790087001.0110517,
+    "seen": 1790259989.182815,
+    "ast_hash": "b075bdfeb90202a7ac9fe82a085ef37a",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/3. Survey Summary/LowYuShengJavier_UX2570_Assignment4.pdf-23.png": {
+    "mtime": 1790087001.012055,
+    "seen": 1790259989.182816,
+    "ast_hash": "ec5b4663aa0f2a198c9e6f2047e55fe6",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/3. Survey Summary/LowYuShengJavier_UX2570_Assignment4.pdf-24.png": {
+    "mtime": 1790087001.014265,
+    "seen": 1790259989.1828175,
+    "ast_hash": "ccab2224cfd3d1d63e10a448943db9a5",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/4. User Persona Study/LowYuShengJavier_UX2570_Assignment4.pdf-25.png": {
+    "mtime": 1790087001.017268,
+    "seen": 1790259989.1828187,
+    "ast_hash": "cbdc548b706d2ad679a3374431bee18d",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/4. User Persona Study/LowYuShengJavier_UX2570_Assignment4.pdf-26.png": {
+    "mtime": 1790087001.0207765,
+    "seen": 1790259989.1828196,
+    "ast_hash": "192cf29711ba183acb91ce78fb364232",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/4. User Persona Study/LowYuShengJavier_UX2570_Assignment4.pdf-27.png": {
+    "mtime": 1790087001.0222917,
+    "seen": 1790259989.1828203,
+    "ast_hash": "c28b7cb5c55a6c3aa19165cf79f8a45e",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/4. User Persona Study/LowYuShengJavier_UX2570_Assignment4.pdf-28.png": {
+    "mtime": 1790087001.0243585,
+    "seen": 1790259989.182821,
+    "ast_hash": "5c057491f2c3d88b5a30372692242a11",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/4. User Persona Study/LowYuShengJavier_UX2570_Assignment4.pdf-29.png": {
+    "mtime": 1790087001.02785,
+    "seen": 1790259989.182822,
+    "ast_hash": "c27ebc9bfdca51f880d295313d26ef2b",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/4. User Persona Study/LowYuShengJavier_UX2570_Assignment4.pdf-30.png": {
+    "mtime": 1790087001.0288513,
+    "seen": 1790259989.182823,
+    "ast_hash": "0e9d22ced493db6f69028fcb46b855e8",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/4. User Persona Study/LowYuShengJavier_UX2570_Assignment4.pdf-31.png": {
+    "mtime": 1790087001.0319455,
+    "seen": 1790259989.1828237,
+    "ast_hash": "81cbb6e9d03ee13ec3c58ded67a2e60e",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/4. User Persona Study/LowYuShengJavier_UX2570_Assignment4.pdf-32.png": {
+    "mtime": 1790087001.0345821,
+    "seen": 1790259989.1828246,
+    "ast_hash": "92e396e28656931f214244588665ffc0",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/4. User Persona Study/LowYuShengJavier_UX2570_Assignment4.pdf-33.png": {
+    "mtime": 1790087001.0377326,
+    "seen": 1790259989.1828256,
+    "ast_hash": "fc55df4d7508b662556e0a4c9cc3077a",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/5. Design Objectives/LowYuShengJavier_UX2570_Assignment4.pdf-34.png": {
+    "mtime": 1790087001.038737,
+    "seen": 1790259989.1828263,
+    "ast_hash": "a0cb6d26b15f56753f4f66d6503bcb49",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/5. Design Objectives/LowYuShengJavier_UX2570_Assignment4.pdf-35.png": {
+    "mtime": 1790087001.0417628,
+    "seen": 1790259989.182827,
+    "ast_hash": "1e28ab0470e5b0cf4f36f7164775fee5",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/5. Design Objectives/LowYuShengJavier_UX2570_Assignment4.pdf-36.png": {
+    "mtime": 1790087001.0428023,
+    "seen": 1790259989.1828277,
+    "ast_hash": "284e1df1abebf5241c8b756d79a42889",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/5. Design Objectives/LowYuShengJavier_UX2570_Assignment4.pdf-37.png": {
+    "mtime": 1790087001.0491486,
+    "seen": 1790259989.182829,
+    "ast_hash": "afbb01b8de8a739068f9e43e12d9d471",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/5. Design Objectives/LowYuShengJavier_UX2570_Assignment4.pdf-38.png": {
+    "mtime": 1790087001.050155,
+    "seen": 1790259989.1828299,
+    "ast_hash": "9467c7758044eecef7086c7d5f1e6d6a",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/5. Design Objectives/LowYuShengJavier_UX2570_Assignment4.pdf-39.png": {
+    "mtime": 1790087001.0554833,
+    "seen": 1790259989.1828306,
+    "ast_hash": "425755eb9899fc7caaa7230344358941",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/5. Design Objectives/LowYuShengJavier_UX2570_Assignment4.pdf-40.png": {
+    "mtime": 1790087001.0564842,
+    "seen": 1790259989.1828315,
+    "ast_hash": "e1a3b1b1581f0bc3333a883883acc2ed",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/5. Design Objectives/LowYuShengJavier_UX2570_Assignment4.pdf-41.png": {
+    "mtime": 1790087001.0590026,
+    "seen": 1790259989.1828325,
+    "ast_hash": "701b2530c1eea1a75f596eb043b3e69f",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/5. Design Objectives/LowYuShengJavier_UX2570_Assignment4.pdf-42.png": {
+    "mtime": 1790087001.0620153,
+    "seen": 1790259989.1828332,
+    "ast_hash": "2d5629ec810baa2b74d084b66cf6764d",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/5. Design Objectives/LowYuShengJavier_UX2570_Assignment4.pdf-43.png": {
+    "mtime": 1790087001.0671449,
+    "seen": 1790259989.182834,
+    "ast_hash": "bb75e0a57c9e6218226ed9f7f49f3084",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/6. Before After/LowYuShengJavier_UX2570_Assignment4.pdf-44.png": {
+    "mtime": 1790087001.0705836,
+    "seen": 1790259989.1828349,
+    "ast_hash": "add850accccfa5d9e937f037d2502a48",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/6. Before After/LowYuShengJavier_UX2570_Assignment4.pdf-45.png": {
+    "mtime": 1790087001.0729077,
+    "seen": 1790259989.1828358,
+    "ast_hash": "16f442a5ab36e022deb00fa29ab82c5b",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/6. Before After/LowYuShengJavier_UX2570_Assignment4.pdf-46.png": {
+    "mtime": 1790087001.0744197,
+    "seen": 1790259989.1828368,
+    "ast_hash": "730cc1246cfb4b126f5b88572fdb92ad",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/6. Before After/LowYuShengJavier_UX2570_Assignment4.pdf-47.png": {
+    "mtime": 1790087001.0764213,
+    "seen": 1790259989.1828375,
+    "ast_hash": "8ed1c98243c011d2e307521444d463bd",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/6. Before After/LowYuShengJavier_UX2570_Assignment4.pdf-48.png": {
+    "mtime": 1790087001.0788667,
+    "seen": 1790259989.1828382,
+    "ast_hash": "f5e12fa54aea9254886e9ed1b694ca1c",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/6. Before After/LowYuShengJavier_UX2570_Assignment4.pdf-49.png": {
+    "mtime": 1790087001.0833209,
+    "seen": 1790259989.1828394,
+    "ast_hash": "c524cc23158785d883dd52f85f3d2147",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/pages/HealthBuddy/pages/6. Before After/LowYuShengJavier_UX2570_Assignment4.pdf-50.png": {
+    "mtime": 1790087001.086766,
+    "seen": 1790259989.1828403,
+    "ast_hash": "0f1cd60ec84a911b11f8a69f5be797f2",
+    "semantic_hash": ""
+  },
+  "src/shelves/Bookshelf 2/papers/Paper One/photo_2026-08-28_10-00-26.jpg": {
+    "mtime": 1790087001.1027796,
+    "seen": 1790259989.182841,
+    "ast_hash": "7e65903674f717eab869f6ceb826c182",
+    "semantic_hash": ""
+  }
+}

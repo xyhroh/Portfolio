@@ -123,7 +123,7 @@ async function startIntroRoleRotation() {
   let roles = ["UX Strategist"]; // used only if roles.txt is missing/empty
   try {
     // BASE_URL (not a hardcoded "/") so this still resolves once deployed
-    // under a subpath, e.g. GitHub Pages serving from /Bookshelf-Portfolio/.
+    // under a subpath, e.g. GitHub Pages serving from /Portfolio/.
     const res = await fetch(`${import.meta.env.BASE_URL}roles.txt`);
     const text = await res.text();
     const parsed = text
