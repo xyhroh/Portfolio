@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About — Javier Low</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/nav.css" />
+    <link rel="stylesheet" href="/src/home/home.css" />
+    <style>
+      .about {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 100px 5vw 140px;
+      }
+      .about h1 {
+        max-width: 820px;
+        margin: 0 0 64px;
+        font-family: Montserrat, system-ui, sans-serif;
+        font-weight: 600;
+        font-size: clamp(36px, 4.2vw, 60px);
+        line-height: 1.2;
+      }
+      .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 64px;
+        max-width: 1000px;
+      }
+      .about p {
+        margin: 0 0 18px;
+        font-size: 17px;
+        line-height: 1.65;
+      }
+      .about h2 {
+        margin: 0 0 16px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .about ul {
+        margin: 0 0 40px;
+        padding: 0;
+        list-style: none;
+      }
+      .about li {
+        padding: 12px 0;
+        border-bottom: 1px solid #e6e6e6;
+        font-size: 16px;
+      }
+      @media (max-width: 760px) {
+        .about-grid {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <a class="nav-name" href="./">Javier Low<span>UX Designer</span></a>
+    </nav>
+    <nav class="nav-pill" aria-label="Main">
+      <a href="./">Home</a>
+      <a href="about.html" aria-current="page">About</a>
+      <a href="library.html">Library</a>
+    </nav>
+
+    <!-- TODO: everything in [brackets] is a placeholder — replace with your own words. -->
+    <main class="about">
+      <p class="eyebrow">About</p>
+      <h1>I'm Javier, a UX designer who starts with what users actually do, not what we assume they do.</h1>
+
+      <div class="about-grid">
+        <div>
+          <p>[Two or three sentences on where you are now — studying, working, or looking for your next role — and what kind of problems you want to work on.]</p>
+          <p>[One or two sentences on how you work: e.g. surveys and interviews first, then personas, flows and testing. Mention a project from the homepage as proof.]</p>
+          <p>[A line about you outside design — keep it short and human.]</p>
+        </div>
+        <div>
+          <h2>What I do</h2>
+          <ul>
+            <li>UX research &amp; usability testing</li>
+            <li>Personas, journeys &amp; information architecture</li>
+            <li>Wireframes, prototypes &amp; UI design</li>
+            <li>Design systems &amp; product documentation</li>
+          </ul>
+          <h2>Tools</h2>
+          <ul>
+            <li>[Figma, FigJam, …]</li>
+          </ul>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer" id="contact">
+      <h2>Let's work together.</h2>
+      <div class="footer-links">
+        <a href="mailto:you@example.com">you@example.com</a>
+        <a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="resume.png" target="_blank" rel="noopener">Resume</a>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -11,6 +11,8 @@ Each folder holds:
 ```json
 {
   "title": "Project name",
+  "status": "In Progress",
+  "tags": ["Mobile App", "UX Research"],
   "description": "One or two sentences.",
   "feedback": { "label": "Key user feedback:", "text": "The grey callout box." },
   "stats": [

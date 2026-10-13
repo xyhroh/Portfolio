@@ -10,26 +10,53 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;600&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="/src/nav.css" />
     <link rel="stylesheet" href="/src/home/home.css" />
   </head>
   <body>
-    <header class="hero">
+    <nav class="nav">
+      <a class="nav-name" href="#top">Javier Low<span>UX Designer</span></a>
+    </nav>
+    <nav class="nav-pill" aria-label="Main">
+      <a href="./" aria-current="page">Home</a>
+      <a href="about.html">About</a>
+      <a href="library.html">Library</a>
+    </nav>
+
+    <header class="hero" id="top">
+      <p class="eyebrow">Javier Low — UX Designer</p>
       <h1>
         I design experiences that start with <span class="accent">evidence</span> and end with
         <span class="accent">impact.</span>
       </h1>
+      <div class="hero-actions">
+        <a class="hero-cta" href="#work">View my work ↓</a>
+        <!-- ponytail: resume is a PNG copied from the bookshelf; drop a resume.pdf in public/ and point here -->
+        <a href="resume.png" target="_blank" rel="noopener">Resume ↗</a>
+        <a href="#contact">Contact</a>
+      </div>
       <!-- Marks where the badge hangs (src/home/lanyard/Lanyard.jsx). -->
       <div id="lanyard"></div>
     </header>
     <!-- The badge's canvas: full-screen, above the page, clicks pass through. -->
     <div id="lanyard-layer"></div>
 
-    <main>
+    <main id="work">
       <h2 class="section-label">Featured projects</h2>
       <!-- One card per folder in src/home/projects/ — see home.js. -->
       <div id="projects"></div>
-      <a class="library-link" href="library.html">View my library of works -&gt;</a>
+      <a class="library-link" href="library.html">View my library of works →</a>
     </main>
+
+    <!-- TODO: replace the email and LinkedIn placeholders before deploying. -->
+    <footer class="footer" id="contact">
+      <h2>Let's work together.</h2>
+      <div class="footer-links">
+        <a href="mailto:you@example.com">you@example.com</a>
+        <a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="resume.png" target="_blank" rel="noopener">Resume</a>
+      </div>
+    </footer>
 
     <script type="module" src="/src/home/home.js"></script>
     <script type="module" src="/src/home/lanyard/Lanyard.jsx"></script>

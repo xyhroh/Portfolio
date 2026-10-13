@@ -1,0 +1,14 @@
+{
+  "status": "Work in Progress",
+  "tags": [
+    "[platform]",
+    "[method]",
+    "[domain]"
+  ],
+  "title": "HOOK",
+  "description": "[Problem: who struggled with what, in one sentence.] [Solution: what you designed and the outcome, in one sentence.]",
+  "button": {
+    "label": "Case study dropping soon",
+    "link": "library.html"
+  }
+}

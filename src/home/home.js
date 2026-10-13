@@ -35,6 +35,12 @@ function buildCard(folder, data) {
 
   const card = el("article", "project");
   const body = el("div", "project-body");
+  if (data.status || data.tags?.length) {
+    const meta = el("div", "project-meta");
+    if (data.status) meta.append(el("span", "project-status", data.status));
+    data.tags?.forEach((t) => meta.append(el("span", "project-tag", t)));
+    body.append(meta);
+  }
   body.append(el("h3", "", data.title ?? folder.split("/").pop()));
   if (data.description) body.append(el("p", "project-desc", data.description));
 

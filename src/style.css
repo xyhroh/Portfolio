@@ -374,18 +374,4 @@ canvas {
   }
 }
 
-/* Back to the home page (index.html). Above #app (z-index 10) so the
-   canvas never swallows the click. */
-#home-link {
-  position: fixed;
-  top: 16px;
-  right: 4vw;
-  z-index: 20;
-  color: #2a2c2f;
-  font-size: 15px;
-  font-weight: 600;
-  text-decoration: none;
-}
-#home-link:hover {
-  text-decoration: underline;
-}
+

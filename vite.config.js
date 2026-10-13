@@ -4,7 +4,7 @@ import { defineConfig } from "vite";
 // base keeps asset URLs working under any repo name (it broke once on a
 // rename: the old hardcoded prefix 404ed every JS/CSS file).
 //
-// Two pages: index.html (home + lanyard) and library.html (the bookshelf).
+// Three pages: index.html (home + lanyard), about.html, library.html (the bookshelf).
 // Vite only builds pages listed in `input`. The lanyard is written in JSX,
 // so esbuild needs the automatic runtime (no `import React` in each file).
 export default defineConfig({
@@ -12,7 +12,7 @@ export default defineConfig({
   esbuild: { jsx: "automatic" },
   build: {
     rollupOptions: {
-      input: { main: "index.html", library: "library.html" },
+      input: { main: "index.html", about: "about.html", library: "library.html" },
     },
   },
 });

@@ -1,0 +1,33 @@
+{
+  "status": "In Progress",
+  "tags": [
+    "UX Research",
+    "Usability Audit",
+    "Heuristic Evaluation",
+    "Team Project"
+  ],
+  "title": "Facebook Usability Research",
+  "description": "With 3 billion monthly users and a decade of added features, Facebook's interface has become hard to navigate. Our team audited the app's core flows to find where that complexity breaks usability, and what to fix first.",
+  "feedback": {
+    "label": "Key finding:",
+    "text": "[Your strongest single finding from the report]"
+  },
+  "stats": [
+    {
+      "value": "[n]",
+      "label": "[participants]"
+    },
+    {
+      "value": "[n]",
+      "label": "[usability issues found]"
+    },
+    {
+      "value": "[n]",
+      "label": "[recommendations]"
+    }
+  ],
+  "button": {
+    "label": "Case study dropping soon",
+    "link": "library.html"
+  }
+}

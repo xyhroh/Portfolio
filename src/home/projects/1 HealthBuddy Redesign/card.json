@@ -1,14 +1,33 @@
 {
+  "status": "Case Study Available",
+  "tags": [
+    "Mobile App",
+    "UX Research",
+    "Redesign",
+    "Healthcare"
+  ],
   "title": "HealthBuddy Redesign",
-  "description": "Redesigning a public healthcare app that's more accessible and convenient for outpatients and elderly, backed up by user research and data.",
+  "description": "Outpatients and elderly users struggled to book appointments through a cluttered public healthcare app. I redesigned the home screen around booking as the primary action, backed by survey data and three research-led personas.",
   "feedback": {
     "label": "Key user feedback:",
     "text": "Survey respondents struggled to book an appointment without hassle due to a cluttered homescreen, so that became the primary action."
   },
   "stats": [
-    { "value": "16", "label": "survey respondents" },
-    { "value": "3", "label": "personas designed for" },
-    { "value": "50%", "label": "found the old app confusing" }
+    {
+      "value": "16",
+      "label": "survey respondents"
+    },
+    {
+      "value": "3",
+      "label": "personas designed for"
+    },
+    {
+      "value": "50%",
+      "label": "found the old app confusing"
+    }
   ],
-  "button": { "label": "Read case study →", "link": "library.html" }
+  "button": {
+    "label": "Read case study →",
+    "link": "library.html"
+  }
 }

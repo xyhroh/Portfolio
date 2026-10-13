@@ -19,6 +19,7 @@ import {
   CuboidCollider,
   Physics,
   RigidBody,
+  useRapier,
   useRopeJoint,
   useSphericalJoint,
 } from "@react-three/rapier";
@@ -199,7 +200,7 @@ function Strap() {
   const strap = useTexture(strapImage);
   const { width, height } = useThree((state) => state.size);
   const [curve] = useState(() => {
-    const c = new THREE.CatmullRomCurve3(Array.from({ length: 5 }, () => new THREE.Vector3()));
+    const c = new THREE.CatmullRomCurve3(Array.from({ length: 6 }, () => new THREE.Vector3()));
     c.curveType = "chordal";
     return c;
   });
@@ -213,20 +214,29 @@ function Strap() {
     const { fixed, j1, j2, card } = chain;
     if (!fixed.current || !card.current || !band.current) return;
     const q = card.current.rotation();
-    curve.points[0].set(0, ANCHOR_Y, 0).applyQuaternion(quat.set(q.x, q.y, q.z, q.w)).add(card.current.translation());
-    curve.points[1].copy(j2.current.translation());
-    curve.points[2].copy(j1.current.translation());
-    curve.points[3].copy(fixed.current.translation());
+    quat.set(q.x, q.y, q.z, q.w);
+    // The strap's end is the middle of the badge, so the badge itself always hides it: the strap
+    // is drawn first and covered by everything (see below), so no end point is ever visible.
+    curve.points[0].copy(card.current.translation());
+    curve.points[1].set(0, ANCHOR_Y, 0).applyQuaternion(quat).add(card.current.translation()); // through the clamp
+    curve.points[2].copy(j2.current.translation());
+    curve.points[3].copy(j1.current.translation());
+    curve.points[4].copy(fixed.current.translation());
     // keep the strap running off the top of the screen even when the pin has been pulled down
-    curve.points[4].copy(curve.points[3]).addScaledVector(dir.copy(curve.points[3]).sub(curve.points[2]).normalize(), 6);
-    band.current.geometry.setPoints(curve.getPoints(64));  });
+    curve.points[5].copy(curve.points[4]).addScaledVector(dir.copy(curve.points[4]).sub(curve.points[3]).normalize(), 6);
+    band.current.geometry.setPoints(curve.getPoints(64));
+  });
 
+  // Always drawn first, writing no depth, so the badge and clamp cover its end. Left to three's
+  // depth sort, the strap (whose mesh sits at the origin) and the clamp swapped draw order whenever
+  // the badge swung across that depth, and the strap flickered over/under the clamp.
   return (
-    <mesh ref={band} frustumCulled={false}>
+    <mesh ref={band} frustumCulled={false} renderOrder={-1}>
       <meshLineGeometry />
       <meshLineMaterial
         color="white"
         depthTest={false}
+        depthWrite={false}
         resolution={[width, height]}
         useMap
         map={strap}
@@ -235,6 +245,18 @@ function Strap() {
       />
     </mesh>
   );
+}
+
+// Steps the physics exactly once per drawn frame, by that frame's real length. A fixed 1/60 s
+// step with no interpolation (needed so the strap stays on the clamp, see <Strap>) runs 0 or 2
+// steps on frames that straddle the step boundary, and on 120/144 Hz screens only every other
+// frame, so the badge and strap moved in uneven jumps. The delta is capped so a long pause
+// (switching tabs) can't fling the badge with one giant step. Placed after <Band> so the drag
+// targets it sets are applied in the same frame.
+function Stepper() {
+  const { step } = useRapier();
+  useFrame((_, delta) => step(Math.min(delta, 1 / 30)));
+  return null;
 }
 
 // The canvas covers the whole viewport (a fixed, click-through layer above the
@@ -272,8 +294,10 @@ createRoot(document.getElementById("lanyard-layer")).render(
     <CameraRig />
     <ambientLight intensity={Math.PI} />
     <Suspense fallback={null}>
-      <Physics gravity={[0, -40, 0]} timeStep={1 / 60} interpolate={false}>
+      {/* paused: the built-in fixed-step loop is off, <Stepper> drives the world instead */}
+      <Physics gravity={[0, -40, 0]} timeStep="vary" interpolate={false} paused>
         <Band />
+        <Stepper />
       </Physics>
       <Strap />
     </Suspense>

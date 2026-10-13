@@ -3,11 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bookshelf Portfolio — Prototype</title>
+    <title>Library — Javier Low</title>
+    <link rel="stylesheet" href="/src/nav.css" />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <a id="home-link" href="./">&larr; Home</a>
+    <nav class="nav-pill" aria-label="Main">
+      <a href="./">Home</a>
+      <a href="about.html">About</a>
+      <a href="library.html" aria-current="page">Library</a>
+    </nav>
 
     <!-- Sits behind the (transparent-background) 3D canvas — see the
          renderer alpha setup in main.js section 1 — so the shelf visually
