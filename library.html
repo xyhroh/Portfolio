@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Library — Javier Low</title>
-    <link rel="stylesheet" href="/src/nav.css" />
+    <title>Bookshelf Portfolio — Prototype</title>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <nav class="nav-pill" aria-label="Main">
-      <a href="./">Home</a>
-      <a href="about.html">About</a>
-      <a href="library.html" aria-current="page">Library</a>
-    </nav>
+    <div id="loader" role="status" aria-live="polite">
+      <div class="loader-books" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <span>Setting up the library&hellip;</span>
+    </div>
+    <p id="sr-status" class="sr-only" role="status" aria-live="polite"></p>
+    <a id="home-link" href="./">&larr; Home</a>
 
     <!-- Sits behind the (transparent-background) 3D canvas — see the
          renderer alpha setup in main.js section 1 — so the shelf visually
@@ -56,21 +56,25 @@
       <span id="preview-title"></span>
     </div>
 
-    <div id="reading-panel">
+    <div id="reading-panel" role="region" aria-label="Book controls">
       <h2 id="reading-title"></h2>
       <div id="reading-controls">
         <button id="reading-prev">&larr; Prev</button>
-        <span id="reading-counter"></span>
+        <span id="reading-counter" aria-live="polite"></span>
         <button id="reading-next">Next &rarr;</button>
+        <button id="sound-toggle" type="button" aria-pressed="false" aria-label="Page-turn sound">Sound off</button>
         <button id="reading-close">Close</button>
       </div>
+      <p class="key-hint">&larr; &rarr; turn page &middot; Home / End &middot; Esc close</p>
     </div>
 
-    <div id="paper-panel">
+    <p id="key-hint" aria-hidden="true">&larr; &rarr; switch shelf &middot; &uarr; &darr; choose a book &middot; Enter open &middot; Esc back</p>
+
+    <div id="paper-panel" role="region" aria-label="Paper controls">
       <h2 id="paper-title"></h2>
       <div id="paper-controls">
         <button id="paper-prev">&larr; Prev</button>
-        <span id="paper-counter"></span>
+        <span id="paper-counter" aria-live="polite"></span>
         <button id="paper-next">Next &rarr;</button>
         <button id="paper-close">Close</button>
       </div>

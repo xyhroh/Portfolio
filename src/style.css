@@ -374,4 +374,174 @@ canvas {
   }
 }
 
+/* Back to the home page (index.html). Above #app (z-index 10) so the
+   canvas never swallows the click. */
+#home-link {
+  position: fixed;
+  top: 16px;
+  right: 4vw;
+  z-index: 20;
+  color: #2a2c2f;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+#home-link:hover {
+  text-decoration: underline;
+}
 
+
+/* ---------------------------------------------------------------
+   Polish layer: loader, fade-in, keyboard focus, press feedback,
+   hint text, reduced motion.
+   --------------------------------------------------------------- */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: #ffffff;
+  color: #55585c;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  transition: opacity 0.6s ease, visibility 0.6s;
+}
+
+#loader.done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loader-books {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 44px;
+}
+
+.loader-books i {
+  display: block;
+  width: 10px;
+  border-radius: 2px;
+  background: #3a4a5a;
+  animation: loader-book 1.1s ease-in-out infinite;
+}
+.loader-books i:nth-child(1) { height: 30px; animation-delay: 0s; }
+.loader-books i:nth-child(2) { height: 40px; animation-delay: 0.12s; background: #4a4038; }
+.loader-books i:nth-child(3) { height: 34px; animation-delay: 0.24s; background: #3a4a42; }
+.loader-books i:nth-child(4) { height: 42px; animation-delay: 0.36s; background: #4a3838; }
+
+@keyframes loader-book {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+#app canvas {
+  opacity: 0;
+  transition: opacity 0.7s ease;
+  outline: none;
+}
+body.ready #app canvas {
+  opacity: 1;
+}
+
+/* keyboard focus is always visible, mouse clicks don't draw a ring */
+#app canvas:focus-visible {
+  box-shadow: inset 0 0 0 3px rgba(47, 52, 56, 0.55);
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #1f6feb;
+  outline-offset: 2px;
+}
+
+#reading-controls button,
+#paper-controls button,
+.nav-arrow,
+#home-link {
+  transition: background-color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+}
+#reading-controls button:active:not(:disabled),
+#paper-controls button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+.nav-arrow:active {
+  transform: translateY(-50%) scale(0.93);
+}
+#reading-controls button[aria-pressed="true"] {
+  background: #1f6feb;
+}
+
+#reading-panel,
+#paper-panel,
+#preview-panel {
+  animation: panel-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes panel-in {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.key-hint {
+  margin: 10px 0 0;
+  color: #8a8d91;
+  font-size: 12px;
+}
+
+#key-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 5;
+  margin: 0;
+  color: #9a9da1;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+body.reading-active #key-hint {
+  display: none;
+}
+/* touch devices have no keyboard */
+@media (hover: none), (orientation: portrait) {
+  #key-hint,
+  .key-hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #loader,
+  #app canvas,
+  #intro-role,
+  #shelf-info-header,
+  #shelf-info-body,
+  #reading-panel,
+  #paper-panel,
+  #preview-panel {
+    transition: none;
+    animation: none;
+  }
+  .loader-books i {
+    animation: none;
+  }
+}

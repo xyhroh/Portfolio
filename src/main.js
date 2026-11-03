@@ -37,13 +37,97 @@ const camera = new THREE.PerspectiveCamera(45, getViewportSize().width / getView
 const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
 renderer.setClearColor(0xffffff, 0);
 renderer.setSize(getViewportSize().width, getViewportSize().height);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // adaptive: see section 1a
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
 document.getElementById("app").appendChild(renderer.domElement);
+renderer.domElement.tabIndex = 0;
+renderer.domElement.setAttribute("role", "application");
+renderer.domElement.setAttribute(
+  "aria-label",
+  "Interactive 3D bookshelf. Left and right arrow keys switch shelf, up and down choose a book, Enter opens it, Escape goes back."
+);
+renderer.domElement.style.cursor = "grab";
+
+// -----------------------------------------------------------------------
+// 1a. MOTION SYSTEM + RENDER-ON-DEMAND
+// One place for every duration/easing so the whole piece moves with a
+// single, consistent rhythm (it used to mix 0.45/0.55/0.6/0.7/0.8 s with
+// four different easings). T() collapses every duration to ~0 for anyone
+// whose OS asks for reduced motion.
+//
+// The scene is only re-drawn when something actually changed (a tween is
+// running, the camera is moving, a texture just arrived, the window
+// resized). A still bookshelf costs ~0% GPU instead of re-rendering 60
+// times a second, which is what keeps laptops cool and phones from
+// throttling. Anything that changes the picture outside GSAP calls
+// invalidate().
+// -----------------------------------------------------------------------
+
+const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+const motion = {
+  hover: 0.18,
+  fade: 0.35,
+  pull: 0.55,
+  open: 0.9,
+  close: 0.65,
+  flip: 0.62,
+  carousel: 0.5,
+  inOut: "power3.inOut",
+  out: "power3.out",
+  flipEase: "power2.inOut",
+  settle: "back.out(1.25)",
+};
+function T(seconds) {
+  return reduceMotionQuery.matches ? 0.001 : seconds;
+}
+
+// GPU texture uploads are queued and done ONE PER FRAME. Uploading several
+// page textures in the same frame (what happens when a book is hovered) is a
+// visible hitch; spread out they're invisible.
+const uploadQueue = [];
+function queueUpload(texture, rec, token) {
+  uploadQueue.push({ texture, rec, token });
+}
+function processUploadQueue() {
+  while (uploadQueue.length) {
+    const { texture, rec, token } = uploadQueue.shift();
+    if (rec.token !== token) continue; // unloaded in the meantime
+    renderer.initTexture(texture);
+    invalidate();
+    return;
+  }
+}
+
+let framesToRender = 3;
+function invalidate(frames = 2) {
+  if (frames > framesToRender) framesToRender = frames;
+}
+document.addEventListener("visibilitychange", () => invalidate(3));
+
+// Adaptive resolution: if the device can't hold ~40 fps while the scene is
+// animating, quietly drop the render resolution a step instead of stuttering.
+let pixelRatio = Math.min(window.devicePixelRatio, 1.5);
+const minPixelRatio = 0.85;
+let frameTimeAvg = 16;
+let slowStreak = 0;
+function applyPixelRatio() {
+  renderer.setPixelRatio(pixelRatio);
+  const { width, height } = getViewportSize();
+  renderer.setSize(width, height);
+  invalidate(3);
+}
+
+const maxAnisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+
+// Short status messages for screen readers (see #sr-status in library.html)
+const srStatus = document.getElementById("sr-status");
+function announce(message) {
+  if (srStatus) srStatus.textContent = message;
+}
 
 // A softly lit interior used purely as a reflection/ambient source (via
 // PMREM), not as a visible background — this is what keeps varnished wood
@@ -615,16 +699,16 @@ function createTitlePageTexture(project) {
   canvas.height = 700;
   const ctx = canvas.getContext("2d");
 
-  ctx.fillStyle = "#fdf8ef";
+  ctx.fillStyle = "#f8f8f6";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.fillStyle = "#3a2a17";
+  ctx.fillStyle = "#26282b";
   ctx.font = "bold 42px system-ui, sans-serif";
   ctx.textAlign = "center";
   ctx.fillText(project.title, canvas.width / 2, 140);
 
   ctx.font = "20px system-ui, sans-serif";
-  ctx.fillStyle = "#5a4a38";
+  ctx.fillStyle = "#55585c";
   wrapText(ctx, project.description, canvas.width / 2, 210, 400, 28);
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -651,6 +735,31 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
 
 const textureLoader = new THREE.TextureLoader();
 
+// Page images are decoded OFF the main thread (ImageBitmap) and pushed to the
+// GPU the moment they arrive (renderer.initTexture) — i.e. while the book is
+// merely hovered — so nothing heavy is left to happen mid-swing when the book
+// opens. Falls back to the plain TextureLoader where ImageBitmap isn't available.
+const bitmapLoader = typeof createImageBitmap === "function" ? new THREE.ImageBitmapLoader() : null;
+if (bitmapLoader) bitmapLoader.setOptions({ imageOrientation: "flipY", premultiplyAlpha: "none" });
+
+function loadImageTexture(url, onLoad, onError) {
+  if (!bitmapLoader) {
+    textureLoader.load(url, onLoad, undefined, onError);
+    return;
+  }
+  bitmapLoader.load(
+    url,
+    (bitmap) => {
+      const tex = new THREE.Texture(bitmap);
+      tex.flipY = false; // the bitmap is already flipped
+      tex.needsUpdate = true;
+      onLoad(tex);
+    },
+    undefined,
+    onError
+  );
+}
+
 // Each side of a leaf is split into a spine-side and an outer-side segment
 // (see the hinge-building code below) so it can bend at the crease while
 // flipping. Both segments on one side share one image, so once it's loaded
@@ -663,8 +772,34 @@ const textureLoader = new THREE.TextureLoader();
 // too, but that's the OPPOSITE mesh segment (inner vs outer) from where
 // the front's near-spine half lived. Swapping which half goes to which
 // segment keeps left-to-right reading order correct once flipped.
-function applyPageSide(innerMaterial, outerMaterial, page, reversed) {
+const paperTint = 0xe8e8e6; // what a page looks like before its picture has arrived
+// Pages are unlit and not tone-mapped (so print colours stay true), tinted a
+// whisper off pure white so the sheet reads as paper against the white site.
+const pageWhite = new THREE.Color(0xf8f8f6);
+
+// Pictures fade up out of the paper tint instead of popping in
+function revealMaterial(material) {
+  gsap.killTweensOf(material.color);
+  if (reduceMotionQuery.matches) {
+    material.color.copy(pageWhite);
+    return;
+  }
+  material.color.set(0xdedede);
+  gsap.to(material.color, { r: pageWhite.r, g: pageWhite.g, b: pageWhite.b, duration: motion.fade, ease: "power1.out" });
+}
+
+// `rec` is the leaf's bookkeeping record (see ensureOpenBookBuilt): every
+// texture created for the leaf is tracked on it so unloadLeaf() can free the
+// GPU memory later, and `rec.token` lets a late-arriving image notice that
+// its leaf was already unloaded and throw itself away.
+function applyPageSide(innerMaterial, outerMaterial, page, reversed, rec) {
+  const token = rec.token;
+
   function useTexture(tex) {
+    if (rec.token !== token) {
+      tex.dispose();
+      return;
+    }
     // The two mesh segments together are a fixed pageWidth x pageHeight
     // box, but a source page image rarely matches that aspect exactly
     // (a landscape slide vs. a portrait-ish page) — mapping the WHOLE
@@ -687,6 +822,7 @@ function applyPageSide(innerMaterial, outerMaterial, page, reversed) {
       offsetY = (1 - repeatY) / 2;
     }
 
+    tex.anisotropy = maxAnisotropy; // clones inherit it: sharp text at a slant
     const leftHalf = tex.clone();
     leftHalf.needsUpdate = true;
     leftHalf.repeat.set(repeatX * 0.5, repeatY);
@@ -695,10 +831,15 @@ function applyPageSide(innerMaterial, outerMaterial, page, reversed) {
     rightHalf.needsUpdate = true;
     rightHalf.repeat.set(repeatX * 0.5, repeatY);
     rightHalf.offset.set(offsetX + repeatX * 0.5, offsetY);
+    rec.textures.push(tex, leftHalf, rightHalf);
+    queueUpload(leftHalf, rec, token); // upload soon, one per frame, not during the opening swing
     innerMaterial.map = reversed ? rightHalf : leftHalf;
     innerMaterial.needsUpdate = true;
     outerMaterial.map = reversed ? leftHalf : rightHalf;
     outerMaterial.needsUpdate = true;
+    revealMaterial(innerMaterial);
+    revealMaterial(outerMaterial);
+    invalidate();
   }
 
   if (!page) {
@@ -706,19 +847,21 @@ function applyPageSide(innerMaterial, outerMaterial, page, reversed) {
     // empty) — leave it a plain blank sheet instead of loading anything
     innerMaterial.map = null;
     outerMaterial.map = null;
+    innerMaterial.color.copy(pageWhite);
+    outerMaterial.color.copy(pageWhite);
     innerMaterial.needsUpdate = true;
     outerMaterial.needsUpdate = true;
+    invalidate();
     return;
   }
 
   if (page.image) {
-    textureLoader.load(
+    loadImageTexture(
       page.image,
       (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace;
         useTexture(tex);
       },
-      undefined,
       () => useTexture(createPagePlaceholderTexture(page.label || "?", page.color || "#e7dcc9"))
     );
   } else {
@@ -729,9 +872,81 @@ function applyPageSide(innerMaterial, outerMaterial, page, reversed) {
 // Applies both faces of one physical leaf: `front` (recto, visible while
 // unflipped) and `back` (verso, revealed once the leaf turns over) — see
 // buildLeaves() for how consecutive page images get paired into a leaf.
-function applyLeafContent(innerMaterial, outerMaterial, innerBackMaterial, outerBackMaterial, leaf) {
-  applyPageSide(innerMaterial, outerMaterial, leaf.front, false);
-  applyPageSide(innerBackMaterial, outerBackMaterial, leaf.back, true);
+function applyLeafContent(innerMaterial, outerMaterial, innerBackMaterial, outerBackMaterial, leaf, rec) {
+  applyPageSide(innerMaterial, outerMaterial, leaf.front, false, rec);
+  applyPageSide(innerBackMaterial, outerBackMaterial, leaf.back, true, rec);
+}
+
+// --- lazy page loading -------------------------------------------------
+// A 50-page book used to decode and upload all 50 full-size images to the
+// GPU the moment you hovered it (~1 GB of texture memory). Now a leaf only
+// holds its pictures while it is within LEAF_WINDOW leaves of the page being
+// read; everything further away is released and re-fetched (from the browser
+// cache) if you flip back to it.
+const LEAF_WINDOW = 2;
+
+function loadLeaf(rec, withBack = true) {
+  const [inner, outer, innerBack, outerBack] = rec.mats;
+  if (!rec.frontLoaded) {
+    rec.frontLoaded = true;
+    applyPageSide(inner, outer, rec.leaf.front, false, rec);
+  }
+  if (withBack && !rec.backLoaded) {
+    rec.backLoaded = true;
+    applyPageSide(innerBack, outerBack, rec.leaf.back, true, rec);
+  }
+}
+
+function unloadLeaf(rec) {
+  if (!rec.frontLoaded && !rec.backLoaded) return;
+  rec.frontLoaded = false;
+  rec.backLoaded = false;
+  rec.token++;
+  rec.textures.forEach((t) => t.dispose());
+  rec.textures.length = 0;
+  rec.mats.forEach((m) => {
+    gsap.killTweensOf(m.color);
+    m.map = null;
+    m.color.set(paperTint);
+    m.needsUpdate = true;
+  });
+}
+
+// Loads the leaves around `center` (the number of leaves already turned),
+// then — after any flip in progress has landed — frees the ones outside it.
+function updateLeafWindow(built, center, peek = false) {
+  built.windowCenter = center;
+  if (peek) {
+    // just hovering a book: all that's needed is the first visible page
+    if (built.pageHinges[0]) loadLeaf(built.pageHinges[0].userData.rec, false);
+    return;
+  }
+  const lo = center - 1 - LEAF_WINDOW;
+  const hi = center + LEAF_WINDOW;
+  // nearest pages first, so the ones on screen arrive first
+  built.pageHinges
+    .map((hinge, i) => ({ hinge, i }))
+    .filter(({ i }) => i >= lo && i <= hi)
+    .sort((a, b) => Math.abs(a.i - center) - Math.abs(b.i - center))
+    .forEach(({ hinge }) => loadLeaf(hinge.userData.rec));
+  gsap.delayedCall(1, () => {
+    const c = built.windowCenter;
+    built.pageHinges.forEach((hinge, i) => {
+      const keep = c !== null && i >= c - 1 - LEAF_WINDOW && i <= c + LEAF_WINDOW;
+      if (!keep) unloadLeaf(hinge.userData.rec);
+    });
+  });
+}
+
+// Frees every page texture of a book that is no longer being read or peeked at.
+function releaseBookTextures(project) {
+  const built = openBookCache.get(project);
+  if (!built) return;
+  built.windowCenter = null;
+  gsap.delayedCall(1, () => {
+    if (built.windowCenter !== null) return;
+    built.pageHinges.forEach((hinge) => unloadLeaf(hinge.userData.rec));
+  });
 }
 
 // Pairs up a project's flat page-image list into double-sided leaves —
@@ -761,9 +976,18 @@ function buildLeaves(project) {
 // out left-to-right as [back cover | spine | front cover], each cover
 // panel as wide as the book is deep and the spine strip as wide as the
 // book is thick. This slices that one image into the three faces.
+let coversPending = 0;
+function coverSettled() {
+  coversPending--;
+  invalidate(3);
+  if (coversPending <= 0) markLibraryReady();
+}
+
 function applyCoverWrap(book, imageUrl) {
+  coversPending++;
   textureLoader.load(imageUrl, (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = maxAnisotropy;
     tex.wrapS = THREE.ClampToEdgeWrapping;
     tex.wrapT = THREE.ClampToEdgeWrapping;
 
@@ -786,14 +1010,15 @@ function applyCoverWrap(book, imageUrl) {
     backMaterial.needsUpdate = true;
     spineMaterial.map = slice(backFrac, spineFrac);
     spineMaterial.needsUpdate = true;
-  });
+    coverSettled();
+  }, undefined, coverSettled);
 }
 
 // Unlit — page/cover/paper surfaces should read as true, consistent
 // color, not get multiplied by the cabinet's warm lights (which is what
 // was giving pages and spines a dark, shadowed, hard-to-read tint).
-const pageEdgeMaterial = new THREE.MeshBasicMaterial({ color: 0xf3e9d2 });
-const paperEdgeMaterial = new THREE.MeshBasicMaterial({ color: 0xf3e9d2 });
+const pageEdgeMaterial = new THREE.MeshBasicMaterial({ color: 0xe6e6e3, toneMapped: false });
+const paperEdgeMaterial = new THREE.MeshBasicMaterial({ color: 0xe6e6e3, toneMapped: false });
 
 // Brushed steel, not polished brass — a neutral gunmetal gray with
 // moderate roughness reads as understated hardware, while a warm, shiny
@@ -1314,6 +1539,7 @@ function navigateCarousel(direction) {
     updatePreviewPanel();
   }
 
+  keyboardBookIndex = -1;
   currentShelfIndex = (currentShelfIndex + direction + shelves.length) % shelves.length;
   activeShelf = shelves[currentShelfIndex];
   carouselRotationY -= direction * stepAngle;
@@ -1326,8 +1552,8 @@ function navigateCarousel(direction) {
   let hasAppeared = false;
   gsap.to(carouselGroup.rotation, {
     y: carouselRotationY,
-    duration: 0.45,
-    ease: "power3.out",
+    duration: T(motion.carousel),
+    ease: motion.out,
     onUpdate: function () {
       if (!hasAppeared && this.progress() > 0.6) {
         hasAppeared = true;
@@ -1493,6 +1719,7 @@ function ensureOpenBookBuilt(project) {
   const leftCoverGeometry = new THREE.BoxGeometry(pageWidth, pageHeight, pageThickness);
   const leftCoverMaterial = new THREE.MeshBasicMaterial({
     map: createTitlePageTexture(project),
+    toneMapped: false,
   });
   const leftCover = new THREE.Mesh(leftCoverGeometry, [
     pageEdgeMaterial,
@@ -1524,14 +1751,25 @@ function ensureOpenBookBuilt(project) {
     const originalZ = -index * zStep; // stack back-to-front on the right
     hinge.position.z = originalZ;
     hinge.userData.originalZ = originalZ;
+    // where this leaf sits once turned onto the left-hand pile (later leaves on top)
+    hinge.userData.leftZ = leftCoverZ + (index + 1) * zStep;
 
     // unlit + white, not tinted — a lit material multiplied by the
     // cabinet's warm lights would push every page toward yellow
-    const innerMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const outerMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const innerBackMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const outerBackMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    applyLeafContent(innerMaterial, outerMaterial, innerBackMaterial, outerBackMaterial, leaf);
+    const innerMaterial = new THREE.MeshBasicMaterial({ color: paperTint, toneMapped: false });
+    const outerMaterial = new THREE.MeshBasicMaterial({ color: paperTint, toneMapped: false });
+    const innerBackMaterial = new THREE.MeshBasicMaterial({ color: paperTint, toneMapped: false });
+    const outerBackMaterial = new THREE.MeshBasicMaterial({ color: paperTint, toneMapped: false });
+    // textures are NOT loaded here any more — updateLeafWindow() does that
+    // for just the leaves near the page being read
+    hinge.userData.rec = {
+      leaf,
+      mats: [innerMaterial, outerMaterial, innerBackMaterial, outerBackMaterial],
+      textures: [],
+      token: 0,
+      frontLoaded: false,
+      backLoaded: false,
+    };
 
     const innerMesh = new THREE.Mesh(new THREE.BoxGeometry(segmentWidth, pageHeight, pageThickness), [
       pageEdgeMaterial,
@@ -1565,7 +1803,7 @@ function ensureOpenBookBuilt(project) {
 
   const tabs = buildTabs(project, pageHinges, sectionLeafStart);
 
-  const built = { pageHinges, zStep, leftCoverZ, tabs, leftCover };
+  const built = { pageHinges, zStep, leftCoverZ, tabs, leftCover, windowCenter: null };
   openBookCache.set(project, built);
   return built;
 }
@@ -1610,21 +1848,22 @@ const tabGapY = 0.014;
 
 function createTabTexture(label, hexColor) {
   const canvas = document.createElement("canvas");
-  canvas.width = 384;
-  canvas.height = 80; // matches the tab's own width:height ratio, so the label isn't stretched
+  canvas.width = 1024;
+  canvas.height = 213; // matches the tab's own width:height ratio, so the label isn't stretched
   const ctx = canvas.getContext("2d");
 
   ctx.fillStyle = `#${hexColor.toString(16).padStart(6, "0")}`;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 34px system-ui, sans-serif";
+  ctx.font = "bold 88px system-ui, sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(label, canvas.width / 2, canvas.height / 2);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = maxAnisotropy;
   return texture;
 }
 
@@ -1649,6 +1888,7 @@ function buildTabs(project, pageHinges, sectionLeafStart) {
     // into shadow depending on the light angle.
     const labelMaterial = new THREE.MeshBasicMaterial({
       map: createTabTexture(section.label, color),
+      toneMapped: false,
     });
     const blankMaterial = new THREE.MeshBasicMaterial({ color });
     const sideMaterial = new THREE.MeshStandardMaterial({ color });
@@ -1691,20 +1931,35 @@ function updateReadingUI() {
 // slightly through the middle of the turn, then both settle flat again
 // at either end — closer to how Issuu (or a real page) turns than a
 // perfectly stiff rotation.
-function animateFlip(hinge, targetY, duration) {
+function animateFlip(hinge, targetY, duration, delay = 0) {
   const creaseHinge = hinge.userData.creaseHinge;
+  const { originalZ, leftZ } = hinge.userData;
+  // The leaf stays in its own slot of the stack it is leaving until it is
+  // edge-on (90 degrees, where it can't be seen), and only then moves to its slot
+  // in the stack it is landing on. Switching earlier slid it behind or through
+  // its neighbours — that was the "glitching through pages". A small lift
+  // keeps it clear of the pages around it while it is in the air.
+  function place(progress) {
+    const onRight = Math.abs(hinge.rotation.y) < Math.PI / 2;
+    hinge.position.z = (onRight ? originalZ : leftZ) + Math.sin(progress * Math.PI) * 0.012;
+  }
   gsap.to(hinge.rotation, {
     y: targetY,
     duration,
-    ease: "power2.inOut",
+    delay,
+    ease: motion.flipEase,
+    overwrite: true, // a fast second click replaces the turn in progress instead of fighting it
     onUpdate: function () {
       const bend = Math.sin(this.progress() * Math.PI);
       creaseHinge.rotation.y = bend * 0.4;
       hinge.position.y = bend * 0.025;
+      place(this.progress());
     },
+    onInterrupt: () => place(0),
     onComplete: () => {
       creaseHinge.rotation.y = 0;
       hinge.position.y = 0;
+      hinge.position.z = targetY === 0 ? originalZ : leftZ;
     },
   });
 }
@@ -1719,25 +1974,32 @@ function jumpToIndex(targetIndex) {
   const clamped = Math.max(0, Math.min(targetIndex, pageHinges.length));
   if (clamped === currentIndex) return;
 
+  // A multi-page jump (a tab, Home/End) fans the pages over one after
+  // another over ~0.3 s instead of moving as one stiff slab.
+  const count = Math.abs(clamped - currentIndex);
+  const step = count > 1 ? T(Math.min(0.045, 0.3 / count)) : 0;
+  const duration = T(motion.flip);
+
   if (clamped > currentIndex) {
     for (let i = currentIndex; i < clamped; i++) {
       const hinge = pageHinges[i];
       // move it just in front of the left cover, and in front of any
       // page already flipped there, so the chunk lands stacked in order
-      hinge.position.z = leftCoverZ + (i + 1) * zStep;
-      animateFlip(hinge, -Math.PI, 0.7);
+      animateFlip(hinge, -Math.PI, duration, (i - currentIndex) * step);
     }
   } else {
     for (let i = currentIndex - 1; i >= clamped; i--) {
       const hinge = pageHinges[i];
-      animateFlip(hinge, 0, 0.7);
       // restore its original spot in the right-hand stack
-      hinge.position.z = hinge.userData.originalZ;
+      animateFlip(hinge, 0, duration, (currentIndex - 1 - i) * step);
     }
   }
 
   readingState.currentIndex = clamped;
+  updateLeafWindow(readingState.built, clamped);
   updateReadingUI();
+  playFlipSound(count);
+  invalidate();
 }
 
 function flipNext() {
@@ -1763,15 +2025,20 @@ paperViewGroup.position.copy(readingPosition);
 paperViewGroup.visible = false;
 scene.add(paperViewGroup);
 
-const paperViewMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const paperViewMaterial = new THREE.MeshBasicMaterial({ color: 0xf8f8f6, toneMapped: false });
 let paperViewMesh = null;
 let paperReadingState = null; // { paper, currentIndex }
 
 function setPaperViewTexture(imageUrl) {
   textureLoader.load(imageUrl, (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = maxAnisotropy;
+    const previous = paperViewMaterial.map;
     paperViewMaterial.map = tex;
     paperViewMaterial.needsUpdate = true;
+    if (previous && previous !== tex) previous.dispose();
+    revealMaterial(paperViewMaterial);
+    invalidate();
 
     // resize the plane to the image's real aspect ratio so it never stretches
     const aspect = tex.image.width / tex.image.height;
@@ -1817,8 +2084,9 @@ function openPaperView(paper) {
   refitCameraFraming();
   enterReadingControls();
 
-  gsap.to(camera.position, { ...readingCameraPos, duration: 0.8, ease: "power2.inOut" });
-  gsap.to(controls.target, { ...readingTarget, duration: 0.8, ease: "power2.inOut" });
+  gsap.to(camera.position, { ...readingCameraPos, duration: T(motion.open), ease: motion.inOut });
+  gsap.to(controls.target, { ...readingTarget, duration: T(motion.open), ease: motion.inOut });
+  announce(`Reading ${paper.title}`);
 }
 
 function closePaperView() {
@@ -1830,8 +2098,8 @@ function closePaperView() {
   document.body.classList.remove("reading-active");
   refitCameraFraming();
 
-  gsap.to(camera.position, { ...overviewCameraPos, duration: 0.8, ease: "power2.inOut" });
-  gsap.to(controls.target, { ...overviewTarget, duration: 0.8, ease: "power2.inOut" });
+  gsap.to(camera.position, { ...overviewCameraPos, duration: T(motion.close), ease: motion.inOut });
+  gsap.to(controls.target, { ...overviewTarget, duration: T(motion.close), ease: motion.inOut });
 }
 
 function paperFlip(delta) {
@@ -1859,7 +2127,7 @@ singlePageGroup.position.copy(readingPosition);
 singlePageGroup.visible = false;
 scene.add(singlePageGroup);
 
-const singlePageMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const singlePageMaterial = new THREE.MeshBasicMaterial({ color: 0xf8f8f6, toneMapped: false });
 let singlePageMesh = null;
 
 // Mirrors applyPageSide's placeholder handling (section 4) — a page
@@ -1867,8 +2135,13 @@ let singlePageMesh = null;
 // instead of a broken/blank plane.
 function setSinglePageTexture(page) {
   function applyTexture(tex) {
+    const previous = singlePageMaterial.map;
+    tex.anisotropy = maxAnisotropy;
     singlePageMaterial.map = tex;
     singlePageMaterial.needsUpdate = true;
+    if (previous && previous !== tex) previous.dispose();
+    revealMaterial(singlePageMaterial);
+    invalidate();
     // resize the plane to the image's real aspect ratio, capped to the
     // book's own page dimensions, so it never stretches or overflows them
     const aspect = tex.image.width / tex.image.height;
@@ -1911,6 +2184,12 @@ function singlePageJumpTo(targetIndex) {
   readingState.currentIndex = clamped;
   setSinglePageTexture(readingState.project.pages[clamped]);
   updateSinglePageUI();
+  playFlipSound(1);
+  // warm the browser cache for the neighbours so the next swipe is instant
+  [clamped + 1, clamped - 1].forEach((i) => {
+    const neighbour = readingState.project.pages[i];
+    if (neighbour?.image) new Image().src = neighbour.image;
+  });
 }
 
 function singlePageNext() {
@@ -1954,8 +2233,10 @@ function openBook(book) {
     setSinglePageTexture(project.pages[0]);
     updateSinglePageUI();
   } else {
-    const { pageHinges, zStep, leftCoverZ, tabs } = buildOpenBook(project);
-    readingState = { mode: "spread", project, pageHinges, currentIndex: 0, zStep, leftCoverZ, tabs };
+    const built = buildOpenBook(project);
+    const { pageHinges, zStep, leftCoverZ, tabs } = built;
+    readingState = { mode: "spread", project, built, pageHinges, currentIndex: 0, zStep, leftCoverZ, tabs };
+    updateLeafWindow(built, 0);
     updateReadingUI();
   }
 
@@ -1981,11 +2262,11 @@ function openBook(book) {
 
   const revealGroup = single ? singlePageGroup : openBookGroup;
   revealGroup.visible = false;
-  gsap.to(bookOpenPivot.position, { ...readingPosition, duration: 0.55, ease: "power2.inOut" });
+  gsap.to(bookOpenPivot.position, { ...readingPosition, duration: T(motion.open), ease: "sine.inOut" });
   gsap.to(bookOpenPivot.rotation, {
     y: Math.PI,
-    duration: 0.55,
-    ease: "power2.inOut",
+    duration: T(motion.open),
+    ease: "sine.inOut",
     onUpdate: function () {
       if (!revealGroup.visible && this.progress() > 0.5) {
         revealGroup.visible = true;
@@ -2010,8 +2291,11 @@ function openBook(book) {
   refitCameraFraming();
   enterReadingControls();
 
-  gsap.to(camera.position, { ...readingCameraPos, duration: 0.55, ease: "power2.inOut" });
-  gsap.to(controls.target, { ...readingTarget, duration: 0.55, ease: "power2.inOut" });
+  // one smooth, gradual push-in: same duration and easing as the book's own swing
+  gsap.to(camera.position, { ...readingCameraPos, duration: T(motion.open), ease: "sine.inOut", overwrite: "auto" });
+  gsap.to(controls.target, { ...readingTarget, duration: T(motion.open), ease: "sine.inOut", overwrite: "auto" });
+  announce(`Opened ${project.title}. Page 1 of ${project.pages.length}.`);
+  playThud();
 }
 
 function closeBook() {
@@ -2022,15 +2306,15 @@ function closeBook() {
   // mirror the opening transition: the pages linger a moment while the
   // real book reappears (still turned away) and rotates back closed
   const revealGroup = readingState?.mode === "single" ? singlePageGroup : openBookGroup;
-  gsap.delayedCall(0.15, () => {
+  gsap.delayedCall(T(0.15), () => {
     revealGroup.visible = false;
   });
 
   document.body.classList.remove("reading-active");
   refitCameraFraming();
 
-  gsap.to(camera.position, { ...overviewCameraPos, duration: 0.8, ease: "power2.inOut" });
-  gsap.to(controls.target, { ...overviewTarget, duration: 0.8, ease: "power2.inOut" });
+  gsap.to(camera.position, { ...overviewCameraPos, duration: T(motion.close), ease: motion.inOut });
+  gsap.to(controls.target, { ...overviewTarget, duration: T(motion.close), ease: motion.inOut });
 
   if (activeShelfBook) {
     // guard against closing mid-swing, while the book is still parented
@@ -2040,9 +2324,11 @@ function closeBook() {
     const homeGroup = activeShelfBook.userData.homeGroup;
     if (activeShelfBook.parent !== homeGroup) homeGroup.attach(activeShelfBook);
     pushBack(activeShelfBook);
+    releaseBookTextures(activeShelfBook.userData.project); // free the page images from GPU memory
     activeShelfBook = null;
   }
   readingState = null;
+  announce("Closed the book.");
 }
 
 // -----------------------------------------------------------------------
@@ -2055,13 +2341,13 @@ function pullOut(book) {
   // moment it's pulled out, well before the reader clicks to actually
   // open it — so the swing-open animation isn't competing with a burst
   // of fresh page loads and feels immediate instead of laggy
-  ensureOpenBookBuilt(book.userData.project);
+  updateLeafWindow(ensureOpenBookBuilt(book.userData.project), 0, true);
   gsap.to(book.position, {
     x: book.userData.restPosition.x,
     y: book.userData.restPosition.y,
     z: book.userData.restPosition.z + 1.3,
-    duration: 0.6,
-    ease: "power3.out",
+    duration: T(motion.pull),
+    ease: motion.settle, // slides out with a small, soft overshoot
   });
 }
 
@@ -2072,10 +2358,14 @@ function pushBack(book) {
     x: book.userData.restPosition.x,
     y: book.userData.restPosition.y,
     z: book.userData.restPosition.z,
-    duration: 0.6,
-    ease: "power2.inOut",
+    duration: T(motion.pull),
+    ease: motion.inOut,
   });
-  gsap.to(book.rotation, { y: 0, duration: 0.9, ease: "power2.inOut" });
+  gsap.to(book.rotation, { y: 0, duration: T(motion.close), ease: motion.inOut });
+  // a book that was only peeked at (never opened) gives its page images back
+  if (!(readingState && readingState.project === book.userData.project)) {
+    releaseBookTextures(book.userData.project);
+  }
 }
 
 // -----------------------------------------------------------------------
@@ -2273,6 +2563,7 @@ const activePointers = new Set();
 
 function onPointerDown(event) {
   activePointers.add(event.pointerId);
+  if (!readingState && !paperReadingState && renderer.domElement.style.cursor === "grab") setCursor("grabbing");
   if (!readingState && !paperReadingState) return;
   if (activePointers.size > 1) {
     dragStart = null;
@@ -2283,6 +2574,7 @@ function onPointerDown(event) {
 
 function onPointerUp(event) {
   activePointers.delete(event.pointerId);
+  if (renderer.domElement.style.cursor === "grabbing") setCursor("grab");
   if (!dragStart) return;
   const dx = event.clientX - dragStart.x;
   const dy = event.clientY - dragStart.y;
@@ -2319,16 +2611,16 @@ let hoveredTab = null;
 // so the hover "glow" brightens their own .color toward white instead of
 // an emissive property those materials no longer have.
 function hoverTab(tab) {
-  gsap.to(tab.scale, { x: 1.15, y: 1.15, duration: 0.18, ease: "power2.out" });
+  gsap.to(tab.scale, { x: 1.15, y: 1.15, duration: T(motion.hover), ease: motion.out });
   tab.userData.hoverMaterials.forEach((material) => {
-    gsap.to(material.color, { r: 1.4, g: 1.4, b: 1.4, duration: 0.18 });
+    gsap.to(material.color, { r: 1.4, g: 1.4, b: 1.4, duration: T(motion.hover) });
   });
 }
 
 function unhoverTab(tab) {
-  gsap.to(tab.scale, { x: 1, y: 1, duration: 0.18, ease: "power2.out" });
+  gsap.to(tab.scale, { x: 1, y: 1, duration: T(motion.hover), ease: motion.out });
   tab.userData.hoverMaterials.forEach((material) => {
-    gsap.to(material.color, { r: 1, g: 1, b: 1, duration: 0.18 });
+    gsap.to(material.color, { r: 1, g: 1, b: 1, duration: T(motion.hover) });
   });
 }
 
@@ -2343,9 +2635,9 @@ let hoveredArrow = null;
 
 function setHoveredArrow(arrow) {
   if (arrow === hoveredArrow) return;
-  if (hoveredArrow) gsap.to(hoveredArrow.scale, { x: 1, y: 1, z: 1, duration: 0.15, ease: "power2.out" });
+  if (hoveredArrow) gsap.to(hoveredArrow.scale, { x: 1, y: 1, z: 1, duration: T(motion.hover), ease: motion.out });
   hoveredArrow = arrow;
-  if (hoveredArrow) gsap.to(hoveredArrow.scale, { x: 1.15, y: 1.15, z: 1.15, duration: 0.15, ease: "power2.out" });
+  if (hoveredArrow) gsap.to(hoveredArrow.scale, { x: 1.15, y: 1.15, z: 1.15, duration: T(motion.hover), ease: motion.out });
 }
 
 // Hovering does the "pull a book partway out to see it" gesture; hovering
@@ -2356,17 +2648,37 @@ function setHoveredArrow(arrow) {
 // that's currently at the front of the carousel.
 let hoveredBook = null;
 
+function setCursor(value) {
+  if (renderer.domElement.style.cursor !== value) renderer.domElement.style.cursor = value;
+}
+
 function onPointerMove(event) {
   // the swipe-to-flip drag (pointerdown/up above) is what handles pointer
   // movement while reading — orbiting/hover-peek stay off until you close.
   // Tab hover still works, since it's not fighting the drag for meaning.
   if (readingState || paperReadingState) {
-    if (readingState && readingState.mode === "spread" && readingState.tabs.length > 0 && !dragStart) {
-      setPointerFromEvent(event);
-      const tabHits = raycaster.intersectObjects(readingState.tabs);
+    if (dragStart) return;
+    setPointerFromEvent(event);
+    if (readingState && readingState.mode === "spread") {
+      const tabHits = readingState.tabs.length > 0 ? raycaster.intersectObjects(readingState.tabs) : [];
       setHoveredTab(tabHits.length > 0 ? tabHits[0].object : null);
+      if (tabHits.length > 0) {
+        setCursor("pointer");
+      } else {
+        // the cursor says which way a click turns the page
+        const hits = raycaster.intersectObject(openBookGroup, true);
+        if (hits.length === 0) setCursor("zoom-out"); // click past the book = close it
+        else setCursor(openBookGroup.worldToLocal(hits[0].point.clone()).x >= 0 ? "e-resize" : "w-resize");
+      }
+    } else if (readingState && readingState.mode === "single") {
+      setHoveredTab(null);
+      const hits = raycaster.intersectObject(singlePageMesh);
+      if (hits.length === 0) setCursor("zoom-out");
+      else setCursor(singlePageGroup.worldToLocal(hits[0].point.clone()).x >= 0 ? "e-resize" : "w-resize");
     } else {
       setHoveredTab(null);
+      const hits = raycaster.intersectObject(paperViewMesh);
+      setCursor(hits.length === 0 ? "zoom-out" : "default");
     }
     return;
   }
@@ -2375,14 +2687,21 @@ function onPointerMove(event) {
   const arrowHits = raycaster.intersectObjects(carouselArrows);
   setHoveredArrow(arrowHits.length > 0 ? arrowHits[0].object : null);
 
+  let overDrawer = false;
   if (activeShelf.getDrawerState() !== "open") {
     const drawerHits = raycaster.intersectObject(activeShelf.drawerFrontPanel);
-    if (drawerHits.length > 0) activeShelf.peekDrawer();
+    overDrawer = drawerHits.length > 0;
+    if (overDrawer) activeShelf.peekDrawer();
     else activeShelf.unpeekDrawer();
+  } else {
+    overDrawer = raycaster.intersectObject(activeShelf.drawerFrontPanel).length > 0;
+    if (!overDrawer) overDrawer = raycaster.intersectObjects(activeShelf.paperMeshes).length > 0;
   }
 
   const hits = raycaster.intersectObjects(activeShelf.shelfBooks);
   const hovered = hits.length > 0 ? hits[0].object : null;
+
+  setCursor(hovered || overDrawer || arrowHits.length > 0 ? "pointer" : event.buttons ? "grabbing" : "grab");
 
   if (hovered !== hoveredBook) {
     if (hoveredBook && hoveredBook.userData.state === "out") {
@@ -2397,6 +2716,201 @@ function onPointerMove(event) {
 }
 
 renderer.domElement.addEventListener("pointermove", onPointerMove);
+
+// -----------------------------------------------------------------------
+// 11d. KEYBOARD CONTROLS
+// Everything the mouse does is reachable from the keyboard:
+//   overview : <- / -> switch shelf, Up / Down choose a book, Enter open it,
+//              Esc put it back / close the drawer
+//   reading  : <- / -> (or PageUp/PageDown, Space) turn the page,
+//              Home / End first / last page, Esc close
+// -----------------------------------------------------------------------
+
+let keyboardBookIndex = -1;
+
+function keyboardPickBook(delta) {
+  const books = activeShelf.shelfBooks;
+  if (books.length === 0) return;
+  if (hoveredBook && hoveredBook.userData.state === "out") pushBack(hoveredBook);
+  if (keyboardBookIndex === -1) keyboardBookIndex = delta > 0 ? 0 : books.length - 1;
+  else keyboardBookIndex = (keyboardBookIndex + delta + books.length) % books.length;
+  hoveredBook = books[keyboardBookIndex];
+  if (hoveredBook.userData.state === "shelved") pullOut(hoveredBook);
+  updatePreviewPanel();
+  announce(`${hoveredBook.userData.project.title}. Press Enter to open.`);
+}
+
+function onKeyDown(event) {
+  if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
+  const tag = event.target.tagName;
+  // let real buttons keep their own Enter/Space behaviour
+  if ((tag === "BUTTON" || tag === "A") && (event.key === "Enter" || event.key === " ")) return;
+  const key = event.key;
+
+  if (readingState) {
+    const single = readingState.mode === "single";
+    if (key === "ArrowRight" || key === "PageDown" || key === " ") {
+      single ? singlePageNext() : flipNext();
+    } else if (key === "ArrowLeft" || key === "PageUp") {
+      single ? singlePagePrev() : flipPrev();
+    } else if (key === "Home") {
+      single ? singlePageJumpTo(0) : jumpToIndex(0);
+    } else if (key === "End") {
+      single ? singlePageJumpTo(readingState.project.pages.length - 1) : jumpToIndex(readingState.pageHinges.length);
+    } else if (key === "Escape") {
+      closeBook();
+    } else {
+      return;
+    }
+    event.preventDefault();
+    return;
+  }
+
+  if (paperReadingState) {
+    if (key === "ArrowRight" || key === "PageDown") paperFlip(1);
+    else if (key === "ArrowLeft" || key === "PageUp") paperFlip(-1);
+    else if (key === "Escape") closePaperView();
+    else return;
+    event.preventDefault();
+    return;
+  }
+
+  if (key === "ArrowLeft") navigateCarousel(-1);
+  else if (key === "ArrowRight") navigateCarousel(1);
+  else if (key === "ArrowDown") keyboardPickBook(1);
+  else if (key === "ArrowUp") keyboardPickBook(-1);
+  else if (key === "Enter" && hoveredBook && hoveredBook.userData.state === "out") {
+    const book = hoveredBook;
+    hoveredBook = null;
+    keyboardBookIndex = -1;
+    openBook(book);
+  } else if (key === "Escape") {
+    if (hoveredBook && hoveredBook.userData.state === "out") pushBack(hoveredBook);
+    hoveredBook = null;
+    keyboardBookIndex = -1;
+    updatePreviewPanel();
+    if (activeShelf.getDrawerState() === "open") activeShelf.closeDrawer();
+  } else {
+    return;
+  }
+  event.preventDefault();
+}
+
+document.addEventListener("keydown", onKeyDown);
+
+// -----------------------------------------------------------------------
+// 11e. OPTIONAL PAGE-TURN SOUND
+// Synthesised with the Web Audio API (no audio files to ship or load): a
+// short, filtered burst of noise per page. Off by default — the reader opts
+// in with the Sound button in the reading bar, and the choice is remembered.
+// -----------------------------------------------------------------------
+
+let soundOn = false;
+try {
+  soundOn = localStorage.getItem("shelf-sound") === "on";
+} catch {
+  /* storage blocked — sound just stays off */
+}
+let audioCtx = null;
+let noiseBuffer = null;
+
+function getAudio() {
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    audioCtx = new Ctx();
+    noiseBuffer = audioCtx.createBuffer(1, Math.floor(audioCtx.sampleRate * 0.25), audioCtx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  }
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  return audioCtx;
+}
+
+function playFlipSound(count = 1) {
+  if (!soundOn || reduceMotionQuery.matches) return;
+  const ctx = getAudio();
+  if (!ctx) return;
+  const bursts = Math.min(count, 6);
+  for (let k = 0; k < bursts; k++) {
+    const t = ctx.currentTime + k * 0.045;
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.Q.value = 0.8;
+    filter.frequency.setValueAtTime(1500, t);
+    filter.frequency.exponentialRampToValueAtTime(5200, t + 0.2);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.1, t + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+    src.connect(filter).connect(gain).connect(ctx.destination);
+    src.start(t);
+    src.stop(t + 0.25);
+  }
+}
+
+// a soft low "thup" when a book opens
+function playThud() {
+  if (!soundOn || reduceMotionQuery.matches) return;
+  const ctx = getAudio();
+  if (!ctx) return;
+  const t = ctx.currentTime + 0.3;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.frequency.setValueAtTime(120, t);
+  osc.frequency.exponentialRampToValueAtTime(55, t + 0.15);
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.exponentialRampToValueAtTime(0.12, t + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.22);
+}
+
+const soundToggle = document.getElementById("sound-toggle");
+function syncSoundToggle() {
+  soundToggle.setAttribute("aria-pressed", String(soundOn));
+  soundToggle.textContent = soundOn ? "Sound on" : "Sound off";
+}
+soundToggle.addEventListener("click", () => {
+  soundOn = !soundOn;
+  try {
+    localStorage.setItem("shelf-sound", soundOn ? "on" : "off");
+  } catch {
+    /* ignore */
+  }
+  syncSoundToggle();
+  if (soundOn) playFlipSound(1);
+});
+syncSoundToggle();
+
+// -----------------------------------------------------------------------
+// 11f. LOADING STATE
+// The covers are the only images fetched up front. Until they've arrived
+// the page shows a small loader; then the loader fades and the scene fades
+// in, instead of the shelf popping in half-textured.
+// -----------------------------------------------------------------------
+
+let libraryReady = false;
+function markLibraryReady() {
+  if (libraryReady) return;
+  libraryReady = true;
+  invalidate(3);
+  document.body.classList.add("ready");
+  // replay the shelf settling now that it's actually visible
+  dropShelfIntoPlace(activeShelf.group);
+  dropBooksIntoPlace(activeShelf.shelfBooks);
+  const loader = document.getElementById("loader");
+  if (loader) {
+    loader.classList.add("done");
+    setTimeout(() => loader.remove(), 700);
+  }
+}
+// never leave someone staring at a loader if an image is slow or missing
+setTimeout(markLibraryReady, 5000);
+if (coversPending === 0) markLibraryReady();
 
 // -----------------------------------------------------------------------
 // 12. RESIZE HANDLING + RENDER LOOP
@@ -2417,6 +2931,7 @@ function refitCameraFraming() {
   camera.updateProjectionMatrix();
   renderer.setSize(width, height);
   updateCameraFraming();
+  invalidate(3);
 }
 
 // The plain resize/orientation-change case: no tween is already running
@@ -2447,16 +2962,47 @@ function clampOrbitAzimuth() {
   orbitSpherical.setFromVector3(orbitOffset);
   const clamped = THREE.MathUtils.clamp(orbitSpherical.theta, -azimuthSoftLimit, azimuthSoftLimit);
   const over = orbitSpherical.theta - clamped;
-  if (over === 0) return;
+  if (over === 0) return false;
   orbitSpherical.theta -= over * azimuthSpring;
   camera.position.copy(controls.target).add(orbitOffset.setFromSpherical(orbitSpherical));
+  return true;
 }
 
-function animate() {
+let lastRenderAt = 0;
+function animate(now) {
   requestAnimationFrame(animate);
-  controls.update();
-  clampOrbitAzimuth();
+  processUploadQueue();
+  if (controls.update()) invalidate();
+  if (clampOrbitAzimuth()) invalidate();
+  // any running tween (page turn, hover, shelf drop, camera move, delayed call) means the picture is changing
+  if (gsap.globalTimeline.getChildren(false, true, true).length > 0) invalidate();
+
+  if (framesToRender <= 0 || document.hidden) {
+    lastRenderAt = 0;
+    return;
+  }
+  framesToRender--;
   renderer.render(scene, camera);
+
+  // adaptive resolution (see section 1a): only judge back-to-back frames
+  if (lastRenderAt && now - lastRenderAt < 80) {
+    frameTimeAvg = frameTimeAvg * 0.9 + (now - lastRenderAt) * 0.1;
+    if (frameTimeAvg > 26 && pixelRatio > minPixelRatio) {
+      slowStreak++;
+      if (slowStreak > 20) {
+        pixelRatio = Math.max(minPixelRatio, pixelRatio - 0.25);
+        slowStreak = 0;
+        frameTimeAvg = 16;
+        applyPixelRatio();
+      }
+    } else {
+      slowStreak = 0;
+    }
+  }
+  lastRenderAt = now;
 }
 
-animate();
+animate(performance.now());
+
+// read-only handle for the performance checks in the case study / DevTools
+window.__bookshelfDebug = { renderer };
