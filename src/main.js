@@ -123,6 +123,13 @@ function applyPixelRatio() {
 
 const maxAnisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
 
+// phone book buttons (see syncBookList): declared up here because the shelf-info
+// panel is first filled in long before the rest of the page's code has run
+const bookListEl = document.getElementById("book-list");
+const coarsePointer = window.matchMedia("(pointer: coarse)");
+let bookListShelf = null;
+let bookListReady = false; // set once the whole module has run
+
 // Short status messages for screen readers (see #sr-status in library.html)
 const srStatus = document.getElementById("sr-status");
 function announce(message) {
@@ -961,12 +968,14 @@ function updateLeafWindow(built, center, peek = false) {
 
 // Frees every page texture of a book that is no longer being read or peeked at.
 function releaseBookTextures(project) {
-  const built = openBookCache.get(project);
-  if (!built) return;
-  built.windowCenter = null;
-  gsap.delayedCall(1, () => {
-    if (built.windowCenter !== null) return;
-    built.pageHinges.forEach((hinge) => unloadLeaf(hinge.userData.rec));
+  [openBookCache, openBookCacheSingle].forEach((cache) => {
+    const built = cache.get(project);
+    if (!built) return;
+    built.windowCenter = null;
+    gsap.delayedCall(1, () => {
+      if (built.windowCenter !== null) return;
+      built.pageHinges.forEach((hinge) => unloadLeaf(hinge.userData.rec));
+    });
   });
 }
 
@@ -976,7 +985,11 @@ function releaseBookTextures(project) {
 // at the start of the untabbed front matter and at every section, so a
 // tab always lands on the FRONT of a leaf rather than being buried on
 // the back of the page before it.
-function buildLeaves(project) {
+function buildLeaves(project, single = false) {
+  if (single) {
+    // phone: one page at a time, so every page is its own leaf (nothing hidden on a back side)
+    return { leaves: project.pages.map((page) => ({ front: page, back: null })), sectionLeafStart: [] };
+  }
   const bounds = [0, ...project.sections.map((s) => s.startIndex), project.pages.length];
   const leaves = [];
   const sectionLeafStart = new Array(project.sections.length).fill(0);
@@ -1366,6 +1379,7 @@ function updateShelfInfoPanel({ animate = true } = {}) {
   const apply = () => {
     shelfInfoHeader.textContent = activeShelf.info.header;
     shelfInfoBody.textContent = activeShelf.info.body;
+    syncBookList(true);
   };
   if (!animate) {
     apply();
@@ -1668,9 +1682,13 @@ const readingTarget = readingPosition.clone();
 // change (section 12) — #app isn't always the full viewport (portrait
 // layout, see style.css), so this has to stay reactive, not one-time.
 function updateCameraFraming() {
-  overviewCameraPos.z = fitDistance(sceneWidth, sceneHeight, framingMargin);
-  const readingWidth = portraitQuery.matches ? singlePageWidth : spreadBookWidth;
+  const portrait = portraitQuery.matches;
+  // phone: the floor arrows are hidden and the canvas is full width, so frame just the cabinet
+  overviewCameraPos.z = fitDistance(portrait ? outerWidth * 1.15 : sceneWidth, sceneHeight, framingMargin);
+  const readingWidth = portrait ? singlePageWidth * 1.06 : spreadBookWidth;
   readingCameraPos.z = readingPosition.z + fitDistance(readingWidth, openBookHeight, 1.15);
+  // phone: look at the middle of the right-hand page (the spine sits at the screen's left edge)
+  readingCameraPos.x = readingTarget.x = readingPosition.x + (portrait ? pageWidth / 2 + 0.01 : 0);
 }
 updateCameraFraming();
 
@@ -1718,6 +1736,7 @@ let readingState = null; // { project, pageHinges: [], currentIndex }
 // the transition into a book feel laggy, especially on a book you'd
 // already opened before in the same visit.
 const openBookCache = new Map(); // project -> { pageHinges, zStep, leftCoverZ, tabs, leftCover }
+const openBookCacheSingle = new Map(); // same, for the one-page-at-a-time phone layout
 
 // Kicks off building (and loading the textures for) a project's open-book
 // pages without showing them yet. Call this as early as possible — e.g.
@@ -1727,11 +1746,12 @@ const openBookCache = new Map(); // project -> { pageHinges, zStep, leftCoverZ, 
 // competing with a burst of fresh image decodes.
 let sharedLeafGeometry = null;
 
-function ensureOpenBookBuilt(project) {
-  const cached = openBookCache.get(project);
+function ensureOpenBookBuilt(project, single = false) {
+  const cache = single ? openBookCacheSingle : openBookCache;
+  const cached = cache.get(project);
   if (cached) return cached;
 
-  const { leaves, sectionLeafStart } = buildLeaves(project);
+  const { leaves, sectionLeafStart } = buildLeaves(project, single);
 
   const zStep = pageThickness + 0.0006;
   // kept comfortably behind every page slot below so the cover never
@@ -1831,19 +1851,19 @@ function ensureOpenBookBuilt(project) {
 
   const tabs = buildTabs(project, pageHinges, sectionLeafStart);
 
-  const built = { pageHinges, zStep, leftCoverZ, tabs, leftCover, windowCenter: null };
-  openBookCache.set(project, built);
+  const built = { pageHinges, zStep, leftCoverZ, tabs, leftCover, windowCenter: null, single };
+  cache.set(project, built);
   return built;
 }
 
 // Puts a project's (built-or-cached) pages into openBookGroup, reset to
 // their closed/unflipped state, ready for the opening swing to reveal.
-function buildOpenBook(project) {
+function buildOpenBook(project, single = false) {
   while (openBookGroup.children.length) {
     openBookGroup.remove(openBookGroup.children[0]);
   }
 
-  const built = ensureOpenBookBuilt(project);
+  const built = ensureOpenBookBuilt(project, single);
 
   built.pageHinges.forEach((hinge, index) => {
     hinge.rotation.set(0, 0, 0);
@@ -1852,7 +1872,7 @@ function buildOpenBook(project) {
     setLeafShown(hinge, false); // updateLeafWindow() shows the ones around the current page
     openBookGroup.add(hinge);
   });
-  openBookGroup.add(built.leftCover);
+  if (!single) openBookGroup.add(built.leftCover); // (a phone shows only the right-hand page)
 
   return built;
 }
@@ -1951,7 +1971,7 @@ function updateReadingUI() {
   const total = readingState.pageHinges.length;
   readingCounter.textContent = `${Math.min(readingState.currentIndex + 1, total)} / ${total}`;
   readingPrev.disabled = readingState.currentIndex === 0;
-  readingNext.disabled = readingState.currentIndex >= total;
+  readingNext.disabled = readingState.currentIndex >= readingState.maxIndex;
 }
 
 // Turns one page's hinge to `targetY` (0 = flat/unflipped, -PI = flipped
@@ -2000,10 +2020,10 @@ function animateFlip(hinge, targetY, duration, delay = 0) {
 // once, like grabbing a bookmarked chunk of a real book and turning
 // it as a single wad rather than leafing through one page at a time.
 // A plain Prev/Next click is just the one-page case of this same jump.
-function jumpToIndex(targetIndex) {
-  if (!readingState) return;
+function jumpToIndex(targetIndex, force = false) {
+  if (!readingState || (readingState.busy && !force)) return;
   const { pageHinges, currentIndex, zStep, leftCoverZ } = readingState;
-  const clamped = Math.max(0, Math.min(targetIndex, pageHinges.length));
+  const clamped = Math.max(0, Math.min(targetIndex, readingState.maxIndex));
   if (clamped === currentIndex) return;
 
   // A multi-page jump (a tab, Home/End) fans the pages over one after
@@ -2148,97 +2168,6 @@ function paperFlip(delta) {
 }
 
 // -----------------------------------------------------------------------
-// 7c. SINGLE-PAGE BOOK READING (portrait only)
-// The desktop spread below shows two facing pages at once, each one
-// squeezed to illegibility on a narrow portrait screen — this is the
-// same "one flat sheet, texture swapped on Prev/Next" approach the
-// paper view above already uses, for a book's own pages[] instead of a
-// paper's. openBook() decides which of the two this section or the
-// spread section below actually gets used, based on the screen's
-// current orientation at the moment a book is opened.
-// -----------------------------------------------------------------------
-
-const singlePageGroup = new THREE.Group();
-singlePageGroup.position.copy(readingPosition);
-singlePageGroup.visible = false;
-scene.add(singlePageGroup);
-
-const singlePageMaterial = new THREE.MeshBasicMaterial({ color: 0xf8f8f6, toneMapped: false });
-let singlePageMesh = null;
-
-// Mirrors applyPageSide's placeholder handling (section 4) — a page
-// slot with no real image yet gets the same "drop PNGs here" texture
-// instead of a broken/blank plane.
-function setSinglePageTexture(page) {
-  function applyTexture(tex) {
-    const previous = singlePageMaterial.map;
-    tex.anisotropy = maxAnisotropy;
-    singlePageMaterial.map = tex;
-    singlePageMaterial.needsUpdate = true;
-    if (previous && previous !== tex) disposeTexture(previous);
-    revealMaterial(singlePageMaterial);
-    invalidate();
-    // resize the plane to the image's real aspect ratio, capped to the
-    // book's own page dimensions, so it never stretches or overflows them
-    const aspect = tex.image.width / tex.image.height;
-    let w = pageWidth;
-    let h = w / aspect;
-    if (h > pageHeight) {
-      h = pageHeight;
-      w = h * aspect;
-    }
-    singlePageMesh.geometry.dispose();
-    singlePageMesh.geometry = new THREE.PlaneGeometry(w, h);
-  }
-
-  if (page.image) {
-    textureLoader.load(
-      page.image,
-      (tex) => {
-        tex.colorSpace = THREE.SRGBColorSpace;
-        applyTexture(tex);
-      },
-      undefined,
-      () => applyTexture(createPagePlaceholderTexture(page.label || "?", page.color || "#e7dcc9"))
-    );
-  } else {
-    applyTexture(createPagePlaceholderTexture(page.label || "", page.color || "#e7dcc9"));
-  }
-}
-
-function updateSinglePageUI() {
-  const total = readingState.project.pages.length;
-  readingCounter.textContent = `${readingState.currentIndex + 1} / ${total}`;
-  readingPrev.disabled = readingState.currentIndex === 0;
-  readingNext.disabled = readingState.currentIndex >= total - 1;
-}
-
-function singlePageJumpTo(targetIndex) {
-  const total = readingState.project.pages.length;
-  const clamped = Math.max(0, Math.min(targetIndex, total - 1));
-  if (clamped === readingState.currentIndex) return;
-  readingState.currentIndex = clamped;
-  setSinglePageTexture(readingState.project.pages[clamped]);
-  updateSinglePageUI();
-  playFlipSound(1);
-  // warm the browser cache for the neighbours so the next swipe is instant
-  [clamped + 1, clamped - 1].forEach((i) => {
-    const neighbour = readingState.project.pages[i];
-    if (neighbour?.image) new Image().src = neighbour.image;
-  });
-}
-
-function singlePageNext() {
-  if (!readingState) return;
-  singlePageJumpTo(readingState.currentIndex + 1);
-}
-
-function singlePagePrev() {
-  if (!readingState) return;
-  singlePageJumpTo(readingState.currentIndex - 1);
-}
-
-// -----------------------------------------------------------------------
 // 8. OPENING / CLOSING A BOOK
 // -----------------------------------------------------------------------
 
@@ -2251,132 +2180,197 @@ let activeShelfBook = null;
 const bookOpenPivot = new THREE.Group();
 scene.add(bookOpenPivot);
 
-// Hands a book back from the opening pivot to its own shelf group, keeping its
-// place in the world. attach() alone re-derives the rotation as an equivalent
-// but different set of angles (x = 180, y = 0, z = 180 instead of y = 180),
-// and the push-back animation only ever animates y — so the book never swung
-// back and the next open made it turn a full extra half-turn (the "360").
-// Setting the turn explicitly as a y-rotation keeps it a clean 180 each way.
-function returnBookToShelf(book, yaw) {
+// Hands a book back to its own shelf group (it is parented to the scene while
+// it is out being read) and puts it exactly back in its slot, as plain
+// position / rotation / scale values.
+function returnBookToShelf(book) {
   book.userData.homeGroup.attach(book);
-  book.rotation.set(0, yaw, 0);
+  book.position.copy(book.userData.restPosition);
+  book.rotation.set(0, 0, 0);
+  book.scale.set(1, 1, 1);
+}
+
+// The front cover as its own hinged sheet: it shows the book's real cover
+// artwork on the outside and the title page on the inside, and swings open on
+// the spine to reveal the first page. It is what makes the book OPEN instead
+// of just turning around.
+const coverClosedZ = 0.004; // just in front of the first page
+function getCoverLeaf(book, project) {
+  let cover = book.userData.coverLeaf;
+  if (cover) return cover;
+  const hinge = new THREE.Group();
+  const geometry = new THREE.PlaneGeometry(pageWidth, pageHeight);
+  // the book's own front-cover material, so the swap from the closed book to this sheet is invisible
+  const outside = new THREE.Mesh(geometry, book.material[0]);
+  outside.position.set(pageWidth / 2 + 0.01, 0, 0.0004);
+  const insideMaterial = new THREE.MeshBasicMaterial({ map: createTitlePageTexture(project), toneMapped: false });
+  const inside = new THREE.Mesh(geometry, insideMaterial);
+  inside.rotation.y = Math.PI;
+  inside.position.set(pageWidth / 2 + 0.01, 0, -0.0004);
+  hinge.add(outside, inside);
+  cover = { hinge };
+  book.userData.coverLeaf = cover;
+  return cover;
+}
+
+// Pose of the cover sheet from its angle: stays in front of the pages until it is
+// edge-on, then sits on the left-hand pile behind every page that lands there.
+function poseCoverLeaf(cover, built) {
+  const hinge = cover.hinge;
+  const angle = Math.min(Math.max(-hinge.rotation.y, 0), Math.PI);
+  hinge.position.y = Math.sin(angle) * 0.02;
+  hinge.position.z = angle < Math.PI / 2 ? coverClosedZ : built.leftCoverZ + 0.0006;
 }
 
 function openBook(book) {
   activeShelfBook = book;
   const project = book.userData.project;
-  // Decided once, at the moment the book opens — see section 7c for why
-  // portrait gets a single page at a time instead of this two-page
-  // spread: reading one page at a time is the point, so mid-read
+  // Decided once, at the moment the book opens: a phone (portrait) shows one
+  // page at a time, a landscape screen shows the two-page spread. Mid-read
   // orientation changes deliberately don't retroactively switch modes.
   const single = portraitQuery.matches;
 
-  if (single) {
-    readingState = { mode: "single", project, currentIndex: 0 };
-    if (!singlePageMesh) {
-      singlePageMesh = new THREE.Mesh(new THREE.PlaneGeometry(pageWidth, pageHeight), singlePageMaterial);
-      singlePageGroup.add(singlePageMesh);
-    }
-    setSinglePageTexture(project.pages[0]);
-    updateSinglePageUI();
-  } else {
-    const built = buildOpenBook(project);
-    const { pageHinges, zStep, leftCoverZ, tabs } = built;
-    readingState = { mode: "spread", project, built, pageHinges, currentIndex: 0, zStep, leftCoverZ, tabs };
-    updateLeafWindow(built, 0);
-    updateReadingUI();
-  }
+  // Both layouts are real hinged pages (so a page can be dragged by hand on a
+  // phone too); the phone layout just has one page per leaf, no tabs and no
+  // left-hand page, and the camera looks at the right-hand page only.
+  const built = buildOpenBook(project, single);
+  const { pageHinges, zStep, leftCoverZ, tabs } = built;
+  readingState = {
+    mode: single ? "single" : "spread",
+    project,
+    built,
+    pageHinges,
+    currentIndex: 0,
+    zStep,
+    leftCoverZ,
+    tabs,
+    maxIndex: single ? pageHinges.length - 1 : pageHinges.length, // a phone never turns its last page away
+    busy: true, // ignore page turns / close until the opening animation has finished
+  };
+  updateLeafWindow(built, 0);
+  updateReadingUI();
 
   readingTitle.textContent = project.title;
   readingPanel.classList.add("visible");
   updatePreviewPanel(); // readingState is set above, so this hides the preview panel
 
-  // Swing the book open on its own spine instead of spinning it in place:
-  // put a pivot at the book's spine-side edge, reparent the book onto it
-  // (attach() preserves its current world transform, so nothing jumps —
-  // this book is always still shelved on the currently-active, carousel-
-  // front shelf at this point, so its local position already equals its
-  // world position), then animate the pivot itself toward the reading
-  // position while it rotates — the book arcs open on its binding as it
-  // travels, the way a real cover swings rather than sliding over then
-  // spinning on the spot. Whichever view (spread or single-page) reveals
-  // itself the same way, partway through this same swing.
-  const hingeWorldPos = book.position.clone();
-  hingeWorldPos.x += bookWidth / 2;
-  bookOpenPivot.position.copy(hingeWorldPos);
-  bookOpenPivot.rotation.set(0, 0, 0);
-  bookOpenPivot.attach(book);
+  // The title page is carried by the cover sheet now, so the separate left-hand page stays hidden
+  built.leftCover.visible = false;
+  const cover = getCoverLeaf(book, project);
+  cover.hinge.rotation.set(0, 0, 0);
+  cover.hinge.position.set(0, 0, coverClosedZ);
+  openBookGroup.add(cover.hinge);
+  openBookGroup.visible = false;
 
-  const revealGroup = single ? singlePageGroup : openBookGroup;
-  revealGroup.visible = false;
-  gsap.to(bookOpenPivot.position, { ...readingPosition, duration: T(motion.open), ease: "sine.inOut" });
-  gsap.to(bookOpenPivot.rotation, {
-    y: Math.PI,
-    duration: T(motion.open),
-    ease: "sine.inOut",
-    onUpdate: function () {
-      if (!revealGroup.visible && this.progress() > 0.5) {
-        revealGroup.visible = true;
-      }
-    },
-    onComplete: () => {
-      book.visible = false;
-      // hand the book back to ITS OWN shelf group (not the scene
-      // directly) so it keeps rotating along with that shelf if the
-      // carousel turns later, and so closeBook()/pushBack() below can
-      // animate its position/rotation in the right local space
-      returnBookToShelf(book, Math.PI);
-    },
-  });
-
-  // See the matching comment in openPaperView — expands #app to full
-  // width in portrait so the open view has room to be legible, and
-  // refits readingCameraPos to that box before both the tween below
-  // (captures it as its end value) and enterReadingControls (bases
-  // maxDistance on it).
   document.body.classList.add("reading-active");
   refitCameraFraming();
   enterReadingControls();
 
-  // one smooth, gradual push-in: same duration and easing as the book's own swing
-  gsap.to(camera.position, { ...readingCameraPos, duration: T(motion.open), ease: "sine.inOut", overwrite: "auto" });
-  gsap.to(controls.target, { ...readingTarget, duration: T(motion.open), ease: "sine.inOut", overwrite: "auto" });
+  // One continuous move, in two beats:
+  //  1. the book leaves the shelf, turns a quarter turn so its FRONT COVER faces
+  //     you, and grows to page size as it comes to the middle of the screen;
+  //  2. its cover swings open 180 degrees on the spine, revealing the first page.
+  // The camera pushes in gradually across both.
+  scene.attach(book); // keeps where it is in the world; from here on it is animated in world space
+  const beat1 = T(0.55);
+  const beat2 = T(0.65);
+  const tl = gsap.timeline({
+    onComplete: () => {
+      if (readingState) readingState.busy = false;
+    },
+  });
+  tl.to(
+    book.position,
+    {
+      x: readingPosition.x + 0.01 + pageWidth / 2, // spine on the left edge of the right-hand page
+      y: readingPosition.y,
+      z: readingPosition.z - bookWidth / 2 + coverClosedZ, // front cover lands where the cover sheet starts
+      duration: beat1,
+      ease: "power2.inOut",
+    },
+    0
+  );
+  tl.to(book.rotation, { y: -Math.PI / 2, duration: beat1, ease: "power2.inOut" }, 0);
+  tl.to(book.scale, { x: 1, y: pageHeight / bookHeight, z: pageWidth / bookDepth, duration: beat1, ease: "power2.inOut" }, 0);
+  tl.call(() => {
+    // swap the closed book for the (identical-looking) cover sheet on top of the first page
+    book.visible = false;
+    openBookGroup.visible = true;
+  });
+  tl.to(cover.hinge.rotation, {
+    y: -Math.PI,
+    duration: beat2,
+    ease: "power2.inOut",
+    onUpdate: () => poseCoverLeaf(cover, built),
+    onComplete: () => poseCoverLeaf(cover, built),
+  });
+  playFlipSound(1);
+
+  gsap.to(camera.position, { ...readingCameraPos, duration: beat1 + beat2, ease: "sine.inOut", overwrite: "auto" });
+  gsap.to(controls.target, { ...readingTarget, duration: beat1 + beat2, ease: "sine.inOut", overwrite: "auto" });
   announce(`Opened ${project.title}. Page 1 of ${project.pages.length}.`);
   playThud();
 }
 
 function closeBook() {
+  if (!readingState || readingState.busy) return;
+  const state = readingState;
+  const book = activeShelfBook;
+  const built = state.built;
+  state.busy = true;
+  bookDrag = null;
   readingPanel.classList.remove("visible");
   exitReadingControls();
   setHoveredTab(null); // reset any tab left mid-glow/scaled from hovering
-
-  // mirror the opening transition: the pages linger a moment while the
-  // real book reappears (still turned away) and rotates back closed
-  const revealGroup = readingState?.mode === "single" ? singlePageGroup : openBookGroup;
-  gsap.delayedCall(T(0.15), () => {
-    revealGroup.visible = false;
-  });
-
   document.body.classList.remove("reading-active");
   refitCameraFraming();
 
-  gsap.to(camera.position, { ...overviewCameraPos, duration: T(motion.close), ease: motion.inOut });
-  gsap.to(controls.target, { ...overviewTarget, duration: T(motion.close), ease: motion.inOut });
+  // The opening played backwards: pages turn back to the start (if you were
+  // further in), the cover swings shut, the book becomes a solid object again
+  // and goes back to its slot on the shelf.
+  const cover = book.userData.coverLeaf;
+  const pagesBack = state.currentIndex > 0;
+  const beatPages = pagesBack ? T(0.55) : 0;
+  const beatCover = T(0.5);
+  const beatShelf = T(0.6);
+  const restWorld = book.userData.homeGroup.localToWorld(book.userData.restPosition.clone());
 
-  if (activeShelfBook) {
-    // guard against closing mid-swing, while the book is still parented
-    // under the opening pivot — hand it back to its own shelf group
-    // first so the plain position/rotation tween below lands on the
-    // right (shelf-local) values
-    const homeGroup = activeShelfBook.userData.homeGroup;
-    if (activeShelfBook.parent !== homeGroup) returnBookToShelf(activeShelfBook, bookOpenPivot.rotation.y);
-    pushBack(activeShelfBook);
-    releaseBookTextures(activeShelfBook.userData.project); // free the page images from GPU memory
-    activeShelfBook = null;
-  }
-  bookDrag = null;
-  readingState = null;
-  announce("Closed the book.");
+  const tl = gsap.timeline({
+    onComplete: () => {
+      returnBookToShelf(book);
+      book.visible = true;
+      book.userData.state = "shelved";
+      releaseBookTextures(book.userData.project); // free the page images from GPU memory
+      openBookGroup.visible = false;
+      activeShelfBook = null;
+      readingState = null;
+      syncBookList();
+      announce("Closed the book.");
+    },
+  });
+  if (pagesBack) tl.call(() => jumpToIndex(0, true), null, 0);
+  tl.to(
+    cover.hinge.rotation,
+    {
+      y: 0,
+      duration: beatCover,
+      ease: "power2.inOut",
+      onUpdate: () => poseCoverLeaf(cover, built),
+      onComplete: () => poseCoverLeaf(cover, built),
+    },
+    beatPages
+  );
+  tl.call(() => {
+    openBookGroup.visible = false;
+    book.visible = true;
+  });
+  tl.to(book.position, { x: restWorld.x, y: restWorld.y, z: restWorld.z, duration: beatShelf, ease: "power2.inOut" }, ">");
+  tl.to(book.rotation, { y: 0, duration: beatShelf, ease: "power2.inOut" }, "<");
+  tl.to(book.scale, { x: 1, y: 1, z: 1, duration: beatShelf, ease: "power2.inOut" }, "<");
+
+  const total = beatPages + beatCover + beatShelf;
+  gsap.to(camera.position, { ...overviewCameraPos, duration: total, ease: "sine.inOut", overwrite: "auto" });
+  gsap.to(controls.target, { ...overviewTarget, duration: total, ease: "sine.inOut", overwrite: "auto" });
 }
 
 // -----------------------------------------------------------------------
@@ -2389,7 +2383,7 @@ function pullOut(book) {
   // moment it's pulled out, well before the reader clicks to actually
   // open it — so the swing-open animation isn't competing with a burst
   // of fresh page loads and feels immediate instead of laggy
-  updateLeafWindow(ensureOpenBookBuilt(book.userData.project), 0, true);
+  updateLeafWindow(ensureOpenBookBuilt(book.userData.project, portraitQuery.matches), 0, true);
   gsap.to(book.position, {
     x: book.userData.restPosition.x,
     y: book.userData.restPosition.y,
@@ -2428,8 +2422,8 @@ const readingPrev = document.getElementById("reading-prev");
 const readingNext = document.getElementById("reading-next");
 const readingClose = document.getElementById("reading-close");
 
-readingPrev.addEventListener("click", () => (readingState?.mode === "single" ? singlePagePrev() : flipPrev()));
-readingNext.addEventListener("click", () => (readingState?.mode === "single" ? singlePageNext() : flipNext()));
+readingPrev.addEventListener("click", flipPrev);
+readingNext.addEventListener("click", flipNext);
 readingClose.addEventListener("click", closeBook);
 
 const paperPanel = document.getElementById("paper-panel");
@@ -2453,7 +2447,74 @@ paperClose.addEventListener("click", closePaperView);
 const previewPanel = document.getElementById("preview-panel");
 const previewTitle = document.getElementById("preview-title");
 
+// --- phone: a row of book buttons under the shelf (portrait layout, see
+// style.css). Tapping the thin spines of a shelf-full of books is fiddly, so
+// every book also gets a big button: tap once to pull it out, tap again to open.
+
+function syncBookList(rebuild = false) {
+  if (!bookListReady || !bookListEl) return;
+  const books = activeShelf.shelfBooks;
+  if (rebuild || bookListShelf !== activeShelf) {
+    bookListShelf = activeShelf;
+    bookListEl.replaceChildren();
+    books.forEach((book) => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "book-chip";
+      chip.addEventListener("click", () => selectBookFromList(book));
+      bookListEl.appendChild(chip);
+    });
+  }
+  [...bookListEl.children].forEach((chip, i) => {
+    const book = books[i];
+    const title = book.userData.project.title;
+    const selected = hoveredBook === book && !readingState;
+    chip.classList.toggle("selected", selected);
+    chip.setAttribute("aria-pressed", String(selected));
+    chip.textContent = selected ? `Open ${title} \u203A` : title;
+    if (selected) chip.scrollIntoView({ inline: "nearest", block: "nearest" });
+  });
+}
+
+function selectBookFromList(book) {
+  if (readingState || paperReadingState || isCarouselRotating) return;
+  if (hoveredBook === book && book.userData.state === "out") {
+    hoveredBook = null;
+    keyboardBookIndex = -1;
+    openBook(book);
+    syncBookList();
+    return;
+  }
+  if (hoveredBook && hoveredBook.userData.state === "out") pushBack(hoveredBook);
+  hoveredBook = book;
+  keyboardBookIndex = activeShelf.shelfBooks.indexOf(book);
+  if (book.userData.state === "shelved") pullOut(book);
+  updatePreviewPanel();
+  announce(`${book.userData.project.title}. Tap again to open.`);
+}
+
+// A fingertip is much bigger than a book spine: if a tap misses every book, open/select the nearest one
+// within a thumb's width instead of ignoring it.
+const pickPoint = new THREE.Vector3();
+function pickBookNear(event) {
+  const rect = renderer.domElement.getBoundingClientRect();
+  let best = null;
+  let bestDistance = 44;
+  activeShelf.shelfBooks.forEach((book) => {
+    book.getWorldPosition(pickPoint).project(camera);
+    const x = rect.left + ((pickPoint.x + 1) / 2) * rect.width;
+    const y = rect.top + ((1 - pickPoint.y) / 2) * rect.height;
+    const distance = Math.hypot(event.clientX - x, event.clientY - y);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      best = book;
+    }
+  });
+  return best;
+}
+
 function updatePreviewPanel() {
+  syncBookList();
   if (hoveredBook && !readingState) {
     previewTitle.textContent = hoveredBook.userData.project.title;
     previewPanel.classList.add("visible");
@@ -2504,19 +2565,20 @@ function onClick(event) {
     return;
   }
 
+  if (readingState?.busy) return; // the book is opening or closing
   setPointerFromEvent(event);
 
   if (readingState && readingState.mode === "single") {
-    const hits = raycaster.intersectObject(singlePageMesh);
+    const hits = raycaster.intersectObject(openBookGroup, true);
     if (hits.length === 0) {
       // clicked past the page entirely — treat it like closing the book
       closeBook();
       return;
     }
-    // did the ray land left or right of the page's own centerline?
-    const localPoint = singlePageGroup.worldToLocal(hits[0].point.clone());
-    if (localPoint.x >= 0) singlePageNext();
-    else singlePagePrev();
+    // right part of the page = next, left part = previous
+    const localPoint = openBookGroup.worldToLocal(hits[0].point.clone());
+    if (localPoint.x >= pageWidth * 0.4) flipNext();
+    else flipPrev();
     return;
   }
 
@@ -2570,8 +2632,9 @@ function onClick(event) {
   }
 
   const hits = raycaster.intersectObjects(activeShelf.shelfBooks);
-  if (hits.length > 0) {
-    const book = hits[0].object;
+  const tapped = hits.length > 0 ? hits[0].object : coarsePointer.matches ? pickBookNear(event) : null;
+  if (tapped) {
+    const book = tapped;
     if (book.userData.state === "shelved") {
       pullOut(book);
     } else if (book.userData.state === "out") {
@@ -2618,15 +2681,22 @@ let bookDrag = null;
 const dragStartDistance = 6; // px before a press counts as a drag rather than a click
 
 function beginBookDrag(event) {
-  if (!readingState || readingState.mode !== "spread" || event.button > 0) return;
+  if (!readingState || readingState.busy || event.button > 0) return;
+  const single = readingState.mode === "single";
   setPointerFromEvent(event);
   if (readingState.tabs.length > 0 && raycaster.intersectObjects(readingState.tabs).length > 0) return;
   const hits = raycaster.intersectObject(openBookGroup, true);
   if (hits.length === 0) return;
-  const side = openBookGroup.worldToLocal(hits[0].point.clone()).x >= 0 ? 1 : -1; // 1 = right page, turning forward
-  const index = side > 0 ? readingState.currentIndex : readingState.currentIndex - 1;
-  const hinge = readingState.pageHinges[index];
-  if (!hinge) return;
+  // spread: grab the right page to turn forward, the left page to turn back.
+  // phone: there is only the right-hand page, so the drag direction decides
+  // (drag left = next page, drag right = bring the previous page back).
+  let side = 0;
+  let hinge = null;
+  if (!single) {
+    side = openBookGroup.worldToLocal(hits[0].point.clone()).x >= 0 ? 1 : -1;
+    hinge = readingState.pageHinges[side > 0 ? readingState.currentIndex : readingState.currentIndex - 1];
+    if (!hinge) return;
+  }
 
   // how many screen pixels one page is wide, so the page edge can track the pointer 1:1
   const rect = renderer.domElement.getBoundingClientRect();
@@ -2638,6 +2708,7 @@ function beginBookDrag(event) {
   if (pagePx < 40) return;
 
   bookDrag = {
+    single,
     active: false,
     side,
     hinge,
@@ -2651,13 +2722,37 @@ function beginBookDrag(event) {
   };
 }
 
+// The angle a dragged page is turned to. Spread: the page edge starts on its
+// own side and moves 1:1 with the pointer. Phone, bringing a page back: the page
+// starts off-screen to the left, so it is brought in faster than 1:1 or you'd
+// have to drag across the whole screen before it showed up.
+function dragAngle(d, dx) {
+  if (d.single && d.side < 0) {
+    const f = THREE.MathUtils.clamp(dx / (0.85 * d.pagePx), 0, 1);
+    return Math.PI * Math.pow(1 - f, 3);
+  }
+  return Math.acos(THREE.MathUtils.clamp(d.side + dx / d.pagePx, -1, 1));
+}
+
 function updateBookDrag(event) {
   const d = bookDrag;
   const dx = event.clientX - d.startX;
   const dy = event.clientY - d.startY;
   if (!d.active) {
-    const rightWay = d.side > 0 ? dx < 0 : dx > 0;
-    if (!rightWay || Math.abs(dx) < dragStartDistance || Math.abs(dy) > Math.abs(dx) * 1.5) return;
+    if (Math.abs(dx) < dragStartDistance || Math.abs(dy) > Math.abs(dx) * 1.5) return;
+    if (d.single) {
+      const side = dx < 0 ? 1 : -1;
+      const hinge = readingState.pageHinges[side > 0 ? readingState.currentIndex : readingState.currentIndex - 1];
+      // nothing to turn that way (first / last page): let go of the drag, so the rest of the gesture is ignored
+      if (!hinge || (side > 0 && readingState.currentIndex >= readingState.maxIndex)) {
+        bookDrag = null;
+        return;
+      }
+      d.side = side;
+      d.hinge = hinge;
+    } else if (d.side > 0 ? dx > 0 : dx < 0) {
+      return; // dragging the wrong way for this page
+    }
     d.active = true;
     gsap.killTweensOf(d.hinge.rotation);
     setLeafShown(d.hinge, true);
@@ -2675,9 +2770,7 @@ function updateBookDrag(event) {
   d.lastX = event.clientX;
   d.lastT = now;
 
-  // the page edge starts on its own side and moves with the pointer
-  const u = THREE.MathUtils.clamp(d.side + dx / d.pagePx, -1, 1);
-  d.hinge.rotation.y = -Math.acos(u);
+  d.hinge.rotation.y = -dragAngle(d, dx);
   poseHinge(d.hinge);
   invalidate();
 }
@@ -2697,7 +2790,9 @@ function endBookDrag(commitAllowed) {
   const angle = THREE.MathUtils.clamp(-d.hinge.rotation.y, 0, Math.PI);
   const progress = d.side > 0 ? angle / Math.PI : 1 - angle / Math.PI; // how far it has travelled toward its destination
   const flick = d.velocity * d.side * -1; // positive = moving toward the destination
-  const commit = commitAllowed && (progress > 0.3 || flick > 0.5) && !(flick < -0.5);
+  // (a phone's returning page is only visible once it is past halfway, so it must get there first)
+  const needed = d.single && d.side < 0 ? 0.5 : 0.3;
+  const commit = commitAllowed && (progress > needed || flick > 0.5) && !(flick < -0.5);
   if (commit) {
     jumpToIndex(readingState.currentIndex + (d.side > 0 ? 1 : -1));
   } else {
@@ -2715,9 +2810,9 @@ function onPointerDown(event) {
     bookDrag = null;
     return;
   }
-  if (readingState?.mode === "spread") {
+  if (readingState) {
     beginBookDrag(event);
-    return; // the spread handles its own dragging; swipe-to-flip is for single pages and papers
+    return; // book pages handle their own dragging; swipe-to-flip is only for the paper view now
   }
   dragStart = { x: event.clientX, y: event.clientY };
 }
@@ -2735,13 +2830,7 @@ function onPointerUp(event) {
   dragStart = null;
 
   if (Math.abs(dx) >= swipeThreshold && Math.abs(dx) > Math.abs(dy)) {
-    if (readingState?.mode === "single") {
-      if (dx < 0) singlePageNext();
-      else singlePagePrev();
-    } else if (readingState) {
-      if (dx < 0) flipNext();
-      else flipPrev();
-    } else if (paperReadingState) {
+    if (paperReadingState) {
       if (dx < 0) paperFlip(1);
       else paperFlip(-1);
     }
@@ -2831,11 +2920,9 @@ function onPointerMove(event) {
         if (hits.length === 0) setCursor("zoom-out"); // click past the book = close it
         else setCursor("grab"); // press and drag a page to turn it; a click turns it too
       }
-    } else if (readingState && readingState.mode === "single") {
+    } else if (readingState) {
       setHoveredTab(null);
-      const hits = raycaster.intersectObject(singlePageMesh);
-      if (hits.length === 0) setCursor("zoom-out");
-      else setCursor(singlePageGroup.worldToLocal(hits[0].point.clone()).x >= 0 ? "e-resize" : "w-resize");
+      setCursor(raycaster.intersectObject(openBookGroup, true).length === 0 ? "zoom-out" : "grab");
     } else {
       setHoveredTab(null);
       const hits = raycaster.intersectObject(paperViewMesh);
@@ -2909,15 +2996,14 @@ function onKeyDown(event) {
   const key = event.key;
 
   if (readingState) {
-    const single = readingState.mode === "single";
     if (key === "ArrowRight" || key === "PageDown" || key === " ") {
-      single ? singlePageNext() : flipNext();
+      flipNext();
     } else if (key === "ArrowLeft" || key === "PageUp") {
-      single ? singlePagePrev() : flipPrev();
+      flipPrev();
     } else if (key === "Home") {
-      single ? singlePageJumpTo(0) : jumpToIndex(0);
+      jumpToIndex(0);
     } else if (key === "End") {
-      single ? singlePageJumpTo(readingState.project.pages.length - 1) : jumpToIndex(readingState.pageHinges.length);
+      jumpToIndex(readingState.maxIndex);
     } else if (key === "Escape") {
       closeBook();
     } else {
@@ -3033,7 +3119,8 @@ function playThud() {
 const soundToggle = document.getElementById("sound-toggle");
 function syncSoundToggle() {
   soundToggle.setAttribute("aria-pressed", String(soundOn));
-  soundToggle.textContent = soundOn ? "Sound on" : "Sound off";
+  soundToggle.classList.toggle("off", !soundOn);
+  soundToggle.title = soundOn ? "Sound on" : "Sound off";
 }
 soundToggle.addEventListener("click", () => {
   soundOn = !soundOn;
@@ -3069,6 +3156,8 @@ function markLibraryReady() {
     setTimeout(() => loader.remove(), 700);
   }
 }
+bookListReady = true;
+syncBookList(true);
 // never leave someone staring at a loader if an image is slow or missing
 setTimeout(markLibraryReady, 5000);
 if (coversPending === 0) markLibraryReady();
@@ -3166,4 +3255,4 @@ function animate(now) {
 animate(performance.now());
 
 // read-only handle for the performance checks in the case study / DevTools
-window.__bookshelfDebug = { renderer, activeTweens: () => gsap.globalTimeline.getChildren(false, true, true).length, queued: () => uploadQueue.length };
+window.__bookshelfDebug = { renderer, gsap, activeTweens: () => gsap.globalTimeline.getChildren(false, true, true).length, queued: () => uploadQueue.length };
