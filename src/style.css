@@ -647,3 +647,60 @@ body.reading-active .nav-arrow {
 #paper-counter {
   white-space: nowrap;
 }
+
+/* Icon-only reading controls: less clutter */
+#reading-controls, #paper-controls { display:flex; align-items:center; justify-content:center; gap:6px; }
+.icon-btn { width:40px; height:40px; padding:0 !important; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; }
+.icon-btn svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+#reading-close, #paper-close { margin-left:6px; }
+#sound-toggle .mute { display:none; }
+#sound-toggle.off .waves { display:none; }
+#sound-toggle.off .mute { display:inline; }
+#reading-counter, #paper-counter { min-width:3.2em; text-align:center; font-variant-numeric:tabular-nums; }
+
+/* ---------------------------------------------------------------
+   Reading mode: dimmed room, edge arrows, top-right tools
+   --------------------------------------------------------------- */
+.reading-ui { opacity: 0; pointer-events: none; transition: opacity .35s ease .45s, transform .15s ease, background-color .15s ease; z-index: 30; }
+body.reading-active .reading-ui { opacity: 1; pointer-events: auto; }
+body.reading-active #home-link, body.reading-active #hero, body.reading-active #shelf-info, body.reading-active #key-hint { opacity: 0; pointer-events: none; }
+#home-link, #hero, #shelf-info, #key-hint { transition: opacity .4s ease; }
+
+.reading-edge, .tool-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(255,255,255,.18); border-radius: 50%;
+  background: rgba(255,255,255,.12); color: #fff; cursor: pointer; padding: 0;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.reading-edge svg, .tool-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.reading-edge { position: fixed; top: 50%; width: 52px; height: 52px; margin-top: -26px; }
+.reading-edge-left { left: max(12px, 2vw); }
+.reading-edge-right { right: max(12px, 2vw); }
+#reading-tools { position: fixed; top: 16px; right: max(12px, 2vw); display: flex; gap: 8px; }
+.tool-btn { width: 42px; height: 42px; }
+.reading-edge:hover:not(:disabled), .tool-btn:hover { background: rgba(255,255,255,.26); transform: scale(1.07); }
+.reading-edge:active:not(:disabled), .tool-btn:active { transform: scale(.92); background: rgba(255,255,255,.34); }
+.reading-edge:focus-visible, .tool-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+body.reading-active .reading-edge:disabled { opacity: .18; cursor: default; pointer-events: none; }
+#sound-toggle .mute { display: none; }
+#sound-toggle.off .waves { display: none; }
+#sound-toggle.off .mute { display: inline; }
+
+/* the slim title / page counter that stays at the bottom */
+#reading-panel {
+  background: rgba(18,19,21,.7); border: 1px solid rgba(255,255,255,.12); color: #f2f2f0;
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  padding: 8px 18px; border-radius: 999px; box-shadow: none; bottom: 18px; z-index: 30;
+}
+#reading-panel.visible { display: flex; align-items: baseline; gap: 12px; }
+#reading-title { margin: 0; color: #fff; font-size: 15px; font-weight: 600; }
+#reading-counter { color: rgba(255,255,255,.75); font-size: 13px; font-variant-numeric: tabular-nums; min-width: 0; }
+#reading-panel .key-hint { display: none; }
+
+@media (max-width: 800px), (pointer: coarse) {
+  .reading-edge { width: 44px; height: 44px; margin-top: -22px; background: rgba(0,0,0,.35); }
+  .reading-edge-left { left: 8px; } .reading-edge-right { right: 8px; }
+  #reading-tools { top: 10px; right: 10px; }
+  .tool-btn { background: rgba(0,0,0,.4); }
+}

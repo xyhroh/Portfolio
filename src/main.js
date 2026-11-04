@@ -1722,10 +1722,23 @@ function exitReadingControls() {
   controls.maxDistance = 12;
 }
 
+// A big black sheet behind the open book, in front of the shelf. It fades in
+// while a book opens, so the book is the only bright thing on screen.
+const readingDim = new THREE.Mesh(
+  new THREE.PlaneGeometry(80, 80),
+  new THREE.MeshBasicMaterial({ color: 0x0b0c0e, transparent: true, opacity: 0, depthWrite: false, toneMapped: false })
+);
+readingDim.visible = false;
+readingDim.renderOrder = 0;
+readingDim.frustumCulled = false;
+const dimOpacity = 0.84;
+
 const openBookGroup = new THREE.Group();
 openBookGroup.position.copy(readingPosition);
 openBookGroup.visible = false;
 scene.add(openBookGroup);
+readingDim.position.set(readingPosition.x, readingPosition.y, readingPosition.z - 0.35);
+scene.add(readingDim);
 
 let readingState = null; // { project, pageHinges: [], currentIndex }
 
@@ -1745,6 +1758,43 @@ const openBookCacheSingle = new Map(); // same, for the one-page-at-a-time phone
 // their images are already loading/loaded, and the swing animation isn't
 // competing with a burst of fresh image decodes.
 let sharedLeafGeometry = null;
+
+// Smooth page curl. A page is two half-width boxes sitting end to end; to bend
+// them as ONE continuous curve (instead of folding at the middle) every vertex
+// is moved along a circular arc in the vertex shader. `bend` is the arc's
+// curvature, shared by everything on the leaf, and `s0` says where this mesh
+// sits along the page so both halves join up seamlessly. At bend 0 the shader
+// changes nothing, so resting pages are exactly as before.
+function applyLeafBend(material, bend, s0) {
+  material.onBeforeCompile = (shader) => {
+    shader.uniforms.uBend = bend;
+    shader.uniforms.uS0 = { value: s0 };
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nuniform float uBend;\nuniform float uS0;')
+      .replace(
+        '#include <begin_vertex>',
+        `#include <begin_vertex>
+        {
+          float s = position.x + uS0;
+          float x1 = s;
+          float z1 = 0.0;
+          float nx = 0.0;
+          float nz = 1.0;
+          if (uBend > 0.00001) {
+            float a = uBend * s;
+            x1 = sin(a) / uBend;
+            z1 = -(1.0 - cos(a)) / uBend;
+            nx = sin(a);
+            nz = cos(a);
+          }
+          transformed.x = x1 - uS0 + nx * position.z;
+          transformed.z = z1 + nz * position.z;
+        }`
+      );
+  };
+  material.customProgramCacheKey = () => "leafbend";
+  return material;
+}
 
 function ensureOpenBookBuilt(project, single = false) {
   const cache = single ? openBookCacheSingle : openBookCache;
@@ -1790,7 +1840,7 @@ function ensureOpenBookBuilt(project, single = false) {
   const segmentWidth = pageWidth / 2;
   // every half-page of every book is the same box, so they all share one
   // geometry (less memory, less to upload to the GPU)
-  if (!sharedLeafGeometry) sharedLeafGeometry = new THREE.BoxGeometry(segmentWidth, pageHeight, pageThickness);
+  if (!sharedLeafGeometry) sharedLeafGeometry = new THREE.BoxGeometry(segmentWidth, pageHeight, pageThickness, 10, 1, 1); // 10 slices per half so the page can bend smoothly
 
   const pageHinges = leaves.map((leaf, index) => {
     const hinge = new THREE.Group();
@@ -1806,6 +1856,14 @@ function ensureOpenBookBuilt(project, single = false) {
     const outerMaterial = new THREE.MeshBasicMaterial({ color: paperTint, toneMapped: false });
     const innerBackMaterial = new THREE.MeshBasicMaterial({ color: paperTint, toneMapped: false });
     const outerBackMaterial = new THREE.MeshBasicMaterial({ color: paperTint, toneMapped: false });
+    const bend = { value: 0 }; // curvature, driven by poseHinge
+    hinge.userData.bend = bend;
+    applyLeafBend(innerMaterial, bend, segmentWidth / 2);
+    applyLeafBend(innerBackMaterial, bend, segmentWidth / 2);
+    applyLeafBend(outerMaterial, bend, segmentWidth * 1.5);
+    applyLeafBend(outerBackMaterial, bend, segmentWidth * 1.5);
+    const innerEdge = applyLeafBend(pageEdgeMaterial.clone(), bend, segmentWidth / 2);
+    const outerEdge = applyLeafBend(pageEdgeMaterial.clone(), bend, segmentWidth * 1.5);
     // textures are NOT loaded here any more — updateLeafWindow() does that
     // for just the leaves near the page being read
     hinge.userData.rec = {
@@ -1818,10 +1876,10 @@ function ensureOpenBookBuilt(project, single = false) {
     };
 
     const innerMesh = new THREE.Mesh(sharedLeafGeometry, [
-      pageEdgeMaterial,
-      pageEdgeMaterial,
-      pageEdgeMaterial,
-      pageEdgeMaterial,
+      innerEdge,
+      innerEdge,
+      innerEdge,
+      innerEdge,
       innerMaterial, // +z — front content, visible while unflipped
       innerBackMaterial, // -z — back content, visible once flipped over
     ]);
@@ -1834,10 +1892,10 @@ function ensureOpenBookBuilt(project, single = false) {
     hinge.add(creaseHinge);
 
     const outerMesh = new THREE.Mesh(sharedLeafGeometry, [
-      pageEdgeMaterial,
-      pageEdgeMaterial,
-      pageEdgeMaterial,
-      pageEdgeMaterial,
+      outerEdge,
+      outerEdge,
+      outerEdge,
+      outerEdge,
       outerMaterial,
       outerBackMaterial,
     ]);
@@ -1868,7 +1926,7 @@ function buildOpenBook(project, single = false) {
   built.pageHinges.forEach((hinge, index) => {
     hinge.rotation.set(0, 0, 0);
     hinge.position.set(0, 0, -index * built.zStep);
-    hinge.userData.creaseHinge.rotation.y = 0;
+    hinge.userData.bend.value = 0;
     setLeafShown(hinge, false); // updateLeafWindow() shows the ones around the current page
     openBookGroup.add(hinge);
   });
@@ -1986,32 +2044,128 @@ function updateReadingUI() {
 // can't be seen), and only then moves to its slot in the stack it is landing
 // on — switching earlier slid it behind or through its neighbours. Used by
 // both the animated flips and by dragging a page by hand.
+// A soft shadow the turning page casts on the page beneath it. Without it a
+// turning page looks like a flat card sliding over another one; with it the
+// page reads as lifted off the stack. One thin gradient plane per leaf, made
+// the first time that leaf is turned.
+const leafZStep = 0.0024; // pageThickness + the gap between leaves (see ensureOpenBookBuilt)
+let shadowTexture = null;
+let shadowGeometry = null;
+function getLeafShadow(hinge) {
+  let mesh = hinge.userData.shadow;
+  if (mesh) return mesh;
+  if (!shadowTexture) {
+    const c = document.createElement("canvas");
+    c.width = 128;
+    c.height = 4;
+    const g = c.getContext("2d");
+    const grad = g.createLinearGradient(0, 0, 128, 0);
+    grad.addColorStop(0, "rgba(0,0,0,0.10)");
+    grad.addColorStop(0.75, "rgba(0,0,0,0.55)");
+    grad.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 128, 4);
+    shadowTexture = new THREE.CanvasTexture(c);
+    shadowTexture.colorSpace = THREE.SRGBColorSpace;
+    shadowGeometry = new THREE.PlaneGeometry(1, pageHeight);
+    shadowGeometry.translate(0.5, 0, 0); // starts at the spine and grows outward
+  }
+  const material = new THREE.MeshBasicMaterial({
+    map: shadowTexture,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+    side: THREE.DoubleSide, // a mirrored (left-hand) shadow flips its winding
+    toneMapped: false,
+  });
+  mesh = new THREE.Mesh(shadowGeometry, material);
+  mesh.visible = false;
+  mesh.renderOrder = 2;
+  mesh.frustumCulled = false;
+  hinge.userData.shadow = mesh;
+  return mesh;
+}
+
+function updateLeafShadow(hinge, angle) {
+  const visible = angle > 0.02 && angle < Math.PI - 0.02;
+  const mesh = hinge.userData.shadow;
+  if (!visible) {
+    if (mesh) mesh.visible = false;
+    return;
+  }
+  const shadow = getLeafShadow(hinge);
+  if (!shadow.parent && hinge.parent) hinge.parent.add(shadow);
+  const c = Math.cos(angle);
+  const side = c >= 0 ? 1 : -1;
+  const reach = pageWidth * Math.abs(c) + 0.16 * Math.sin(angle); // a little beyond the page's own footprint, so it shows
+  shadow.scale.x = side * reach;
+  shadow.position.x = side * 0.01;
+  const { originalZ, leftZ } = hinge.userData;
+  shadow.position.z = (side > 0 ? originalZ : leftZ) - leafZStep + 0.0012; // just above the page underneath
+  shadow.material.opacity = Math.sin(angle) * 0.6;
+  shadow.visible = true;
+}
+
+// A sticky tab is glued to the page's edge, so it rides the curve out to the tip.
+function poseTabs(hinge) {
+  const k = hinge.userData.bend.value;
+  const tipX = k > 1e-5 ? Math.sin(k * pageWidth) / k : pageWidth;
+  const tipZ = k > 1e-5 ? -(1 - Math.cos(k * pageWidth)) / k : 0;
+  const tipAngle = k * pageWidth;
+  for (const child of hinge.children) {
+    if (child.userData.startIndex === undefined) continue;
+    if (child.userData.baseX === undefined) child.userData.baseX = child.position.x;
+    child.position.x = child.userData.baseX - pageWidth + tipX;
+    child.position.z = tipZ;
+    child.rotation.y = -tipAngle;
+  }
+}
+
 function poseHinge(hinge) {
   const { originalZ, leftZ } = hinge.userData;
   const angle = Math.min(Math.max(-hinge.rotation.y, 0), Math.PI);
   const bend = Math.sin((angle / Math.PI) * Math.PI);
-  hinge.userData.creaseHinge.rotation.y = bend * 0.4;
+  const curl = bend * 0.3; // the page tip ends up tilted about this many radians relative to the spine
+  hinge.userData.bend.value = curl / pageWidth;
+  poseTabs(hinge);
   hinge.position.y = bend * 0.025;
   hinge.position.z = (angle < Math.PI / 2 ? originalZ : leftZ) + bend * 0.012;
+  updateLeafShadow(hinge, angle);
 }
 
-function animateFlip(hinge, targetY, duration, delay = 0) {
+// `momentum` ({ speed } in px/ms) is set when the page is let go of mid-drag:
+// it keeps moving the way the hand was moving (decelerating, not starting
+// slow like a click-triggered turn) and a harder flick finishes sooner.
+function animateFlip(hinge, targetY, duration, delay = 0, momentum = null) {
   const { originalZ, leftZ } = hinge.userData;
   // finishing a page that was already part-way turned (e.g. let go of while
   // dragging) only needs the remaining fraction of the time
   const remaining = Math.abs(targetY - hinge.rotation.y) / Math.PI;
+  const speedFactor = momentum ? THREE.MathUtils.clamp(1 / (1 + momentum.speed * 0.7), 0.5, 1) : 1;
+  hinge.userData.peeking = false;
+  if (peekHinge === hinge) peekHinge = null;
+  gsap.killTweensOf(hinge.userData.bend);
   gsap.to(hinge.rotation, {
     y: targetY,
-    duration: duration * Math.max(0.3, Math.min(1, remaining)),
+    duration: duration * Math.max(0.3, Math.min(1, remaining)) * speedFactor,
     delay,
-    ease: motion.flipEase,
+    ease: momentum ? "power2.out" : motion.flipEase,
     overwrite: true, // a fast second click replaces the turn in progress instead of fighting it
     onUpdate: () => poseHinge(hinge),
     onInterrupt: () => poseHinge(hinge),
     onComplete: () => {
-      hinge.userData.creaseHinge.rotation.y = 0;
       hinge.position.y = 0;
       hinge.position.z = targetY === 0 ? originalZ : leftZ;
+      updateLeafShadow(hinge, targetY === 0 ? 0 : Math.PI);
+      // the page lands with a small flutter instead of stopping dead
+      hinge.userData.bend.value = 0.05 / pageWidth;
+      gsap.to(hinge.userData.bend, {
+        value: 0,
+        duration: T(0.5),
+        ease: "elastic.out(1, 0.4)",
+        overwrite: true,
+        onUpdate: () => poseTabs(hinge),
+      });
     },
   });
 }
@@ -2020,7 +2174,7 @@ function animateFlip(hinge, targetY, duration, delay = 0) {
 // once, like grabbing a bookmarked chunk of a real book and turning
 // it as a single wad rather than leafing through one page at a time.
 // A plain Prev/Next click is just the one-page case of this same jump.
-function jumpToIndex(targetIndex, force = false) {
+function jumpToIndex(targetIndex, force = false, momentum = null, silent = false) {
   if (!readingState || (readingState.busy && !force)) return;
   const { pageHinges, currentIndex, zStep, leftCoverZ } = readingState;
   const clamped = Math.max(0, Math.min(targetIndex, readingState.maxIndex));
@@ -2037,13 +2191,13 @@ function jumpToIndex(targetIndex, force = false) {
       const hinge = pageHinges[i];
       // move it just in front of the left cover, and in front of any
       // page already flipped there, so the chunk lands stacked in order
-      animateFlip(hinge, -Math.PI, duration, (i - currentIndex) * step);
+      animateFlip(hinge, -Math.PI, duration, (i - currentIndex) * step, count === 1 ? momentum : null);
     }
   } else {
     for (let i = currentIndex - 1; i >= clamped; i--) {
       const hinge = pageHinges[i];
       // restore its original spot in the right-hand stack
-      animateFlip(hinge, 0, duration, (currentIndex - 1 - i) * step);
+      animateFlip(hinge, 0, duration, (currentIndex - 1 - i) * step, count === 1 ? momentum : null);
     }
   }
 
@@ -2054,7 +2208,7 @@ function jumpToIndex(targetIndex, force = false) {
   }
   updateLeafWindow(readingState.built, clamped);
   updateReadingUI();
-  playFlipSound(count);
+  if (!silent) playFlipSound(count);
   invalidate();
 }
 
@@ -2277,8 +2431,11 @@ function openBook(book) {
   const tl = gsap.timeline({
     onComplete: () => {
       if (readingState) readingState.busy = false;
+      nudgeNextPage();
     },
   });
+  readingDim.visible = true;
+  gsap.to(readingDim.material, { opacity: dimOpacity, duration: T(0.55 + 0.65), ease: "sine.inOut", overwrite: "auto", onUpdate: invalidate });
   tl.to(
     book.position,
     {
@@ -2322,6 +2479,7 @@ function closeBook() {
   readingPanel.classList.remove("visible");
   exitReadingControls();
   setHoveredTab(null); // reset any tab left mid-glow/scaled from hovering
+  setPagePeek(null);
   document.body.classList.remove("reading-active");
   refitCameraFraming();
 
@@ -2348,7 +2506,7 @@ function closeBook() {
       announce("Closed the book.");
     },
   });
-  if (pagesBack) tl.call(() => jumpToIndex(0, true), null, 0);
+  if (pagesBack) tl.call(() => jumpToIndex(0, true, null, true), null, 0);
   tl.to(
     cover.hinge.rotation,
     {
@@ -2363,12 +2521,23 @@ function closeBook() {
   tl.call(() => {
     openBookGroup.visible = false;
     book.visible = true;
+    playCloseSound();
   });
   tl.to(book.position, { x: restWorld.x, y: restWorld.y, z: restWorld.z, duration: beatShelf, ease: "power2.inOut" }, ">");
   tl.to(book.rotation, { y: 0, duration: beatShelf, ease: "power2.inOut" }, "<");
   tl.to(book.scale, { x: 1, y: 1, z: 1, duration: beatShelf, ease: "power2.inOut" }, "<");
 
   const total = beatPages + beatCover + beatShelf;
+  gsap.to(readingDim.material, {
+    opacity: 0,
+    duration: total,
+    ease: "sine.inOut",
+    overwrite: "auto",
+    onUpdate: invalidate,
+    onComplete: () => {
+      readingDim.visible = false;
+    },
+  });
   gsap.to(camera.position, { ...overviewCameraPos, duration: total, ease: "sine.inOut", overwrite: "auto" });
   gsap.to(controls.target, { ...overviewTarget, duration: total, ease: "sine.inOut", overwrite: "auto" });
 }
@@ -2680,6 +2849,65 @@ const activePointers = new Set();
 let bookDrag = null;
 const dragStartDistance = 6; // px before a press counts as a drag rather than a click
 
+// Hover peek: on a mouse, the outer edge of a page lifts a touch when you
+// point at it, hinting that it can be grabbed (the cursor changes too).
+let peekHinge = null;
+function setPagePeek(hinge, side) {
+  if (hinge === peekHinge) return;
+  if (peekHinge && peekHinge.userData.peeking) {
+    const old = peekHinge;
+    const rest = old.userData.peekRest;
+    gsap.to(old.rotation, {
+      y: rest,
+      duration: T(0.3),
+      ease: "power2.out",
+      overwrite: true,
+      onUpdate: () => poseHinge(old),
+      onComplete: () => {
+        old.userData.peeking = false;
+        poseHinge(old);
+      },
+    });
+  }
+  peekHinge = null;
+  if (!hinge || gsap.isTweening(hinge.rotation) || hinge.userData.peeking) return;
+  peekHinge = hinge;
+  hinge.userData.peeking = true;
+  hinge.userData.peekRest = side > 0 ? 0 : -Math.PI;
+  setLeafShown(hinge, true);
+  gsap.to(hinge.rotation, {
+    y: side > 0 ? -0.16 : -(Math.PI - 0.16),
+    duration: T(0.3),
+    ease: "power2.out",
+    overwrite: true,
+    onUpdate: () => poseHinge(hinge),
+  });
+}
+
+// Once per visit, right after a book has opened, the next page lifts and
+// settles on its own so people can see that pages are movable.
+let nudgeShown = false;
+function nudgeNextPage() {
+  if (nudgeShown || !readingState || readingState.currentIndex !== 0) return;
+  const hinge = readingState.pageHinges[0];
+  if (!hinge) return;
+  nudgeShown = true;
+  const rest = 0;
+  gsap.to(hinge.rotation, {
+    y: -0.32,
+    duration: T(0.45),
+    ease: "power2.out",
+    yoyo: true,
+    repeat: 1,
+    overwrite: true,
+    onUpdate: () => poseHinge(hinge),
+    onComplete: () => {
+      hinge.rotation.y = rest;
+      poseHinge(hinge);
+    },
+  });
+}
+
 function beginBookDrag(event) {
   if (!readingState || readingState.busy || event.button > 0) return;
   const single = readingState.mode === "single";
@@ -2755,6 +2983,8 @@ function updateBookDrag(event) {
     }
     d.active = true;
     gsap.killTweensOf(d.hinge.rotation);
+    gsap.killTweensOf(d.hinge.userData.bend);
+    d.hinge.userData.peeking = false;
     setLeafShown(d.hinge, true);
     setHoveredTab(null);
     try {
@@ -2794,9 +3024,9 @@ function endBookDrag(commitAllowed) {
   const needed = d.single && d.side < 0 ? 0.5 : 0.3;
   const commit = commitAllowed && (progress > needed || flick > 0.5) && !(flick < -0.5);
   if (commit) {
-    jumpToIndex(readingState.currentIndex + (d.side > 0 ? 1 : -1));
+    jumpToIndex(readingState.currentIndex + (d.side > 0 ? 1 : -1), false, { speed: Math.abs(d.velocity) });
   } else {
-    animateFlip(d.hinge, d.side > 0 ? 0 : -Math.PI, T(motion.flip));
+    animateFlip(d.hinge, d.side > 0 ? 0 : -Math.PI, T(motion.flip), 0, { speed: Math.abs(d.velocity) });
   }
 }
 
@@ -2838,6 +3068,15 @@ function onPointerUp(event) {
   }
 }
 
+// the canvas must own touch gestures, or a phone's browser claims a sideways
+// swipe for itself (scroll / back-swipe) and cancels the page drag
+renderer.domElement.style.touchAction = "none";
+// forget fingers that lifted outside the canvas, so a stale one can't make every later touch look like a pinch
+window.addEventListener("pointerup", (e) => activePointers.delete(e.pointerId));
+window.addEventListener("pointercancel", (e) => activePointers.delete(e.pointerId));
+renderer.domElement.addEventListener("pointerleave", (e) => {
+  if (e.pointerType === "mouse") setPagePeek(null);
+});
 renderer.domElement.addEventListener("pointerdown", onPointerDown);
 renderer.domElement.addEventListener("pointerup", onPointerUp);
 renderer.domElement.addEventListener("pointercancel", (event) => {
@@ -2914,11 +3153,23 @@ function onPointerMove(event) {
       setHoveredTab(tabHits.length > 0 ? tabHits[0].object : null);
       if (tabHits.length > 0) {
         setCursor("pointer");
+        setPagePeek(null);
       } else {
         // the cursor says which way a click turns the page
         const hits = raycaster.intersectObject(openBookGroup, true);
-        if (hits.length === 0) setCursor("zoom-out"); // click past the book = close it
-        else setCursor("grab"); // press and drag a page to turn it; a click turns it too
+        if (hits.length === 0) {
+          setCursor("zoom-out"); // click past the book = close it
+          setPagePeek(null);
+        } else {
+          setCursor("grab"); // press and drag a page to turn it; a click turns it too
+          if (event.pointerType === "mouse" && !readingState.busy) {
+            const lx = openBookGroup.worldToLocal(hits[0].point.clone()).x;
+            const side = lx >= 0 ? 1 : -1;
+            const outer = Math.abs(lx) > pageWidth * 0.5;
+            const hinge = outer ? readingState.pageHinges[side > 0 ? readingState.currentIndex : readingState.currentIndex - 1] : null;
+            setPagePeek(hinge, side);
+          }
+        }
       }
     } else if (readingState) {
       setHoveredTab(null);
@@ -3074,28 +3325,78 @@ function getAudio() {
   return audioCtx;
 }
 
+// One short burst of filtered noise, shaped on the fly. Everything the
+// paper sounds are made of is this plus a different filter and envelope.
+function noiseBurst(t, { dur, type, freq, freqEnd, q = 0.7, gain, attack = 0.01, rate = 1 }) {
+  const ctx = audioCtx;
+  const src = ctx.createBufferSource();
+  src.buffer = noiseBuffer;
+  src.playbackRate.value = rate;
+  const filter = ctx.createBiquadFilter();
+  filter.type = type;
+  filter.Q.value = q;
+  filter.frequency.setValueAtTime(freq, t);
+  if (freqEnd) filter.frequency.exponentialRampToValueAtTime(freqEnd, t + dur);
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(gain, t + attack);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.connect(filter).connect(g).connect(ctx.destination);
+  src.start(t);
+  src.stop(t + dur + 0.02);
+}
+
+// A page turn is two sounds: the airy "fwip" of the page cutting through the
+// air, and a soft papery tick when it lands on the pile. A multi-page jump
+// is ONE quick riffle of ticks, never a row of separate full sounds, and
+// sounds closer together than ~90 ms are dropped so nothing can pile up.
+let lastFlipSoundAt = 0;
 function playFlipSound(count = 1) {
   if (!soundOn || reduceMotionQuery.matches) return;
   const ctx = getAudio();
   if (!ctx) return;
-  const bursts = Math.min(count, 6);
-  for (let k = 0; k < bursts; k++) {
-    const t = ctx.currentTime + k * 0.045;
-    const src = ctx.createBufferSource();
-    src.buffer = noiseBuffer;
-    const filter = ctx.createBiquadFilter();
-    filter.type = "bandpass";
-    filter.Q.value = 0.8;
-    filter.frequency.setValueAtTime(1500, t);
-    filter.frequency.exponentialRampToValueAtTime(5200, t + 0.2);
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(0.1, t + 0.03);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
-    src.connect(filter).connect(gain).connect(ctx.destination);
-    src.start(t);
-    src.stop(t + 0.25);
+  const nowMs = performance.now();
+  if (nowMs - lastFlipSoundAt < 90) return;
+  lastFlipSoundAt = nowMs;
+  const t = ctx.currentTime + 0.01;
+  const v = 0.85 + Math.random() * 0.3; // no two turns sound identical
+  if (count <= 1) {
+    // the swish: breathy mid-high noise that brightens and dies away
+    noiseBurst(t, { dur: 0.34, type: "bandpass", freq: 1800 * v, freqEnd: 4200 * v, q: 0.55, gain: 0.1 * v, attack: 0.07, rate: 0.9 + Math.random() * 0.2 });
+    // a hint of low "body" so it is not just hiss
+    noiseBurst(t, { dur: 0.3, type: "lowpass", freq: 700, freqEnd: 350, q: 0.5, gain: 0.05 * v, attack: 0.08 });
+    // the landing tick
+    noiseBurst(t + 0.3, { dur: 0.06, type: "bandpass", freq: 2600 * v, q: 1.1, gain: 0.07 * v, attack: 0.004 });
+    noiseBurst(t + 0.3, { dur: 0.08, type: "lowpass", freq: 420, q: 0.6, gain: 0.06 * v, attack: 0.004 });
+  } else {
+    // riffle: a quick flutter of ticks, fading out
+    const ticks = Math.min(count, 8);
+    for (let k = 0; k < ticks; k++) {
+      const tk = t + k * 0.035;
+      const fade = 1 - (k / ticks) * 0.6;
+      noiseBurst(tk, { dur: 0.05, type: "bandpass", freq: (2200 + Math.random() * 1800) * v, q: 0.9, gain: 0.06 * fade, attack: 0.004 });
+    }
+    noiseBurst(t, { dur: 0.3, type: "bandpass", freq: 2000, freqEnd: 4500, q: 0.5, gain: 0.05, attack: 0.08 });
   }
+}
+
+// the book cover shutting: one soft, dull "pup" (no hiss at all)
+function playCloseSound(delaySeconds = 0) {
+  if (!soundOn || reduceMotionQuery.matches) return;
+  const ctx = getAudio();
+  if (!ctx) return;
+  const t = ctx.currentTime + delaySeconds;
+  noiseBurst(t, { dur: 0.16, type: "lowpass", freq: 900, freqEnd: 300, q: 0.7, gain: 0.12, attack: 0.006 });
+  const osc = ctx.createOscillator();
+  const g = ctx.createGain();
+  osc.frequency.setValueAtTime(110, t);
+  osc.frequency.exponentialRampToValueAtTime(50, t + 0.14);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.1, t + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+  osc.connect(g).connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.2);
 }
 
 // a soft low "thup" when a book opens

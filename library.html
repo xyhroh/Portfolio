@@ -57,15 +57,17 @@
       <span id="preview-title"></span>
     </div>
 
+    <!-- Reading controls: page arrows sit at the screen edges, sound + close top right -->
+    <button id="reading-prev" type="button" class="reading-ui reading-edge reading-edge-left" aria-label="Previous page" title="Previous page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button id="reading-next" type="button" class="reading-ui reading-edge reading-edge-right" aria-label="Next page" title="Next page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <div id="reading-tools" class="reading-ui">
+      <button id="sound-toggle" type="button" class="tool-btn" aria-pressed="false" aria-label="Page-turn sound" title="Page-turn sound"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path class="waves" d="M16 9c1.5 1.5 1.5 4.5 0 6M18.5 6.5c3 3 3 8 0 11"/><path class="mute" d="M16 9l5 6M21 9l-5 6"/></svg></button>
+      <button id="reading-close" type="button" class="tool-btn" aria-label="Close book" title="Close book (Esc)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+
     <div id="reading-panel" role="region" aria-label="Book controls">
       <h2 id="reading-title"></h2>
-      <div id="reading-controls">
-        <button id="reading-prev">&larr; Prev</button>
-        <span id="reading-counter" aria-live="polite"></span>
-        <button id="reading-next">Next &rarr;</button>
-        <button id="sound-toggle" type="button" aria-pressed="false" aria-label="Page-turn sound">Sound off</button>
-        <button id="reading-close">Close</button>
-      </div>
+      <span id="reading-counter" aria-live="polite"></span>
       <p class="key-hint">drag a page, or &larr; &rarr; to turn &middot; Home / End &middot; Esc close</p>
     </div>
 
@@ -74,10 +76,10 @@
     <div id="paper-panel" role="region" aria-label="Paper controls">
       <h2 id="paper-title"></h2>
       <div id="paper-controls">
-        <button id="paper-prev">&larr; Prev</button>
+        <button id="paper-prev" type="button" class="icon-btn" aria-label="Previous page" title="Previous page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
         <span id="paper-counter" aria-live="polite"></span>
-        <button id="paper-next">Next &rarr;</button>
-        <button id="paper-close">Close</button>
+        <button id="paper-next" type="button" class="icon-btn" aria-label="Next page" title="Next page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        <button id="paper-close" type="button" class="icon-btn" aria-label="Close paper" title="Close paper (Esc)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
     </div>
 
