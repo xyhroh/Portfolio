@@ -772,6 +772,15 @@ function loadImageTexture(url, onLoad, onError) {
 // too, but that's the OPPOSITE mesh segment (inner vs outer) from where
 // the front's near-spine half lived. Swapping which half goes to which
 // segment keeps left-to-right reading order correct once flipped.
+// Frees the GPU copy AND the decoded bitmap held in memory (dispose() alone
+// leaves the bitmap around until the garbage collector gets to it, which is
+// what made things stutter after reading a long book).
+function disposeTexture(texture) {
+  texture.dispose();
+  const image = texture.image;
+  if (image && typeof image.close === "function") image.close();
+}
+
 const paperTint = 0xe8e8e6; // what a page looks like before its picture has arrived
 // Pages are unlit and not tone-mapped (so print colours stay true), tinted a
 // whisper off pure white so the sheet reads as paper against the white site.
@@ -797,7 +806,7 @@ function applyPageSide(innerMaterial, outerMaterial, page, reversed, rec) {
 
   function useTexture(tex) {
     if (rec.token !== token) {
-      tex.dispose();
+      disposeTexture(tex);
       return;
     }
     // The two mesh segments together are a fixed pageWidth x pageHeight
@@ -885,6 +894,10 @@ function applyLeafContent(innerMaterial, outerMaterial, innerBackMaterial, outer
 // cache) if you flip back to it.
 const LEAF_WINDOW = 2;
 
+function setLeafShown(hinge, shown) {
+  hinge.userData.pageMeshes.forEach((m) => (m.visible = shown));
+}
+
 function loadLeaf(rec, withBack = true) {
   const [inner, outer, innerBack, outerBack] = rec.mats;
   if (!rec.frontLoaded) {
@@ -902,7 +915,7 @@ function unloadLeaf(rec) {
   rec.frontLoaded = false;
   rec.backLoaded = false;
   rec.token++;
-  rec.textures.forEach((t) => t.dispose());
+  rec.textures.forEach(disposeTexture);
   rec.textures.length = 0;
   rec.mats.forEach((m) => {
     gsap.killTweensOf(m.color);
@@ -923,6 +936,11 @@ function updateLeafWindow(built, center, peek = false) {
   }
   const lo = center - 1 - LEAF_WINDOW;
   const hi = center + LEAF_WINDOW;
+  // only the pages around the one being read are drawn at all — the rest are
+  // hidden behind them anyway, and a 50-page book was ~300 draw calls per frame
+  built.pageHinges.forEach((hinge, i) => {
+    if (i >= lo && i <= hi) setLeafShown(hinge, true);
+  });
   // nearest pages first, so the ones on screen arrive first
   built.pageHinges
     .map((hinge, i) => ({ hinge, i }))
@@ -933,7 +951,10 @@ function updateLeafWindow(built, center, peek = false) {
     const c = built.windowCenter;
     built.pageHinges.forEach((hinge, i) => {
       const keep = c !== null && i >= c - 1 - LEAF_WINDOW && i <= c + LEAF_WINDOW;
-      if (!keep) unloadLeaf(hinge.userData.rec);
+      if (!keep) {
+        unloadLeaf(hinge.userData.rec);
+        setLeafShown(hinge, false);
+      }
     });
   });
 }
@@ -1704,6 +1725,8 @@ const openBookCache = new Map(); // project -> { pageHinges, zStep, leftCoverZ, 
 // reader actually clicks to open it, the pages are already built and
 // their images are already loading/loaded, and the swing animation isn't
 // competing with a burst of fresh image decodes.
+let sharedLeafGeometry = null;
+
 function ensureOpenBookBuilt(project) {
   const cached = openBookCache.get(project);
   if (cached) return cached;
@@ -1745,6 +1768,9 @@ function ensureOpenBookBuilt(project) {
   // while unflipped, and flipping it over reveals the back (verso)
   // instead of a blank sheet.
   const segmentWidth = pageWidth / 2;
+  // every half-page of every book is the same box, so they all share one
+  // geometry (less memory, less to upload to the GPU)
+  if (!sharedLeafGeometry) sharedLeafGeometry = new THREE.BoxGeometry(segmentWidth, pageHeight, pageThickness);
 
   const pageHinges = leaves.map((leaf, index) => {
     const hinge = new THREE.Group();
@@ -1771,7 +1797,7 @@ function ensureOpenBookBuilt(project) {
       backLoaded: false,
     };
 
-    const innerMesh = new THREE.Mesh(new THREE.BoxGeometry(segmentWidth, pageHeight, pageThickness), [
+    const innerMesh = new THREE.Mesh(sharedLeafGeometry, [
       pageEdgeMaterial,
       pageEdgeMaterial,
       pageEdgeMaterial,
@@ -1781,12 +1807,13 @@ function ensureOpenBookBuilt(project) {
     ]);
     innerMesh.position.x = segmentWidth / 2 + 0.01;
     hinge.add(innerMesh);
+    hinge.userData.pageMeshes = [innerMesh];
 
     const creaseHinge = new THREE.Group();
     creaseHinge.position.x = segmentWidth + 0.01;
     hinge.add(creaseHinge);
 
-    const outerMesh = new THREE.Mesh(new THREE.BoxGeometry(segmentWidth, pageHeight, pageThickness), [
+    const outerMesh = new THREE.Mesh(sharedLeafGeometry, [
       pageEdgeMaterial,
       pageEdgeMaterial,
       pageEdgeMaterial,
@@ -1796,6 +1823,7 @@ function ensureOpenBookBuilt(project) {
     ]);
     outerMesh.position.x = segmentWidth / 2;
     creaseHinge.add(outerMesh);
+    hinge.userData.pageMeshes.push(outerMesh);
 
     hinge.userData.creaseHinge = creaseHinge;
     return hinge;
@@ -1821,6 +1849,7 @@ function buildOpenBook(project) {
     hinge.rotation.set(0, 0, 0);
     hinge.position.set(0, 0, -index * built.zStep);
     hinge.userData.creaseHinge.rotation.y = 0;
+    setLeafShown(hinge, false); // updateLeafWindow() shows the ones around the current page
     openBookGroup.add(hinge);
   });
   openBookGroup.add(built.leftCover);
@@ -1931,33 +1960,36 @@ function updateReadingUI() {
 // slightly through the middle of the turn, then both settle flat again
 // at either end — closer to how Issuu (or a real page) turns than a
 // perfectly stiff rotation.
-function animateFlip(hinge, targetY, duration, delay = 0) {
-  const creaseHinge = hinge.userData.creaseHinge;
+// Sets a leaf's whole pose from its current angle: the soft crease bend, the
+// slight lift, and which stack's slot it occupies. The leaf stays in its own
+// slot of the stack it is leaving until it is edge-on (90 degrees, where it
+// can't be seen), and only then moves to its slot in the stack it is landing
+// on — switching earlier slid it behind or through its neighbours. Used by
+// both the animated flips and by dragging a page by hand.
+function poseHinge(hinge) {
   const { originalZ, leftZ } = hinge.userData;
-  // The leaf stays in its own slot of the stack it is leaving until it is
-  // edge-on (90 degrees, where it can't be seen), and only then moves to its slot
-  // in the stack it is landing on. Switching earlier slid it behind or through
-  // its neighbours — that was the "glitching through pages". A small lift
-  // keeps it clear of the pages around it while it is in the air.
-  function place(progress) {
-    const onRight = Math.abs(hinge.rotation.y) < Math.PI / 2;
-    hinge.position.z = (onRight ? originalZ : leftZ) + Math.sin(progress * Math.PI) * 0.012;
-  }
+  const angle = Math.min(Math.max(-hinge.rotation.y, 0), Math.PI);
+  const bend = Math.sin((angle / Math.PI) * Math.PI);
+  hinge.userData.creaseHinge.rotation.y = bend * 0.4;
+  hinge.position.y = bend * 0.025;
+  hinge.position.z = (angle < Math.PI / 2 ? originalZ : leftZ) + bend * 0.012;
+}
+
+function animateFlip(hinge, targetY, duration, delay = 0) {
+  const { originalZ, leftZ } = hinge.userData;
+  // finishing a page that was already part-way turned (e.g. let go of while
+  // dragging) only needs the remaining fraction of the time
+  const remaining = Math.abs(targetY - hinge.rotation.y) / Math.PI;
   gsap.to(hinge.rotation, {
     y: targetY,
-    duration,
+    duration: duration * Math.max(0.3, Math.min(1, remaining)),
     delay,
     ease: motion.flipEase,
     overwrite: true, // a fast second click replaces the turn in progress instead of fighting it
-    onUpdate: function () {
-      const bend = Math.sin(this.progress() * Math.PI);
-      creaseHinge.rotation.y = bend * 0.4;
-      hinge.position.y = bend * 0.025;
-      place(this.progress());
-    },
-    onInterrupt: () => place(0),
+    onUpdate: () => poseHinge(hinge),
+    onInterrupt: () => poseHinge(hinge),
     onComplete: () => {
-      creaseHinge.rotation.y = 0;
+      hinge.userData.creaseHinge.rotation.y = 0;
       hinge.position.y = 0;
       hinge.position.z = targetY === 0 ? originalZ : leftZ;
     },
@@ -1996,6 +2028,10 @@ function jumpToIndex(targetIndex) {
   }
 
   readingState.currentIndex = clamped;
+  // every page that is about to fly must be drawn while it does
+  for (let i = Math.min(currentIndex, clamped); i < Math.max(currentIndex, clamped); i++) {
+    setLeafShown(pageHinges[i], true);
+  }
   updateLeafWindow(readingState.built, clamped);
   updateReadingUI();
   playFlipSound(count);
@@ -2036,7 +2072,7 @@ function setPaperViewTexture(imageUrl) {
     const previous = paperViewMaterial.map;
     paperViewMaterial.map = tex;
     paperViewMaterial.needsUpdate = true;
-    if (previous && previous !== tex) previous.dispose();
+    if (previous && previous !== tex) disposeTexture(previous);
     revealMaterial(paperViewMaterial);
     invalidate();
 
@@ -2139,7 +2175,7 @@ function setSinglePageTexture(page) {
     tex.anisotropy = maxAnisotropy;
     singlePageMaterial.map = tex;
     singlePageMaterial.needsUpdate = true;
-    if (previous && previous !== tex) previous.dispose();
+    if (previous && previous !== tex) disposeTexture(previous);
     revealMaterial(singlePageMaterial);
     invalidate();
     // resize the plane to the image's real aspect ratio, capped to the
@@ -2215,6 +2251,17 @@ let activeShelfBook = null;
 const bookOpenPivot = new THREE.Group();
 scene.add(bookOpenPivot);
 
+// Hands a book back from the opening pivot to its own shelf group, keeping its
+// place in the world. attach() alone re-derives the rotation as an equivalent
+// but different set of angles (x = 180, y = 0, z = 180 instead of y = 180),
+// and the push-back animation only ever animates y — so the book never swung
+// back and the next open made it turn a full extra half-turn (the "360").
+// Setting the turn explicitly as a y-rotation keeps it a clean 180 each way.
+function returnBookToShelf(book, yaw) {
+  book.userData.homeGroup.attach(book);
+  book.rotation.set(0, yaw, 0);
+}
+
 function openBook(book) {
   activeShelfBook = book;
   const project = book.userData.project;
@@ -2278,7 +2325,7 @@ function openBook(book) {
       // directly) so it keeps rotating along with that shelf if the
       // carousel turns later, and so closeBook()/pushBack() below can
       // animate its position/rotation in the right local space
-      book.userData.homeGroup.attach(book);
+      returnBookToShelf(book, Math.PI);
     },
   });
 
@@ -2322,11 +2369,12 @@ function closeBook() {
     // first so the plain position/rotation tween below lands on the
     // right (shelf-local) values
     const homeGroup = activeShelfBook.userData.homeGroup;
-    if (activeShelfBook.parent !== homeGroup) homeGroup.attach(activeShelfBook);
+    if (activeShelfBook.parent !== homeGroup) returnBookToShelf(activeShelfBook, bookOpenPivot.rotation.y);
     pushBack(activeShelfBook);
     releaseBookTextures(activeShelfBook.userData.project); // free the page images from GPU memory
     activeShelfBook = null;
   }
+  bookDrag = null;
   readingState = null;
   announce("Closed the book.");
 }
@@ -2561,20 +2609,126 @@ let suppressNextClick = false;
 const swipeThreshold = 40;
 const activePointers = new Set();
 
+// --- dragging a page by hand (open-book spread, desktop) -----------------
+// Press on a page and drag: the page edge follows the pointer, bending as it
+// goes. Let go past roughly a third of the way (or with a flick) and it
+// finishes turning; otherwise it settles back. A plain click still turns the
+// page, and the section tabs still work as before.
+let bookDrag = null;
+const dragStartDistance = 6; // px before a press counts as a drag rather than a click
+
+function beginBookDrag(event) {
+  if (!readingState || readingState.mode !== "spread" || event.button > 0) return;
+  setPointerFromEvent(event);
+  if (readingState.tabs.length > 0 && raycaster.intersectObjects(readingState.tabs).length > 0) return;
+  const hits = raycaster.intersectObject(openBookGroup, true);
+  if (hits.length === 0) return;
+  const side = openBookGroup.worldToLocal(hits[0].point.clone()).x >= 0 ? 1 : -1; // 1 = right page, turning forward
+  const index = side > 0 ? readingState.currentIndex : readingState.currentIndex - 1;
+  const hinge = readingState.pageHinges[index];
+  if (!hinge) return;
+
+  // how many screen pixels one page is wide, so the page edge can track the pointer 1:1
+  const rect = renderer.domElement.getBoundingClientRect();
+  const toScreenX = (localX) => {
+    const v = openBookGroup.localToWorld(new THREE.Vector3(localX, 0, 0)).project(camera);
+    return rect.left + ((v.x + 1) / 2) * rect.width;
+  };
+  const pagePx = Math.abs(toScreenX(pageWidth) - toScreenX(0));
+  if (pagePx < 40) return;
+
+  bookDrag = {
+    active: false,
+    side,
+    hinge,
+    pagePx,
+    startX: event.clientX,
+    startY: event.clientY,
+    lastX: event.clientX,
+    lastT: performance.now(),
+    velocity: 0,
+    pointerId: event.pointerId,
+  };
+}
+
+function updateBookDrag(event) {
+  const d = bookDrag;
+  const dx = event.clientX - d.startX;
+  const dy = event.clientY - d.startY;
+  if (!d.active) {
+    const rightWay = d.side > 0 ? dx < 0 : dx > 0;
+    if (!rightWay || Math.abs(dx) < dragStartDistance || Math.abs(dy) > Math.abs(dx) * 1.5) return;
+    d.active = true;
+    gsap.killTweensOf(d.hinge.rotation);
+    setLeafShown(d.hinge, true);
+    setHoveredTab(null);
+    try {
+      renderer.domElement.setPointerCapture(d.pointerId);
+    } catch {
+      /* pointer already gone */
+    }
+    setCursor("grabbing");
+  }
+  const now = performance.now();
+  const dt = Math.max(1, now - d.lastT);
+  d.velocity = d.velocity * 0.6 + ((event.clientX - d.lastX) / dt) * 0.4; // px per ms, smoothed
+  d.lastX = event.clientX;
+  d.lastT = now;
+
+  // the page edge starts on its own side and moves with the pointer
+  const u = THREE.MathUtils.clamp(d.side + dx / d.pagePx, -1, 1);
+  d.hinge.rotation.y = -Math.acos(u);
+  poseHinge(d.hinge);
+  invalidate();
+}
+
+function endBookDrag(commitAllowed) {
+  const d = bookDrag;
+  bookDrag = null;
+  if (!d || !d.active) return;
+  suppressNextClick = true; // the click that follows a drag must not also turn the page
+  try {
+    renderer.domElement.releasePointerCapture(d.pointerId);
+  } catch {
+    /* ignore */
+  }
+  if (!readingState) return;
+
+  const angle = THREE.MathUtils.clamp(-d.hinge.rotation.y, 0, Math.PI);
+  const progress = d.side > 0 ? angle / Math.PI : 1 - angle / Math.PI; // how far it has travelled toward its destination
+  const flick = d.velocity * d.side * -1; // positive = moving toward the destination
+  const commit = commitAllowed && (progress > 0.3 || flick > 0.5) && !(flick < -0.5);
+  if (commit) {
+    jumpToIndex(readingState.currentIndex + (d.side > 0 ? 1 : -1));
+  } else {
+    animateFlip(d.hinge, d.side > 0 ? 0 : -Math.PI, T(motion.flip));
+  }
+}
+
 function onPointerDown(event) {
   activePointers.add(event.pointerId);
   if (!readingState && !paperReadingState && renderer.domElement.style.cursor === "grab") setCursor("grabbing");
   if (!readingState && !paperReadingState) return;
   if (activePointers.size > 1) {
     dragStart = null;
+    if (bookDrag) endBookDrag(false); // a second finger (pinch-zoom) cancels the page drag
+    bookDrag = null;
     return;
+  }
+  if (readingState?.mode === "spread") {
+    beginBookDrag(event);
+    return; // the spread handles its own dragging; swipe-to-flip is for single pages and papers
   }
   dragStart = { x: event.clientX, y: event.clientY };
 }
 
 function onPointerUp(event) {
   activePointers.delete(event.pointerId);
-  if (renderer.domElement.style.cursor === "grabbing") setCursor("grab");
+  if (renderer.domElement.style.cursor === "grabbing") setCursor(readingState || paperReadingState ? "grab" : "grab");
+  if (bookDrag) {
+    endBookDrag(true);
+    return;
+  }
   if (!dragStart) return;
   const dx = event.clientX - dragStart.x;
   const dy = event.clientY - dragStart.y;
@@ -2597,7 +2751,10 @@ function onPointerUp(event) {
 
 renderer.domElement.addEventListener("pointerdown", onPointerDown);
 renderer.domElement.addEventListener("pointerup", onPointerUp);
-renderer.domElement.addEventListener("pointercancel", (event) => activePointers.delete(event.pointerId));
+renderer.domElement.addEventListener("pointercancel", (event) => {
+  activePointers.delete(event.pointerId);
+  if (bookDrag) endBookDrag(false);
+});
 
 // -----------------------------------------------------------------------
 // 11c. TAB HOVER + ARROW HOVER
@@ -2653,6 +2810,10 @@ function setCursor(value) {
 }
 
 function onPointerMove(event) {
+  if (bookDrag) {
+    updateBookDrag(event);
+    return;
+  }
   // the swipe-to-flip drag (pointerdown/up above) is what handles pointer
   // movement while reading — orbiting/hover-peek stay off until you close.
   // Tab hover still works, since it's not fighting the drag for meaning.
@@ -2668,7 +2829,7 @@ function onPointerMove(event) {
         // the cursor says which way a click turns the page
         const hits = raycaster.intersectObject(openBookGroup, true);
         if (hits.length === 0) setCursor("zoom-out"); // click past the book = close it
-        else setCursor(openBookGroup.worldToLocal(hits[0].point.clone()).x >= 0 ? "e-resize" : "w-resize");
+        else setCursor("grab"); // press and drag a page to turn it; a click turns it too
       }
     } else if (readingState && readingState.mode === "single") {
       setHoveredTab(null);
@@ -3005,4 +3166,4 @@ function animate(now) {
 animate(performance.now());
 
 // read-only handle for the performance checks in the case study / DevTools
-window.__bookshelfDebug = { renderer };
+window.__bookshelfDebug = { renderer, activeTweens: () => gsap.globalTimeline.getChildren(false, true, true).length, queued: () => uploadQueue.length };

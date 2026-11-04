@@ -545,3 +545,105 @@ body.reading-active #key-hint {
     animation: none;
   }
 }
+
+
+/* ---------------------------------------------------------------
+   Phone layout, round two: a much bigger bookshelf (full width, the
+   text moved BELOW it) plus a row of big book buttons — the thin
+   book spines are hard to tap, so every book also gets a button.
+   --------------------------------------------------------------- */
+
+#book-list {
+  display: none;
+}
+
+@media (orientation: portrait) {
+  #hero {
+    padding: calc(env(safe-area-inset-top, 0px) + 40px) 5vw 0;
+    gap: 2px;
+  }
+  #intro-left {
+    font-size: 15px;
+  }
+  #intro-role {
+    font-size: clamp(24px, 7.5vw, 34px);
+  }
+
+  #main-row {
+    flex-direction: column;
+  }
+  #app {
+    flex: 1 1 0;
+    width: 100%;
+    min-height: 0; /* the canvas has a fixed pixel size; without this it props the column open and pushes the text off-screen */
+    overflow: hidden;
+  }
+
+  #shelf-info {
+    flex: none;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 4px 5vw calc(env(safe-area-inset-bottom, 0px) + 12px);
+    pointer-events: auto;
+  }
+  #shelf-info-header {
+    font-size: 19px;
+  }
+  #shelf-info-body {
+    font-size: 13px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  #book-list {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 0 2px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  #book-list::-webkit-scrollbar {
+    display: none;
+  }
+  .book-chip {
+    flex: none;
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 22px;
+    border: 1.5px solid #c9ccd0;
+    background: #ffffff;
+    color: #2a2c2f;
+    font: 600 14px system-ui, sans-serif;
+    white-space: nowrap;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
+  }
+  .book-chip:active {
+    transform: scale(0.96);
+  }
+  .book-chip.selected {
+    background: #2f3438;
+    border-color: #2f3438;
+    color: #ffffff;
+  }
+
+  /* the chips do the job of the "currently pulled out" label */
+  #preview-panel {
+    display: none !important;
+  }
+}
+
+/* while reading, the shelf arrows have no business over the page; keep the counter on one line */
+body.reading-active .nav-arrow {
+  display: none;
+}
+#reading-counter,
+#paper-counter {
+  white-space: nowrap;
+}
