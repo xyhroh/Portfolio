@@ -121,7 +121,7 @@ function applyPixelRatio() {
   invalidate(3);
 }
 
-const maxAnisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+const maxAnisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
 
 // phone book buttons (see syncBookList): declared up here because the shelf-info
 // panel is first filled in long before the rest of the page's code has run
@@ -720,6 +720,20 @@ function createTitlePageTexture(project) {
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+// The last page of every book: a blank back cover that closes it.
+function createBackCoverTexture(project) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1024;
+  canvas.height = 1400;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#f2f2ef";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = maxAnisotropy;
   return texture;
 }
 
@@ -1651,7 +1665,7 @@ const sceneWidth = Math.max(outerWidth, (arrowGapFromCenter + arrowWidth / 2) * 
 // that stick out past the right page's edge. In portrait (see section
 // 7c, SINGLE-PAGE BOOK READING), only one page shows at a time instead,
 // so the reading camera fits just pageWidth there.
-const spreadBookWidth = pageWidth * 2 + 0.3;
+const spreadBookWidth = pageWidth * 2 + 0.2;
 const singlePageWidth = pageWidth;
 const openBookHeight = pageHeight;
 
@@ -1686,7 +1700,7 @@ function updateCameraFraming() {
   // phone: the floor arrows are hidden and the canvas is full width, so frame just the cabinet
   overviewCameraPos.z = fitDistance(portrait ? outerWidth * 1.15 : sceneWidth, sceneHeight, framingMargin);
   const readingWidth = portrait ? singlePageWidth * 1.06 : spreadBookWidth;
-  readingCameraPos.z = readingPosition.z + fitDistance(readingWidth, openBookHeight, 1.15);
+  readingCameraPos.z = readingPosition.z + fitDistance(readingWidth, openBookHeight, portrait ? 1.15 : 1.03);
   // phone: look at the middle of the right-hand page (the spine sits at the screen's left edge)
   readingCameraPos.x = readingTarget.x = readingPosition.x + (portrait ? pageWidth / 2 + 0.01 : 0);
 }
@@ -1707,6 +1721,16 @@ controls.target.copy(overviewTarget);
 // see updateCameraFraming above — so scrolling out only ever backs off
 // a little from wherever the page currently sits, never drifting into
 // the rest of the scene.
+// Reading needs crisp small text: render the canvas at (at least) 1.75x while
+// a book is open, even on a 1x monitor, which supersamples the page text.
+function setReadingSharpness(on) {
+  // modest bump only, and only once the opening animation has settled, so it never costs smoothness
+  const target = on ? Math.min(Math.max(window.devicePixelRatio, 1.25), 1.5) : Math.min(window.devicePixelRatio, 1.5);
+  if (target === pixelRatio) return;
+  pixelRatio = target;
+  applyPixelRatio();
+}
+
 function enterReadingControls() {
   controls.enabled = true;
   controls.enableRotate = false;
@@ -1824,6 +1848,19 @@ function ensureOpenBookBuilt(project, single = false) {
   ]);
   leftCover.position.set(-pageWidth / 2 - 0.01, 0, leftCoverZ);
 
+  // the back cover: sits behind the last leaf on the right, so after the final
+  // page turns there is an ending instead of an empty shelf
+  const backCoverZ = -(leaves.length + 1) * (pageThickness + 0.0006);
+  const backCover = new THREE.Mesh(new THREE.BoxGeometry(pageWidth, pageHeight, pageThickness), [
+    pageEdgeMaterial,
+    pageEdgeMaterial,
+    pageEdgeMaterial,
+    pageEdgeMaterial,
+    new THREE.MeshBasicMaterial({ map: createBackCoverTexture(project), toneMapped: false }),
+    pageEdgeMaterial,
+  ]);
+  backCover.position.set(pageWidth / 2 + 0.01, 0, backCoverZ);
+
   // each leaf is a small hinge Group pivoting at x = 0 (the spine). The
   // leaf mesh itself sits offset to the right of that pivot, so rotating
   // the hinge -180° swings it over to the left. `originalZ` is where it
@@ -1909,7 +1946,7 @@ function ensureOpenBookBuilt(project, single = false) {
 
   const tabs = buildTabs(project, pageHinges, sectionLeafStart);
 
-  const built = { pageHinges, zStep, leftCoverZ, tabs, leftCover, windowCenter: null, single };
+  const built = { pageHinges, zStep, leftCoverZ, tabs, leftCover, backCover, windowCenter: null, single };
   cache.set(project, built);
   return built;
 }
@@ -1931,6 +1968,7 @@ function buildOpenBook(project, single = false) {
     openBookGroup.add(hinge);
   });
   if (!single) openBookGroup.add(built.leftCover); // (a phone shows only the right-hand page)
+  openBookGroup.add(built.backCover);
 
   return built;
 }
@@ -2431,6 +2469,7 @@ function openBook(book) {
   const tl = gsap.timeline({
     onComplete: () => {
       if (readingState) readingState.busy = false;
+      setReadingSharpness(true);
       nudgeNextPage();
     },
   });
@@ -2496,6 +2535,7 @@ function closeBook() {
   const tl = gsap.timeline({
     onComplete: () => {
       returnBookToShelf(book);
+      setReadingSharpness(false);
       book.visible = true;
       book.userData.state = "shelved";
       releaseBookTextures(book.userData.project); // free the page images from GPU memory
@@ -3209,6 +3249,7 @@ function onPointerMove(event) {
     hoveredBook = hovered;
     if (hoveredBook && hoveredBook.userData.state === "shelved") {
       pullOut(hoveredBook);
+      playHoverSound();
     }
     updatePreviewPanel();
   }
@@ -3235,6 +3276,7 @@ function keyboardPickBook(delta) {
   else keyboardBookIndex = (keyboardBookIndex + delta + books.length) % books.length;
   hoveredBook = books[keyboardBookIndex];
   if (hoveredBook.userData.state === "shelved") pullOut(hoveredBook);
+  playHoverSound();
   updatePreviewPanel();
   announce(`${hoveredBook.userData.project.title}. Press Enter to open.`);
 }
@@ -3303,12 +3345,20 @@ document.addEventListener("keydown", onKeyDown);
 // in with the Sound button in the reading bar, and the choice is remembered.
 // -----------------------------------------------------------------------
 
-let soundOn = false;
+let soundOn = true; // on unless the reader switched it off before
 try {
-  soundOn = localStorage.getItem("shelf-sound") === "on";
+  soundOn = localStorage.getItem("shelf-sound") !== "off";
 } catch {
-  /* storage blocked — sound just stays off */
+  /* storage blocked — keep the default */
 }
+// browsers only allow audio after a click / key press, so unlock it on the first one
+function unlockAudio() {
+  window.removeEventListener("pointerdown", unlockAudio);
+  window.removeEventListener("keydown", unlockAudio);
+  if (soundOn) getAudio();
+}
+window.addEventListener("pointerdown", unlockAudio);
+window.addEventListener("keydown", unlockAudio);
 let audioCtx = null;
 let noiseBuffer = null;
 
@@ -3378,6 +3428,36 @@ function playFlipSound(count = 1) {
     }
     noiseBurst(t, { dur: 0.3, type: "bandpass", freq: 2000, freqEnd: 4500, q: 0.5, gain: 0.05, attack: 0.08 });
   }
+}
+
+// Hovering a book: a soft wooden/paper "tick" as it slides out of the shelf,
+// slightly different each time. Throttled so sweeping across the row stays a
+// pleasant ripple of ticks rather than a buzz.
+let lastHoverSoundAt = 0;
+function playHoverSound() {
+  if (!soundOn || reduceMotionQuery.matches) return;
+  if (!audioCtx || audioCtx.state !== "running") {
+    if (!audioCtx) return; // not unlocked by a click yet
+    audioCtx.resume();
+  }
+  const nowMs = performance.now();
+  if (nowMs - lastHoverSoundAt < 70) return;
+  lastHoverSoundAt = nowMs;
+  const ctx = audioCtx;
+  const t = ctx.currentTime + 0.005;
+  const v = 0.9 + Math.random() * 0.25;
+  noiseBurst(t, { dur: 0.05, type: "bandpass", freq: 1900 * v, q: 1.2, gain: 0.09, attack: 0.002 });
+  noiseBurst(t, { dur: 0.09, type: "lowpass", freq: 520 * v, freqEnd: 260, q: 0.8, gain: 0.1, attack: 0.003 });
+  const osc = ctx.createOscillator();
+  const g = ctx.createGain();
+  osc.frequency.setValueAtTime(190 * v, t);
+  osc.frequency.exponentialRampToValueAtTime(95, t + 0.07);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.05, t + 0.004);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+  osc.connect(g).connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.1);
 }
 
 // the book cover shutting: one soft, dull "pup" (no hiss at all)
