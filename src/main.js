@@ -39,6 +39,10 @@ renderer.setClearColor(0xffffff, 0);
 renderer.setSize(getViewportSize().width, getViewportSize().height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // adaptive: see section 1a
 renderer.shadowMap.enabled = true;
+// The shadow map is re-rendered manually (see the animate loop): the cabinet is
+// static most of the time, and while a book is open the whole thing is hidden
+// behind the dimming sheet anyway, so redrawing it every frame was pure cost.
+renderer.shadowMap.autoUpdate = false;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -122,6 +126,14 @@ function applyPixelRatio() {
 }
 
 const maxAnisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
+
+// Marks the shadow map as needing a redraw for the next little while — called
+// whenever something that casts a shadow starts moving.
+let shadowDirtyUntil = 0;
+function dirtyShadows(ms = 1200) {
+  shadowDirtyUntil = Math.max(shadowDirtyUntil, performance.now() + ms);
+  invalidate();
+}
 
 // phone book buttons (see syncBookList): declared up here because the shelf-info
 // panel is first filled in long before the rest of the page's code has run
@@ -207,8 +219,15 @@ scene.add(rimLight);
 // -----------------------------------------------------------------------
 
 const introRoleEl = document.getElementById("intro-role");
-const introRoleSwapMs = 250; // must match the CSS transition duration on #intro-role
-const introRoleHoldMs = 2200;
+// Typed out and rubbed out by hand rather than cross-faded. The numbers are
+// what a person at a keyboard actually does: backspacing is roughly twice as
+// quick as typing, there is a beat of hesitation on an empty line before the
+// next word starts, and every keystroke is jittered so it never falls into a
+// machine's rhythm.
+const introTypeMs = 85; // a keystroke
+const introDeleteMs = 42; // a backspace
+const introHoldFullMs = 2800; // how long a finished word is left to be read
+const introHoldEmptyMs = 450; // the pause on an empty line
 
 async function startIntroRoleRotation() {
   let roles = ["UX Strategist"]; // used only if roles.txt is missing/empty
@@ -230,14 +249,39 @@ async function startIntroRoleRotation() {
   introRoleEl.textContent = roles[0];
   if (roles.length <= 1) return;
 
-  setInterval(() => {
-    introRoleEl.classList.add("swapping");
-    setTimeout(() => {
+  // Someone who has asked for less motion should not be made to watch a
+  // cursor pecking away: swap the words outright instead.
+  if (reduceMotionQuery.matches) {
+    setInterval(() => {
       index = (index + 1) % roles.length;
       introRoleEl.textContent = roles[index];
-      introRoleEl.classList.remove("swapping");
-    }, introRoleSwapMs);
-  }, introRoleHoldMs);
+    }, introHoldFullMs);
+    return;
+  }
+
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const humanly = (ms) => wait(ms * (0.72 + Math.random() * 0.62));
+  introRoleEl.classList.add("typed"); // turns the caret on
+
+  for (;;) {
+    const current = roles[index];
+    await wait(introHoldFullMs);
+
+    introRoleEl.classList.add("editing"); // a caret stops blinking while it works
+    for (let i = current.length - 1; i >= 0; i--) {
+      introRoleEl.textContent = current.slice(0, i);
+      await humanly(introDeleteMs);
+    }
+    await wait(introHoldEmptyMs);
+
+    index = (index + 1) % roles.length;
+    const next = roles[index];
+    for (let i = 1; i <= next.length; i++) {
+      introRoleEl.textContent = next.slice(0, i);
+      await humanly(introTypeMs);
+    }
+    introRoleEl.classList.remove("editing");
+  }
 }
 
 startIntroRoleRotation();
@@ -293,6 +337,13 @@ const coverImageModules = import.meta.glob(
 const paperImageModules = import.meta.glob("/src/shelves/*/papers/*/*.{png,jpg,jpeg,webp}", {
   eager: true,
 });
+// The left-hand page of an open book. Drop one image into a book's title/
+// folder and it is used instead of the plain title-and-blurb page the code
+// draws. First image wins if there is more than one.
+const titleImageModules = import.meta.glob(
+  "/src/shelves/*/pages/*/title/*.{png,jpg,jpeg,webp}",
+  { eager: true }
+);
 // The header + body blurb shown on the right of the screen (see the
 // #shelf-info panel in index.html) for each shelf — one info.txt per
 // shelf, its first line the header and everything after that the body.
@@ -423,6 +474,15 @@ function coverForFolder(shelfName, folder) {
   return mod ? mod.default : null;
 }
 
+function titleForFolder(shelfName, folder) {
+  const prefix = `/src/shelves/${shelfName}/pages/${folder}/title/`;
+  const [, mod] =
+    Object.entries(titleImageModules)
+      .filter(([path]) => path.startsWith(prefix))
+      .sort(([a], [b]) => naturalCompare(a, b))[0] ?? [];
+  return mod ? mod.default : null;
+}
+
 function buildProjectsForShelf(shelfName) {
   const folders = Array.from(projectFoldersByShelf.get(shelfName) ?? []).sort();
   const projects = folders.map((folder, i) => ({
@@ -437,6 +497,7 @@ function buildProjectsForShelf(shelfName) {
     project.pages = pages;
     project.sections = sections;
     project.coverImage = coverForFolder(shelfName, project.folder);
+    project.titleImage = titleForFolder(shelfName, project.folder);
   });
   return projects;
 }
@@ -723,6 +784,52 @@ function createTitlePageTexture(project) {
   return texture;
 }
 
+// The material for a book's left-hand page. It always starts with the drawn
+// title page so there is something to show immediately, and if the book has an
+// image in its title/ folder that image replaces it as soon as it has loaded.
+// Swapping one texture for another leaves the shader untouched, so this costs
+// nothing at the moment it happens.
+function titlePageMaterial(project) {
+  const material = new THREE.MeshBasicMaterial({
+    map: createTitlePageTexture(project),
+    toneMapped: false,
+  });
+  if (project.titleImage) {
+    loadImageTexture(
+      project.titleImage,
+      (texture) => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.anisotropy = maxAnisotropy;
+        texture.generateMipmaps = true;
+        texture.minFilter = THREE.LinearMipmapLinearFilter;
+        // Centre-crop to the page's proportions rather than stretching, the
+        // same thing the scanned pages do, so any image at all can be dropped
+        // in without it coming out squashed.
+        const image = texture.image;
+        const pageAspect = pageWidth / pageHeight;
+        const imageAspect = image && image.height ? image.width / image.height : pageAspect;
+        if (imageAspect > pageAspect) {
+          const scale = pageAspect / imageAspect;
+          texture.repeat.set(scale, 1);
+          texture.offset.set((1 - scale) / 2, 0);
+        } else if (imageAspect < pageAspect) {
+          const scale = imageAspect / pageAspect;
+          texture.repeat.set(1, scale);
+          texture.offset.set(0, (1 - scale) / 2);
+        }
+        material.map = texture;
+        material.color.set(0xffffff);
+        material.needsUpdate = true;
+        invalidate(2);
+      },
+      () => {
+        /* unreadable image: the drawn title page stays */
+      }
+    );
+  }
+  return material;
+}
+
 // The last page of every book: a blank back cover that closes it.
 function createBackCoverTexture(project) {
   const canvas = document.createElement("canvas");
@@ -807,6 +914,17 @@ const paperTint = 0xe8e8e6; // what a page looks like before its picture has arr
 // whisper off pure white so the sheet reads as paper against the white site.
 const pageWhite = new THREE.Color(0xf8f8f6);
 
+// Every page material is born holding this 1x1 white pixel. A MeshBasicMaterial
+// multiplies its colour by its map, so a white pixel looks like no map at all —
+// but it means that when the real page image arrives later, three.js only swaps
+// one texture for another instead of switching the material from "no map" to
+// "has a map". That switch changes the shader's defines, which forced a brand
+// new program to be COMPILED mid page-turn: a measurable stall several pages
+// into a book. Starting with a map keeps the program fixed for the whole read.
+const blankPixel = new THREE.DataTexture(new Uint8Array([255, 255, 255, 255]), 1, 1, THREE.RGBAFormat);
+blankPixel.colorSpace = THREE.SRGBColorSpace;
+blankPixel.needsUpdate = true;
+
 // Pictures fade up out of the paper tint instead of popping in
 function revealMaterial(material) {
   gsap.killTweensOf(material.color);
@@ -875,8 +993,8 @@ function applyPageSide(innerMaterial, outerMaterial, page, reversed, rec) {
   if (!page) {
     // no image for this side (an odd page count leaves one leaf's back
     // empty) — leave it a plain blank sheet instead of loading anything
-    innerMaterial.map = null;
-    outerMaterial.map = null;
+    innerMaterial.map = blankPixel;
+    outerMaterial.map = blankPixel;
     innerMaterial.color.copy(pageWhite);
     outerMaterial.color.copy(pageWhite);
     innerMaterial.needsUpdate = true;
@@ -940,7 +1058,7 @@ function unloadLeaf(rec) {
   rec.textures.length = 0;
   rec.mats.forEach((m) => {
     gsap.killTweensOf(m.color);
-    m.map = null;
+    m.map = blankPixel; // never back to null: see blankPixel
     m.color.set(paperTint);
     m.needsUpdate = true;
   });
@@ -1437,9 +1555,13 @@ const shelves = shelvesData.map((shelfData, i) => {
   return shelf;
 });
 
-// shelves is in numeric order (Bookshelf 1, 2, 3, ...), so the first
-// one is whatever's shown by default when the page loads.
-let currentShelfIndex = 0;
+// shelves is in numeric order (Bookshelf 1, 2, 3, ...), but an empty shelf
+// makes a terrible first impression: the visitor lands on a bare cabinet and
+// has no reason to think there is anything else behind it. So open on the
+// first shelf that actually has books, falling back to the first shelf if
+// none of them do.
+const firstStockedShelf = shelves.findIndex((shelf) => shelf.shelfBooks.length > 0);
+let currentShelfIndex = firstStockedShelf === -1 ? 0 : firstStockedShelf;
 let activeShelf = shelves[currentShelfIndex];
 let carouselRotationY = -currentShelfIndex * stepAngle;
 carouselGroup.rotation.y = carouselRotationY;
@@ -1593,6 +1715,13 @@ function navigateCarousel(direction) {
   activeShelf = shelves[currentShelfIndex];
   carouselRotationY -= direction * stepAngle;
   updateShelfInfoPanel();
+  // a phone frames on the books themselves, and the incoming shelf's may be
+  // on a different row — glide the camera there as the carousel turns
+  if (portraitQuery.matches) {
+    updateCameraFraming();
+    gsap.to(camera.position, { ...overviewCameraPos, duration: T(motion.carousel), ease: motion.out, overwrite: "auto", onUpdate: invalidate });
+    gsap.to(controls.target, { ...overviewTarget, duration: T(motion.carousel), ease: motion.out, overwrite: "auto", onUpdate: invalidate });
+  }
 
   // The incoming shelf's appearance pop fires partway through the
   // rotation's tail end rather than waiting for it to come to a full
@@ -1695,10 +1824,74 @@ const readingTarget = readingPosition.clone();
 // currently is. Called once here, and again on every resize/orientation
 // change (section 12) — #app isn't always the full viewport (portrait
 // layout, see style.css), so this has to stay reactive, not one-time.
+// On a phone the cabinet is mostly empty shelf and drawer, and the books end
+// up a thumbnail in the corner of it. Measure what is actually on the shelf
+// and frame that instead, with enough of the carcass left around it to still
+// read as a bookshelf. Returns false when there is nothing to look at.
+const bookSizeVec = new THREE.Vector3();
+const bookRestVec = new THREE.Vector3();
+const bookBoxTmp = new THREE.Box3();
+function framePortraitOnBooks() {
+  const books = activeShelf && activeShelf.shelfBooks;
+  if (!books || books.length === 0) return false;
+
+  // Measured from where each book RESTS, not from where it happens to be:
+  // this runs as the carousel starts turning, when the incoming shelf's books
+  // may still be mid drop-in, and a live reading framed the camera on an
+  // empty row. A rest position is also free of the carousel's rotation for
+  // height, since the carousel only ever turns about Y.
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (const book of books) {
+    const rest = book.userData.restPosition;
+    const home = book.userData.homeGroup;
+    if (!rest || !home) return false;
+    bookBoxTmp.setFromObject(book);
+    bookBoxTmp.getSize(bookSizeVec);
+    const y = home.localToWorld(bookRestVec.copy(rest)).y;
+    minX = Math.min(minX, rest.x - bookSizeVec.x / 2);
+    maxX = Math.max(maxX, rest.x + bookSizeVec.x / 2);
+    minY = Math.min(minY, y - bookSizeVec.y / 2);
+    maxY = Math.max(maxY, y + bookSizeVec.y / 2);
+  }
+  if (!Number.isFinite(minX) || !Number.isFinite(minY)) return false;
+
+  const distance = fitDistance((maxX - minX) * 1.5, (maxY - minY) * 1.6, framingMargin);
+  // Then keep the frame inside the cabinet. Books sit on one row, usually off
+  // to one side, so a frame centred on them alone hangs over the carcass edge
+  // and fills the gap with empty background, which just looks broken.
+  const halfHeight = Math.tan((camera.fov * Math.PI) / 360) * distance;
+  const halfWidth = halfHeight * camera.aspect;
+  const reachX = Math.max(0, outerWidth / 2 - halfWidth);
+  const lowestY = sceneBottomY + halfHeight;
+  const highestY = cabinetTopEdgeY - halfHeight;
+  const x = THREE.MathUtils.clamp((minX + maxX) / 2, -reachX, reachX);
+  const y =
+    highestY >= lowestY
+      ? THREE.MathUtils.clamp((minY + maxY) / 2, lowestY, highestY)
+      : (lowestY + highestY) / 2; // cabinet shorter than the frame: centre it
+  overviewTarget.set(x, y, 0);
+  overviewCameraPos.set(x, y, distance);
+  return true;
+}
+
 function updateCameraFraming() {
   const portrait = portraitQuery.matches;
-  // phone: the floor arrows are hidden and the canvas is full width, so frame just the cabinet
-  overviewCameraPos.z = fitDistance(portrait ? outerWidth * 1.15 : sceneWidth, sceneHeight, framingMargin);
+  // (no readingState check here: this runs once at start-up, before that
+  // variable exists, and while a book is open the overview camera is only
+  // where the view will return to anyway)
+  if (portrait && framePortraitOnBooks()) {
+    // framePortraitOnBooks has set the overview camera; fall through to the
+    // reading numbers below, which it does not touch
+  } else {
+    overviewTarget.set(0, sceneCenterY, 0);
+    overviewCameraPos.x = 0;
+    overviewCameraPos.y = sceneCenterY;
+    // phone: the floor arrows are hidden and the canvas is full width, so frame just the cabinet
+    overviewCameraPos.z = fitDistance(portrait ? outerWidth * 1.15 : sceneWidth, sceneHeight, framingMargin);
+  }
   const readingWidth = portrait ? singlePageWidth * 1.06 : spreadBookWidth;
   readingCameraPos.z = readingPosition.z + fitDistance(readingWidth, openBookHeight, portrait ? 1.15 : 1.03);
   // phone: look at the middle of the right-hand page (the spine sits at the screen's left edge)
@@ -1740,6 +1933,8 @@ function enterReadingControls() {
 }
 
 function exitReadingControls() {
+  readingZoomed = false;
+  controls.enablePan = false;
   controls.enabled = true;
   controls.enableRotate = true;
   controls.minDistance = 1.5;
@@ -1756,6 +1951,17 @@ readingDim.visible = false;
 readingDim.renderOrder = 0;
 readingDim.frustumCulled = false;
 const dimOpacity = 0.84;
+
+// Everything behind the dimming sheet. Hidden outright while a book is open.
+function setCabinetVisible(visible) {
+  carouselGroup.visible = visible;
+  shadowCatcher.visible = visible;
+  // portrait hides the floor arrows anyway, so let that rule decide on the way back
+  if (visible) updateArrowVisibility();
+  else carouselArrows.forEach((arrow) => (arrow.visible = false));
+  if (visible) dirtyShadows(400);
+  invalidate(2);
+}
 
 const openBookGroup = new THREE.Group();
 openBookGroup.position.copy(readingPosition);
@@ -1834,10 +2040,7 @@ function ensureOpenBookBuilt(project, single = false) {
 
   // the permanent left-hand page — doesn't flip, shows title + description
   const leftCoverGeometry = new THREE.BoxGeometry(pageWidth, pageHeight, pageThickness);
-  const leftCoverMaterial = new THREE.MeshBasicMaterial({
-    map: createTitlePageTexture(project),
-    toneMapped: false,
-  });
+  const leftCoverMaterial = titlePageMaterial(project);
   const leftCover = new THREE.Mesh(leftCoverGeometry, [
     pageEdgeMaterial,
     pageEdgeMaterial,
@@ -1889,10 +2092,10 @@ function ensureOpenBookBuilt(project, single = false) {
 
     // unlit + white, not tinted — a lit material multiplied by the
     // cabinet's warm lights would push every page toward yellow
-    const innerMaterial = new THREE.MeshBasicMaterial({ color: paperTint, toneMapped: false });
-    const outerMaterial = new THREE.MeshBasicMaterial({ color: paperTint, toneMapped: false });
-    const innerBackMaterial = new THREE.MeshBasicMaterial({ color: paperTint, toneMapped: false });
-    const outerBackMaterial = new THREE.MeshBasicMaterial({ color: paperTint, toneMapped: false });
+    const innerMaterial = new THREE.MeshBasicMaterial({ color: paperTint, map: blankPixel, toneMapped: false });
+    const outerMaterial = new THREE.MeshBasicMaterial({ color: paperTint, map: blankPixel, toneMapped: false });
+    const innerBackMaterial = new THREE.MeshBasicMaterial({ color: paperTint, map: blankPixel, toneMapped: false });
+    const outerBackMaterial = new THREE.MeshBasicMaterial({ color: paperTint, map: blankPixel, toneMapped: false });
     const bend = { value: 0 }; // curvature, driven by poseHinge
     hinge.userData.bend = bend;
     applyLeafBend(innerMaterial, bend, segmentWidth / 2);
@@ -2159,6 +2362,15 @@ function poseTabs(hinge) {
   }
 }
 
+// How deep the bend shader's curl reaches, measured from the flat sheet: it
+// walks an arc of curvature `bend` across the page's width, and the far edge
+// ends up (1 - cos(bend * width)) / bend away from where a flat sheet would
+// put it. Always on the sheet's own -z side.
+function curlDepth(bendValue) {
+  if (bendValue <= 0.00001) return 0;
+  return (1 - Math.cos(bendValue * pageWidth)) / bendValue;
+}
+
 function poseHinge(hinge) {
   const { originalZ, leftZ } = hinge.userData;
   const angle = Math.min(Math.max(-hinge.rotation.y, 0), Math.PI);
@@ -2174,7 +2386,7 @@ function poseHinge(hinge) {
 // `momentum` ({ speed } in px/ms) is set when the page is let go of mid-drag:
 // it keeps moving the way the hand was moving (decelerating, not starting
 // slow like a click-triggered turn) and a harder flick finishes sooner.
-function animateFlip(hinge, targetY, duration, delay = 0, momentum = null) {
+function animateFlip(hinge, targetY, duration, delay = 0, momentum = null, land = false) {
   const { originalZ, leftZ } = hinge.userData;
   // finishing a page that was already part-way turned (e.g. let go of while
   // dragging) only needs the remaining fraction of the time
@@ -2192,17 +2404,32 @@ function animateFlip(hinge, targetY, duration, delay = 0, momentum = null) {
     onUpdate: () => poseHinge(hinge),
     onInterrupt: () => poseHinge(hinge),
     onComplete: () => {
+      if (land) playPageLand(); // exactly when it touches down, not 0.3 s after the swish
       hinge.position.y = 0;
       hinge.position.z = targetY === 0 ? originalZ : leftZ;
       updateLeafShadow(hinge, targetY === 0 ? 0 : Math.PI);
-      // the page lands with a small flutter instead of stopping dead
+      // The page lands with a small flutter instead of stopping dead. The
+      // curl always bows towards the sheet's own -z, so on a page that has
+      // just turned onto the LEFT pile — rotated a half turn — it bows towards
+      // the reader, clear of everything. On one landing back on the RIGHT
+      // stack the sheet is the right way up, so the same bow reaches about
+      // 26 mm straight back, through roughly ten of the 2.4 mm page gaps
+      // beneath it, and those pages flickered through the one on top. Holding
+      // it forward by exactly the depth of its own curl keeps the sheet clear
+      // while it settles, and the offset is gone by the time the flutter is.
       hinge.userData.bend.value = 0.05 / pageWidth;
+      const landsFaceUp = targetY === 0;
+      const restZ = hinge.position.z;
+      if (landsFaceUp) hinge.position.z = restZ + curlDepth(hinge.userData.bend.value);
       gsap.to(hinge.userData.bend, {
         value: 0,
         duration: T(0.5),
         ease: "elastic.out(1, 0.4)",
         overwrite: true,
-        onUpdate: () => poseTabs(hinge),
+        onUpdate: () => {
+          poseTabs(hinge);
+          if (landsFaceUp) hinge.position.z = restZ + curlDepth(hinge.userData.bend.value);
+        },
       });
     },
   });
@@ -2229,13 +2456,13 @@ function jumpToIndex(targetIndex, force = false, momentum = null, silent = false
       const hinge = pageHinges[i];
       // move it just in front of the left cover, and in front of any
       // page already flipped there, so the chunk lands stacked in order
-      animateFlip(hinge, -Math.PI, duration, (i - currentIndex) * step, count === 1 ? momentum : null);
+      animateFlip(hinge, -Math.PI, duration, (i - currentIndex) * step, count === 1 ? momentum : null, count === 1 && !silent);
     }
   } else {
     for (let i = currentIndex - 1; i >= clamped; i--) {
       const hinge = pageHinges[i];
       // restore its original spot in the right-hand stack
-      animateFlip(hinge, 0, duration, (currentIndex - 1 - i) * step, count === 1 ? momentum : null);
+      animateFlip(hinge, 0, duration, (currentIndex - 1 - i) * step, count === 1 ? momentum : null, count === 1 && !silent);
     }
   }
 
@@ -2395,7 +2622,7 @@ function getCoverLeaf(book, project) {
   // the book's own front-cover material, so the swap from the closed book to this sheet is invisible
   const outside = new THREE.Mesh(geometry, book.material[0]);
   outside.position.set(pageWidth / 2 + 0.01, 0, 0.0004);
-  const insideMaterial = new THREE.MeshBasicMaterial({ map: createTitlePageTexture(project), toneMapped: false });
+  const insideMaterial = titlePageMaterial(project);
   const inside = new THREE.Mesh(geometry, insideMaterial);
   inside.rotation.y = Math.PI;
   inside.position.set(pageWidth / 2 + 0.01, 0, -0.0004);
@@ -2442,6 +2669,9 @@ function openBook(book) {
   updateLeafWindow(built, 0);
   updateReadingUI();
 
+  readingZoomed = false;
+  lastReadSide = 1;
+  syncZoomButton();
   readingTitle.textContent = project.title;
   readingPanel.classList.add("visible");
   updatePreviewPanel(); // readingState is set above, so this hides the preview panel
@@ -2451,6 +2681,7 @@ function openBook(book) {
   const cover = getCoverLeaf(book, project);
   cover.hinge.rotation.set(0, 0, 0);
   cover.hinge.position.set(0, 0, coverClosedZ);
+  cover.hinge.visible = true; // a phone hides it once it has swung open
   openBookGroup.add(cover.hinge);
   openBookGroup.visible = false;
 
@@ -2474,7 +2705,17 @@ function openBook(book) {
     },
   });
   readingDim.visible = true;
-  gsap.to(readingDim.material, { opacity: dimOpacity, duration: T(0.55 + 0.65), ease: "sine.inOut", overwrite: "auto", onUpdate: invalidate });
+  gsap.to(readingDim.material, {
+    opacity: dimOpacity,
+    duration: T(0.55 + 0.65),
+    ease: "sine.inOut",
+    overwrite: "auto",
+    onUpdate: invalidate,
+    // Once the sheet is fully opaque the cabinet behind it cannot be seen, so
+    // stop drawing it at all: that is most of the scene's draw calls and its
+    // whole shadow pass, gone for as long as the book is open.
+    onComplete: () => setCabinetVisible(false),
+  });
   tl.to(
     book.position,
     {
@@ -2498,7 +2739,14 @@ function openBook(book) {
     duration: beat2,
     ease: "power2.inOut",
     onUpdate: () => poseCoverLeaf(cover, built),
-    onComplete: () => poseCoverLeaf(cover, built),
+    onComplete: () => {
+      poseCoverLeaf(cover, built);
+      // On a phone there is no left-hand page to lie over the opened front
+      // cover, so it was left hanging in view down the left edge of the
+      // screen, looking like a stray sheet. Nothing needs it again until the
+      // book closes, and closeBook puts it back.
+      if (single) cover.hinge.visible = false;
+    },
   });
   playFlipSound(1);
 
@@ -2515,6 +2763,7 @@ function closeBook() {
   const built = state.built;
   state.busy = true;
   bookDrag = null;
+  setCabinetVisible(true); // the book is about to fly back into it
   readingPanel.classList.remove("visible");
   exitReadingControls();
   setHoveredTab(null); // reset any tab left mid-glow/scaled from hovering
@@ -2535,6 +2784,7 @@ function closeBook() {
   const tl = gsap.timeline({
     onComplete: () => {
       returnBookToShelf(book);
+      dirtyShadows(800);
       setReadingSharpness(false);
       book.visible = true;
       book.userData.state = "shelved";
@@ -2586,13 +2836,52 @@ function closeBook() {
 // 9. SHELF PULL-OUT / PUSH-BACK
 // -----------------------------------------------------------------------
 
+// Compiles the open-book shaders ahead of time. Three.js only compiles a
+// material's program the first time it is actually drawn, so without this the
+// first book to open pays for it in the middle of its own opening swing. Every
+// book's pages are built the same way, so warming one warms them all.
+let openBookWarmed = false;
+function warmOpenBookShaders(built) {
+  if (openBookWarmed || !built) return;
+  openBookWarmed = true;
+  const parked = [];
+  built.pageHinges.slice(0, 2).forEach((hinge) => {
+    setLeafShown(hinge, true);
+    openBookGroup.add(hinge);
+    parked.push(hinge);
+  });
+  if (built.leftCover) {
+    openBookGroup.add(built.leftCover);
+    parked.push(built.leftCover);
+  }
+  if (built.backCover) {
+    openBookGroup.add(built.backCover);
+    parked.push(built.backCover);
+  }
+  const wasVisible = openBookGroup.visible;
+  openBookGroup.visible = true; // compile() only walks what is visible
+  try {
+    renderer.compile(scene, camera);
+  } catch {
+    /* warming up is best effort — never let it break opening a book */
+  }
+  openBookGroup.visible = wasVisible;
+  parked.forEach((object) => {
+    openBookGroup.remove(object);
+    if (object.userData.pageMeshes) setLeafShown(object, false);
+  });
+}
+
 function pullOut(book) {
   book.userData.state = "out";
   // start building this book's pages (and loading their images) the
   // moment it's pulled out, well before the reader clicks to actually
   // open it — so the swing-open animation isn't competing with a burst
   // of fresh page loads and feels immediate instead of laggy
-  updateLeafWindow(ensureOpenBookBuilt(book.userData.project, portraitQuery.matches), 0, true);
+  const builtForHover = ensureOpenBookBuilt(book.userData.project, portraitQuery.matches);
+  updateLeafWindow(builtForHover, 0, true);
+  warmOpenBookShaders(builtForHover);
+  dirtyShadows();
   gsap.to(book.position, {
     x: book.userData.restPosition.x,
     y: book.userData.restPosition.y,
@@ -2660,8 +2949,25 @@ const previewTitle = document.getElementById("preview-title");
 // style.css). Tapping the thin spines of a shelf-full of books is fiddly, so
 // every book also gets a big button: tap once to pull it out, tap again to open.
 
+// The chip strip scrolls sideways on a phone, but a row of chips that simply
+// stops at the screen edge gives no sign of it. Fade the edge you can still
+// scroll towards, and only that one.
+function updateBookListFade() {
+  if (!bookListEl) return;
+  const slack = bookListEl.scrollWidth - bookListEl.clientWidth;
+  const atStart = bookListEl.scrollLeft <= 2;
+  const atEnd = bookListEl.scrollLeft >= slack - 2;
+  bookListEl.classList.toggle("fade-start", slack > 4 && !atStart);
+  bookListEl.classList.toggle("fade-end", slack > 4 && !atEnd);
+}
+if (bookListEl) {
+  bookListEl.addEventListener("scroll", updateBookListFade, { passive: true });
+  window.addEventListener("resize", updateBookListFade);
+}
+
 function syncBookList(rebuild = false) {
   if (!bookListReady || !bookListEl) return;
+  requestAnimationFrame(updateBookListFade);
   const books = activeShelf.shelfBooks;
   if (rebuild || bookListShelf !== activeShelf) {
     bookListShelf = activeShelf;
@@ -3066,7 +3372,7 @@ function endBookDrag(commitAllowed) {
   if (commit) {
     jumpToIndex(readingState.currentIndex + (d.side > 0 ? 1 : -1), false, { speed: Math.abs(d.velocity) });
   } else {
-    animateFlip(d.hinge, d.side > 0 ? 0 : -Math.PI, T(motion.flip), 0, { speed: Math.abs(d.velocity) });
+    animateFlip(d.hinge, d.side > 0 ? 0 : -Math.PI, T(motion.flip), 0, { speed: Math.abs(d.velocity) }, true);
   }
 }
 
@@ -3297,8 +3603,11 @@ function onKeyDown(event) {
       jumpToIndex(0);
     } else if (key === "End") {
       jumpToIndex(readingState.maxIndex);
+    } else if (key === "z" || key === "Z") {
+      setReadingZoom(!readingZoomed, lastReadSide);
     } else if (key === "Escape") {
-      closeBook();
+      if (readingZoomed) setReadingZoom(false);
+      else closeBook();
     } else {
       return;
     }
@@ -3337,6 +3646,166 @@ function onKeyDown(event) {
 }
 
 document.addEventListener("keydown", onKeyDown);
+
+
+// -----------------------------------------------------------------------
+// 11d-2. ZOOM TO READ, AND THE CRISP PAGE OVERLAY
+//
+// Two separate problems, one section.
+//
+// 1. A page scan is a tall document. Fitted to a 16:9 screen the whole page
+//    is visible but its body text ends up only a dozen or so pixels tall, so
+//    "zoom" here means going CLOSER than the fit and letting the page run off
+//    the top and bottom of the screen, with panning to move around it. That is
+//    how anyone reads a PDF, and it is what the fit alone can never give.
+//
+// 2. Even perfectly framed, WebGL has to squeeze a 1600 px page scan into the
+//    few hundred pixels the page covers, through a mipmap, with antialiasing
+//    off. That is what makes the text look soft. So whenever nothing is
+//    moving, the page's own image is laid over the 3D page as an ordinary
+//    <img> at the browser's native resolution, which renders text as crisply
+//    as any other image on the web. The instant anything moves it is pulled
+//    and the real, foldable 3D page is back. The reader never sees the swap —
+//    it is the same picture in the same place — they just see sharp text.
+// -----------------------------------------------------------------------
+
+const readingZoomFactor = 1.8; // how much closer than the whole-spread fit
+let readingZoomed = false;
+
+function readingFitDistance() {
+  return readingCameraPos.z - readingTarget.z;
+}
+
+// side: -1 the left-hand page, 1 the right-hand page.
+function setReadingZoom(on, side = 1) {
+  if (!readingState) return;
+  readingZoomed = on;
+  const single = readingState.built.single;
+  const sideSign = single ? 1 : side;
+  const fit = readingFitDistance();
+  const distance = on ? fit / readingZoomFactor : fit;
+  const x = on ? readingPosition.x + sideSign * (0.01 + pageWidth / 2) : readingCameraPos.x;
+  const duration = T(0.45);
+  gsap.to(camera.position, { x, y: readingPosition.y, z: readingTarget.z + distance, duration, ease: "power2.inOut", overwrite: "auto", onUpdate: invalidate });
+  gsap.to(controls.target, { x, y: readingPosition.y, z: readingTarget.z, duration, ease: "power2.inOut", overwrite: "auto", onUpdate: invalidate });
+  // panning is what makes being zoomed in useful: a one-finger drag still
+  // turns the page, so panning rides on right-drag and two fingers
+  controls.enablePan = on;
+  controls.screenSpacePanning = true;
+  controls.minDistance = on ? 0.25 : 0.4;
+  syncZoomButton();
+  announce(on ? "Zoomed in. Drag with two fingers or the right mouse button to move around the page." : "Zoomed out to the whole page.");
+}
+
+const zoomToggle = document.getElementById("reading-zoom");
+function syncZoomButton() {
+  if (!zoomToggle) return;
+  zoomToggle.setAttribute("aria-pressed", String(readingZoomed));
+  zoomToggle.classList.toggle("on", readingZoomed);
+  zoomToggle.title = readingZoomed ? "Fit the whole page (Z)" : "Zoom in to read (Z)";
+}
+if (zoomToggle) {
+  zoomToggle.addEventListener("click", () => setReadingZoom(!readingZoomed, lastReadSide));
+  syncZoomButton();
+}
+
+// Which half of the screen the reader last pointed at, so zooming goes to the
+// page they were looking at rather than always the right-hand one.
+let lastReadSide = 1;
+renderer.domElement.addEventListener("dblclick", (event) => {
+  if (!readingState || readingState.busy) return;
+  lastReadSide = event.clientX < window.innerWidth / 2 ? -1 : 1;
+  setReadingZoom(!readingZoomed, lastReadSide);
+});
+
+// ---- the crisp overlay
+
+const sharpLayer = document.getElementById("sharp-pages");
+const sharpLeft = document.getElementById("sharp-left");
+const sharpRight = document.getElementById("sharp-right");
+let sharpShown = false;
+let sharpStillSince = 0;
+
+const sharpProjected = new THREE.Vector3();
+const sharpA = { x: 0, y: 0 };
+const sharpB = { x: 0, y: 0 };
+
+function projectToScreen(x, y, z, out) {
+  sharpProjected.set(x, y, z).project(camera);
+  const rect = renderer.domElement.getBoundingClientRect();
+  out.x = rect.left + ((sharpProjected.x + 1) / 2) * rect.width;
+  out.y = rect.top + ((1 - sharpProjected.y) / 2) * rect.height;
+  return out;
+}
+
+// The pages are flat and square-on to the camera, so projecting two opposite
+// corners gives the exact rectangle they cover on screen.
+function placeSharpPage(img, page, xFrom, xTo) {
+  if (!img) return;
+  if (!page || !page.image) {
+    img.style.display = "none";
+    return;
+  }
+  if (img.dataset.src !== page.image) {
+    img.dataset.src = page.image;
+    img.src = page.image;
+  }
+  const z = readingPosition.z;
+  projectToScreen(readingPosition.x + xFrom, readingPosition.y + pageHeight / 2, z, sharpA);
+  projectToScreen(readingPosition.x + xTo, readingPosition.y - pageHeight / 2, z, sharpB);
+  img.style.display = "block";
+  img.style.left = `${Math.min(sharpA.x, sharpB.x)}px`;
+  img.style.top = `${Math.min(sharpA.y, sharpB.y)}px`;
+  img.style.width = `${Math.abs(sharpB.x - sharpA.x)}px`;
+  img.style.height = `${Math.abs(sharpB.y - sharpA.y)}px`;
+}
+
+// The two page images on show right now: the front of the leaf waiting to be
+// turned, and the back of the one already turned onto the left-hand pile.
+function currentSharpPages() {
+  const state = readingState;
+  const hinges = state.pageHinges;
+  const index = state.currentIndex;
+  const rightHinge = hinges[index];
+  const right = rightHinge ? rightHinge.userData.rec.leaf.front : null;
+  let left = null;
+  if (!state.built.single && index > 0) {
+    const leftHinge = hinges[index - 1];
+    // index 0 shows the title page, which is drawn in code, not scanned
+    left = leftHinge ? leftHinge.userData.rec.leaf.back : null;
+  }
+  return { left, right };
+}
+
+function hideSharpPages() {
+  sharpStillSince = 0;
+  if (!sharpShown) return;
+  sharpShown = false;
+  if (sharpLayer) sharpLayer.classList.remove("visible");
+}
+
+function updateSharpPages(now, animating, moved) {
+  if (!sharpLayer) return;
+  const steady = readingState && !readingState.busy && !bookDrag && !peekHinge && !animating;
+  if (!steady) {
+    hideSharpPages();
+    return;
+  }
+  if (!sharpStillSince) sharpStillSince = now;
+  if (now - sharpStillSince < 140) return; // let the page actually settle first
+  if (sharpShown && !moved) return; // nothing has changed, nothing to reposition
+  const { left, right } = currentSharpPages();
+  placeSharpPage(sharpLeft, left, -0.01 - pageWidth, -0.01);
+  placeSharpPage(sharpRight, right, 0.01, 0.01 + pageWidth);
+  if (!sharpShown) {
+    sharpShown = true;
+    sharpLayer.classList.add("visible");
+  }
+}
+
+// a page about to be grabbed should go back to being a real 3D page at once
+renderer.domElement.addEventListener("pointerdown", hideSharpPages, { passive: true });
+window.addEventListener("resize", hideSharpPages);
 
 // -----------------------------------------------------------------------
 // 11e. OPTIONAL PAGE-TURN SOUND
@@ -3415,9 +3884,6 @@ function playFlipSound(count = 1) {
     noiseBurst(t, { dur: 0.34, type: "bandpass", freq: 1800 * v, freqEnd: 4200 * v, q: 0.55, gain: 0.1 * v, attack: 0.07, rate: 0.9 + Math.random() * 0.2 });
     // a hint of low "body" so it is not just hiss
     noiseBurst(t, { dur: 0.3, type: "lowpass", freq: 700, freqEnd: 350, q: 0.5, gain: 0.05 * v, attack: 0.08 });
-    // the landing tick
-    noiseBurst(t + 0.3, { dur: 0.06, type: "bandpass", freq: 2600 * v, q: 1.1, gain: 0.07 * v, attack: 0.004 });
-    noiseBurst(t + 0.3, { dur: 0.08, type: "lowpass", freq: 420, q: 0.6, gain: 0.06 * v, attack: 0.004 });
   } else {
     // riffle: a quick flutter of ticks, fading out
     const ticks = Math.min(count, 8);
@@ -3460,6 +3926,21 @@ function playHoverSound() {
   osc.stop(t + 0.1);
 }
 
+// The soft papery tick of a page settling onto the pile. This used to be baked
+// into playFlipSound at a fixed 0.3 s after the swish, but a page turn lasts
+// anywhere from about 0.2 s (a fast flick) to 0.6 s, so the tick landed at the
+// wrong moment more often than not. animateFlip now fires it on the exact frame
+// the page comes to rest instead.
+function playPageLand() {
+  if (!soundOn || reduceMotionQuery.matches) return;
+  const ctx = getAudio();
+  if (!ctx) return;
+  const t = ctx.currentTime + 0.005;
+  const v = 0.85 + Math.random() * 0.3;
+  noiseBurst(t, { dur: 0.06, type: "bandpass", freq: 2600 * v, q: 1.1, gain: 0.07 * v, attack: 0.004 });
+  noiseBurst(t, { dur: 0.08, type: "lowpass", freq: 420, q: 0.6, gain: 0.06 * v, attack: 0.004 });
+}
+
 // the book cover shutting: one soft, dull "pup" (no hiss at all)
 function playCloseSound(delaySeconds = 0) {
   if (!soundOn || reduceMotionQuery.matches) return;
@@ -3497,6 +3978,17 @@ function playThud() {
   osc.stop(t + 0.22);
 }
 
+// A small message that slides up for a few seconds and leaves again.
+const toastEl = document.getElementById("toast");
+let toastTimer = 0;
+function showToast(message, ms = 4500) {
+  if (!toastEl) return;
+  toastEl.textContent = message;
+  toastEl.classList.add("visible");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove("visible"), ms);
+}
+
 const soundToggle = document.getElementById("sound-toggle");
 function syncSoundToggle() {
   soundToggle.setAttribute("aria-pressed", String(soundOn));
@@ -3514,6 +4006,20 @@ soundToggle.addEventListener("click", () => {
   if (soundOn) playFlipSound(1);
 });
 syncSoundToggle();
+
+// Sound is on out of the box, which is a surprise worth warning people about
+// exactly once. Shown on the first visit only, and never if they have already
+// turned it off.
+function maybeAnnounceSound() {
+  if (!soundOn) return;
+  try {
+    if (localStorage.getItem("shelf-sound-notice") === "seen") return;
+    localStorage.setItem("shelf-sound-notice", "seen");
+  } catch {
+    return; // storage blocked: better to stay quiet than nag on every visit
+  }
+  setTimeout(() => showToast("Sound is on. Use the speaker button in a book to mute it."), 1400);
+}
 
 // -----------------------------------------------------------------------
 // 11f. LOADING STATE
@@ -3536,6 +4042,15 @@ function markLibraryReady() {
     loader.classList.add("done");
     setTimeout(() => loader.remove(), 700);
   }
+  dirtyShadows(4000); // the shelf and books are still settling into place
+  maybeAnnounceSound();
+  // Compile the open-book shaders now, while the reader is still getting their
+  // bearings, rather than during the first book's opening swing.
+  const whenIdle = window.requestIdleCallback || ((fn) => setTimeout(fn, 800));
+  whenIdle(() => {
+    const first = activeShelf.shelfBooks[0];
+    if (first) warmOpenBookShaders(ensureOpenBookBuilt(first.userData.project, portraitQuery.matches));
+  });
 }
 bookListReady = true;
 syncBookList(true);
@@ -3603,16 +4118,22 @@ let lastRenderAt = 0;
 function animate(now) {
   requestAnimationFrame(animate);
   processUploadQueue();
-  if (controls.update()) invalidate();
+  const controlsMoved = controls.update();
+  if (controlsMoved) invalidate();
   if (clampOrbitAzimuth()) invalidate();
   // any running tween (page turn, hover, shelf drop, camera move, delayed call) means the picture is changing
-  if (gsap.globalTimeline.getChildren(false, true, true).length > 0) invalidate();
+  const animating = gsap.globalTimeline.getChildren(false, true, true).length > 0;
+  if (animating) invalidate();
+  // has to run even on frames that don't render: standing still is exactly when
+  // the crisp page overlay is wanted
+  updateSharpPages(now, animating, controlsMoved);
 
   if (framesToRender <= 0 || document.hidden) {
     lastRenderAt = 0;
     return;
   }
   framesToRender--;
+  renderer.shadowMap.needsUpdate = !readingState && (animating || now < shadowDirtyUntil);
   renderer.render(scene, camera);
 
   // adaptive resolution (see section 1a): only judge back-to-back frames

@@ -83,8 +83,29 @@ canvas {
   transition: opacity 0.25s ease;
 }
 
-#intro-role.swapping {
-  opacity: 0;
+/* The role types itself in and rubs itself out again (main.js section 1b).
+   This is its cursor: solid while it is typing or deleting, blinking while
+   the finished word sits there. It is only ever added by the typing path, so
+   reduced-motion visitors get a plain word swap and no cursor at all. */
+#intro-role.typed::after {
+  content: "";
+  display: inline-block;
+  width: 0.055em;
+  height: 0.92em;
+  margin-left: 0.07em;
+  vertical-align: -0.12em;
+  background: currentColor;
+  animation: intro-caret 1.1s steps(1, end) infinite;
+}
+
+#intro-role.typed.editing::after {
+  animation: none;
+  opacity: 1;
+}
+
+@keyframes intro-caret {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
 }
 
 /* ---------------------------------------------------------------
@@ -354,6 +375,21 @@ canvas {
 
   .nav-arrow {
     display: flex;
+  }
+
+  /* Sitting at the vertical centre, these landed right on top of the
+     cabinet. In the bottom corners of the canvas they are out of the way
+     of the shelf and easier to reach one-handed. */
+  .nav-arrow {
+    top: auto;
+    bottom: 6px;
+    transform: none;
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.92);
+  }
+  .nav-arrow:active {
+    transform: scale(0.93);
   }
 
   /* While reading, #app breaks out of the #main-row flex flow entirely
@@ -703,4 +739,83 @@ body.reading-active .reading-edge:disabled { opacity: .18; cursor: default; poin
   .reading-edge-left { left: 8px; } .reading-edge-right { right: 8px; }
   #reading-tools { top: 10px; right: 10px; }
   .tool-btn { background: rgba(0,0,0,.4); }
+}
+
+
+/* ---------------------------------------------------------------------
+   CRISP PAGE OVERLAY
+   The page images, laid over the 3D pages at native resolution while the
+   book is standing still. Above the canvas (#app, z-index 10) and below
+   the reading controls (z-index 30). Never interactive: every pointer
+   event goes through to the canvas so dragging a page still works.
+   object-fit: cover matches the centre-crop the 3D page does to fit a
+   scan to the page's proportions, so the two line up exactly and the
+   swap between them is invisible.
+   --------------------------------------------------------------------- */
+#sharp-pages {
+  position: fixed;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+#sharp-pages.visible { opacity: 1; }
+#sharp-pages img {
+  position: fixed;
+  display: none;
+  object-fit: cover;
+  object-position: center;
+  /* the 3D page is a touch off-white; match it so no seam shows at the edges */
+  background: #f8f8f6;
+}
+
+/* The zoom button reads as "on" while zoomed in. */
+.tool-btn.on { background: rgba(255,255,255,.3); }
+.tool-btn.on .plus { display: none; }
+
+/* ---------------------------------------------------------------------
+   TOAST
+   One short message, bottom centre, out of the way of everything.
+   --------------------------------------------------------------------- */
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 76px;
+  transform: translate(-50%, 10px);
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(18,19,21,.92);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+  box-shadow: 0 6px 24px rgba(0,0,0,.22);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 40;
+  transition: opacity .3s ease, transform .3s ease;
+}
+#toast.visible { opacity: 1; transform: translate(-50%, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  #sharp-pages, #toast { transition: none; }
+}
+
+
+/* ---------------------------------------------------------------
+   The book chips scroll sideways when there are more than fit. A row
+   that just stops at the edge looks like the end of the list, so the
+   side you can still scroll towards is faded out — and only while
+   there is actually something past it (main.js updateBookListFade).
+   --------------------------------------------------------------- */
+#book-list.fade-end {
+  mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent 100%);
+}
+#book-list.fade-start {
+  mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent 100%);
+}
+#book-list.fade-start.fade-end {
+  mask-image: linear-gradient(to right, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
 }

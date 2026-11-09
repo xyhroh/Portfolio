@@ -5,9 +5,15 @@
 // GitHub Actions does on every push) each of those images is resized and
 // converted to WebP, and the page loads the small version instead.
 //
-//   page images  -> max 1024 px wide
+//   page images  -> max 1600 px wide
 //   covers       -> max 2000 px wide (a cover is three panels in one image)
-//   paper images -> max 1400 px wide
+//   paper images -> max 1600 px wide
+//
+// Page images used to be capped at 1024 px, which was the real reason the
+// deployed site looked softer than `npm run dev` (dev serves the originals
+// untouched). A page scan is a document: by the time 1024 px is fitted to the
+// screen and squeezed through a mipmap, body text has nothing left. 1600 px is
+// about the point where that stops being the limiting factor.
 //
 // During `npm run dev` nothing is converted, so editing stays instant.
 import sharp from "sharp";
@@ -19,8 +25,14 @@ const IMAGE_RE = /\.(png|jpe?g)$/i;
 
 function maxWidthFor(file) {
   if (file.includes("/cover/")) return 2000;
-  if (file.includes("/papers/")) return 1400;
-  return 1024;
+  if (file.includes("/papers/")) return 1600;
+  return 1600;
+}
+
+// Pages are text, and text is what webp's quality setting shows first.
+function qualityFor(file) {
+  if (file.includes("/cover/")) return 82; // artwork: 82 is invisible
+  return 88;
 }
 
 export default function optimiseImages() {
@@ -47,7 +59,7 @@ export default function optimiseImages() {
         const output = await sharp(input)
           .rotate()
           .resize({ width: maxWidthFor(file), withoutEnlargement: true })
-          .webp({ quality: 82, effort: 4 })
+          .webp({ quality: qualityFor(file), effort: 4 })
           .toBuffer();
         this.emitFile({ type: "asset", fileName, source: output });
         done.set(file, base + fileName);
