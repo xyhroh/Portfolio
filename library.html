@@ -22,7 +22,13 @@
          (see style.css), this becomes a top banner instead. -->
     <div id="hero">
       <div id="intro-left">Hi there! I'm Javier a</div>
-      <div id="intro-right"><span id="intro-role"></span></div>
+      <!-- The first role is written here, not left empty for JavaScript to
+             fill. It used to arrive only after roles.txt, which sits at the end
+             of a request chain (page -> bundle -> roles.txt, ~491 ms), and this
+             is the largest text on the page, so paint waited on it. The
+             rotator in main.js takes over from whatever is here. Keep this in
+             step with the first line of public/roles.txt. -->
+        <div id="intro-right"><span id="intro-role">UX Strategist</span></div>
     </div>
 
     <!-- #app and #shelf-info are wrapped together only so portrait layout

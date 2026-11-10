@@ -305,6 +305,25 @@ canvas {
   touch-action: manipulation;
 }
 
+/* A png in src/assets/arrows/ replaces the ‹ › glyph. The glyph is pushed
+   out of sight rather than display:none'd, so the button keeps its text as
+   an accessible name. main.js adds .has-image only when a file was actually
+   found, and .mirrored when one shared arrow.png is serving both sides. */
+.nav-arrow.has-image {
+  color: transparent;
+  text-indent: -9999px;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 56% auto;
+}
+.nav-arrow.mirrored {
+  transform: translateY(-50%) scaleX(-1);
+}
+.nav-arrow.mirrored:active {
+  transform: translateY(-50%) scaleX(-1) scale(0.93);
+}
+
 #nav-prev {
   left: 10px;
 }

@@ -246,7 +246,9 @@ async function startIntroRoleRotation() {
   }
 
   let index = 0;
-  introRoleEl.textContent = roles[0];
+  // library.html already shows roles[0] so the hero paints without waiting for
+  // this fetch; only correct it if roles.txt has since been reordered.
+  if (introRoleEl.textContent.trim() !== roles[0]) introRoleEl.textContent = roles[0];
   if (roles.length <= 1) return;
 
   // Someone who has asked for less motion should not be made to watch a
@@ -326,12 +328,27 @@ const palette = [0x2f3c4c, 0x4a4038, 0x3a4a42, 0x4a3838, 0x3d3d3d, 0x39445a];
 
 const knownShelfNames = ["Bookshelf 1", "Bookshelf 2"];
 
+// Which folder a book sits in decides which shelf row it lands on:
+//   <Shelf>/Row 1/<Book>/   the top row
+//   <Shelf>/Row 2/<Book>/   the row below it
+// `pages/` is the original layout and still works, treated as Row 1, so
+// nothing breaks for a shelf whose books have not been moved yet.
+const rowContainers = { pages: 1, "Row 1": 1, "Row 2": 2 };
+
 const pageImageModules = import.meta.glob(
-  "/src/shelves/*/pages/*/pages/**/*.{png,jpg,jpeg,webp}",
+  [
+    "/src/shelves/*/pages/*/pages/**/*.{png,jpg,jpeg,webp}",
+    "/src/shelves/*/Row 1/*/pages/**/*.{png,jpg,jpeg,webp}",
+    "/src/shelves/*/Row 2/*/pages/**/*.{png,jpg,jpeg,webp}",
+  ],
   { eager: true }
 );
 const coverImageModules = import.meta.glob(
-  "/src/shelves/*/pages/*/cover/*.{png,jpg,jpeg,webp}",
+  [
+    "/src/shelves/*/pages/*/cover/*.{png,jpg,jpeg,webp}",
+    "/src/shelves/*/Row 1/*/cover/*.{png,jpg,jpeg,webp}",
+    "/src/shelves/*/Row 2/*/cover/*.{png,jpg,jpeg,webp}",
+  ],
   { eager: true }
 );
 const paperImageModules = import.meta.glob("/src/shelves/*/papers/*/*.{png,jpg,jpeg,webp}", {
@@ -341,9 +358,55 @@ const paperImageModules = import.meta.glob("/src/shelves/*/papers/*/*.{png,jpg,j
 // folder and it is used instead of the plain title-and-blurb page the code
 // draws. First image wins if there is more than one.
 const titleImageModules = import.meta.glob(
-  "/src/shelves/*/pages/*/title/*.{png,jpg,jpeg,webp}",
+  [
+    "/src/shelves/*/pages/*/title/*.{png,jpg,jpeg,webp}",
+    "/src/shelves/*/Row 1/*/title/*.{png,jpg,jpeg,webp}",
+    "/src/shelves/*/Row 2/*/title/*.{png,jpg,jpeg,webp}",
+  ],
   { eager: true }
 );
+// Sound files. Drop an mp3 into src/assets/sounds/ named after the moment
+// it belongs to and it replaces the built-in synthesised sound for that
+// moment. Anything missing keeps its synthesised sound, so the folder can
+// hold one file, all six, or none at all:
+//   page-turn   a single page turning
+//   riffle      a multi-page jump (falls back to page-turn, then synth)
+//   page-land   the page settling onto the pile
+//   hover       a book sliding out of the shelf
+//   open        the book opening
+//   close       the cover shutting
+// wav, ogg and m4a work too; the extension is ignored, only the name counts.
+const soundModules = import.meta.glob("/src/assets/sounds/*.{mp3,wav,ogg,m4a}", {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
+
+// The carousel arrows on the floor either side of the cabinet, and the two
+// round arrow buttons that take over from them in portrait. Drop a png into
+// src/assets/arrows/ to replace the drawn arrow: "arrow.png" is used on both
+// sides (mirrored on the left), or name them "arrow-left.png" and
+// "arrow-right.png" to give each side its own image. Transparent background,
+// pointing right, roughly 2:1 landscape suits the floor arrows best.
+const arrowImageModules = import.meta.glob("/src/assets/arrows/*.{png,jpg,jpeg,webp,svg}", {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
+
+// Both folders above are keyed by file NAME, not by position, so a book's
+// cover-style "first image wins" rule doesn't apply: an unrecognised name is
+// simply ignored rather than silently used for the wrong thing.
+function assetByStem(modules, names) {
+  for (const name of names) {
+    for (const [path, url] of Object.entries(modules)) {
+      const stem = path.split("/").pop().replace(/\.[^.]+$/, "").toLowerCase();
+      if (stem === name) return url;
+    }
+  }
+  return null;
+}
+
 // The header + body blurb shown on the right of the screen (see the
 // #shelf-info panel in index.html) for each shelf — one info.txt per
 // shelf, its first line the header and everything after that the body.
@@ -369,8 +432,11 @@ function slugify(folder) {
 }
 
 function parseShelfProjectPath(path) {
-  const m = path.match(/^\/src\/shelves\/([^/]+)\/pages\/([^/]+)\//);
-  return m ? { shelf: m[1], folder: m[2] } : null;
+  const m = path.match(/^\/src\/shelves\/([^/]+)\/([^/]+)\/([^/]+)\//);
+  if (!m) return null;
+  const row = rowContainers[m[2]];
+  if (!row) return null; // papers/ and anything else is not a book
+  return { shelf: m[1], container: m[2], folder: m[3], row };
 }
 
 function parseShelfPaperPath(path) {
@@ -378,15 +444,18 @@ function parseShelfPaperPath(path) {
   return m ? { shelf: m[1], folder: m[2] } : null;
 }
 
-const projectFoldersByShelf = new Map(); // shelfName -> Set(projectFolder)
+const projectFoldersByShelf = new Map(); // shelfName -> Map(projectFolder -> { container, row })
 const paperFoldersByShelf = new Map(); // shelfName -> Set(paperFolder)
 
-[...Object.keys(pageImageModules), ...Object.keys(coverImageModules)].forEach((path) => {
-  const parsed = parseShelfProjectPath(path);
-  if (!parsed) return;
-  if (!projectFoldersByShelf.has(parsed.shelf)) projectFoldersByShelf.set(parsed.shelf, new Set());
-  projectFoldersByShelf.get(parsed.shelf).add(parsed.folder);
-});
+[...Object.keys(pageImageModules), ...Object.keys(coverImageModules), ...Object.keys(titleImageModules)].forEach(
+  (path) => {
+    const parsed = parseShelfProjectPath(path);
+    if (!parsed) return;
+    if (!projectFoldersByShelf.has(parsed.shelf)) projectFoldersByShelf.set(parsed.shelf, new Map());
+    // a book named the same on both rows keeps whichever row it was found in
+    projectFoldersByShelf.get(parsed.shelf).set(parsed.folder, { container: parsed.container, row: parsed.row });
+  }
+);
 
 Object.keys(paperImageModules).forEach((path) => {
   const parsed = parseShelfPaperPath(path);
@@ -419,8 +488,8 @@ function stripLeadingNumber(str) {
 // numeric order, jumping to that subfolder's first page. Loose files
 // left directly in `pages/` alongside section subfolders are treated
 // as untabbed front matter and placed before the first tab.
-function pagesAndSectionsForFolder(shelfName, folder) {
-  const prefix = `/src/shelves/${shelfName}/pages/${folder}/pages/`;
+function pagesAndSectionsForFolder(shelfName, container, folder) {
+  const prefix = `/src/shelves/${shelfName}/${container}/${folder}/pages/`;
   const matches = Object.entries(pageImageModules)
     .filter(([path]) => path.startsWith(prefix))
     .map(([path, mod]) => {
@@ -465,8 +534,8 @@ function pagesAndSectionsForFolder(shelfName, folder) {
   return { pages, sections };
 }
 
-function coverForFolder(shelfName, folder) {
-  const prefix = `/src/shelves/${shelfName}/pages/${folder}/cover/`;
+function coverForFolder(shelfName, container, folder) {
+  const prefix = `/src/shelves/${shelfName}/${container}/${folder}/cover/`;
   const [, mod] =
     Object.entries(coverImageModules)
       .filter(([path]) => path.startsWith(prefix))
@@ -474,8 +543,8 @@ function coverForFolder(shelfName, folder) {
   return mod ? mod.default : null;
 }
 
-function titleForFolder(shelfName, folder) {
-  const prefix = `/src/shelves/${shelfName}/pages/${folder}/title/`;
+function titleForFolder(shelfName, container, folder) {
+  const prefix = `/src/shelves/${shelfName}/${container}/${folder}/title/`;
   const [, mod] =
     Object.entries(titleImageModules)
       .filter(([path]) => path.startsWith(prefix))
@@ -484,20 +553,26 @@ function titleForFolder(shelfName, folder) {
 }
 
 function buildProjectsForShelf(shelfName) {
-  const folders = Array.from(projectFoldersByShelf.get(shelfName) ?? []).sort();
-  const projects = folders.map((folder, i) => ({
+  // top row first, then the row below it, alphabetical within each — which is
+  // also the order the chips and the up/down keys walk through
+  const entries = Array.from(projectFoldersByShelf.get(shelfName) ?? new Map()).sort(
+    ([aFolder, a], [bFolder, b]) => a.row - b.row || aFolder.localeCompare(bFolder)
+  );
+  const projects = entries.map(([folder, where], i) => ({
     title: folder,
     slug: slugify(folder),
     folder,
+    container: where.container,
+    row: where.row,
     color: palette[i % palette.length],
     description: "A short blurb about this project and the problem it explores.",
   }));
   projects.forEach((project) => {
-    const { pages, sections } = pagesAndSectionsForFolder(shelfName, project.folder);
+    const { pages, sections } = pagesAndSectionsForFolder(shelfName, project.container, project.folder);
     project.pages = pages;
     project.sections = sections;
-    project.coverImage = coverForFolder(shelfName, project.folder);
-    project.titleImage = titleForFolder(shelfName, project.folder);
+    project.coverImage = coverForFolder(shelfName, project.container, project.folder);
+    project.titleImage = titleForFolder(shelfName, project.container, project.folder);
   });
   return projects;
 }
@@ -555,7 +630,20 @@ const booksPerRow = 8; // <-- tune this to control shelf width / row count
 const bookAreaHeight = bookHeight + 0.1; // tighter clearance above/below each row than before
 const frameThickness = 0.2;
 const shelfWidth = booksPerRow * bookWidth + (booksPerRow - 1) * gap + 0.25; // a little slack for one more book before it wraps
-const numberOfRows = Math.max(2, ...shelvesData.map((s) => Math.ceil(s.projects.length / booksPerRow))); // always show at least one spare row
+// How many rows the carcass needs: at least 2 (a top and a bottom), plus more
+// only if a row has been given more books than fit across it and they wrap.
+function rowsNeededFor(projects) {
+  const filled = new Map();
+  let deepest = 0;
+  projects.forEach((project) => {
+    const row = project.row ?? 1;
+    const n = (filled.get(row) ?? 0) + 1;
+    filled.set(row, n);
+    deepest = Math.max(deepest, row - 1 + Math.floor((n - 1) / booksPerRow));
+  });
+  return deepest + 1;
+}
+const numberOfRows = Math.max(2, ...shelvesData.map((s) => rowsNeededFor(s.projects)));
 const outerWidth = shelfWidth + frameThickness * 2;
 const outerHeight = numberOfRows * bookAreaHeight + (numberOfRows + 1) * frameThickness;
 const shelfBaseY = 0; // where the bottom-most row's books sit
@@ -761,37 +849,58 @@ function createPagePlaceholderTexture(label, hexOrCssColor) {
   return texture;
 }
 
-function createTitlePageTexture(project) {
-  const canvas = document.createElement("canvas");
-  canvas.width = 512;
-  canvas.height = 700;
-  const ctx = canvas.getContext("2d");
-
-  ctx.fillStyle = "#f8f8f6";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = "#26282b";
-  ctx.font = "bold 42px system-ui, sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText(project.title, canvas.width / 2, 140);
-
-  ctx.font = "20px system-ui, sans-serif";
-  ctx.fillStyle = "#55585c";
-  wrapText(ctx, project.description, canvas.width / 2, 210, 400, 28);
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  return texture;
+// The strongest colour on a book's front cover, so the surfaces inside the
+// book can be finished to match it the way a real hardcover's boards are.
+// Sampled from the cover artwork where there is one; books without artwork
+// fall back to the palette colour their spine is already drawn in.
+function dominantCoverColour(image, offsetFrac, widthFrac) {
+  try {
+    const w = 48;
+    const h = 64;
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    ctx.drawImage(image, image.width * offsetFrac, 0, image.width * widthFrac, image.height, 0, 0, w, h);
+    const data = ctx.getImageData(0, 0, w, h).data;
+    // bucket near-identical shades together so one flat colour wins outright
+    // instead of being split across a hundred almost-equal neighbours
+    const counts = new Map();
+    for (let i = 0; i < data.length; i += 4) {
+      const key = ((data[i] >> 4) << 8) | ((data[i + 1] >> 4) << 4) | (data[i + 2] >> 4);
+      counts.set(key, (counts.get(key) || 0) + 1);
+    }
+    let bestKey = -1;
+    let best = 0;
+    for (const [key, n] of counts) {
+      if (n > best) {
+        best = n;
+        bestKey = key;
+      }
+    }
+    if (bestKey < 0) return null;
+    const r = ((bestKey >> 8) & 15) * 17;
+    const g = ((bestKey >> 4) & 15) * 17;
+    const bl = (bestKey & 15) * 17;
+    return `#${((1 << 24) | (r << 16) | (g << 8) | bl).toString(16).slice(1)}`;
+  } catch {
+    return null; // an image the canvas will not give pixels back for
+  }
 }
 
-// The material for a book's left-hand page. It always starts with the drawn
-// title page so there is something to show immediately, and if the book has an
-// image in its title/ folder that image replaces it as soon as it has loaded.
-// Swapping one texture for another leaves the shader untouched, so this costs
-// nothing at the moment it happens.
+function innerCoverColour(project) {
+  return project.coverColour || project.color;
+}
+
+// The material for a book's left-hand page. With no image in the book's
+// title/ folder it stays a flat panel in the book's own cover colour, like the
+// inside board of a hardcover. Drop an image in that folder and it takes over
+// as soon as it has loaded. The blank pixel is there from the start so that
+// swap never changes the shader (see blankPixel).
 function titlePageMaterial(project) {
   const material = new THREE.MeshBasicMaterial({
-    map: createTitlePageTexture(project),
+    color: innerCoverColour(project),
+    map: blankPixel,
     toneMapped: false,
   });
   if (project.titleImage) {
@@ -830,36 +939,6 @@ function titlePageMaterial(project) {
   return material;
 }
 
-// The last page of every book: a blank back cover that closes it.
-function createBackCoverTexture(project) {
-  const canvas = document.createElement("canvas");
-  canvas.width = 1024;
-  canvas.height = 1400;
-  const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#f2f2ef";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = maxAnisotropy;
-  return texture;
-}
-
-function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-  const words = text.split(" ");
-  let line = "";
-  let cursorY = y;
-  for (const word of words) {
-    const testLine = line + word + " ";
-    if (ctx.measureText(testLine).width > maxWidth && line !== "") {
-      ctx.fillText(line, x, cursorY);
-      line = word + " ";
-      cursorY += lineHeight;
-    } else {
-      line = testLine;
-    }
-  }
-  ctx.fillText(line, x, cursorY);
-}
 
 const textureLoader = new THREE.TextureLoader();
 
@@ -1169,6 +1248,10 @@ function applyCoverWrap(book, imageUrl) {
       return sliced;
     }
 
+    const project = book.userData.project;
+    const sampled = dominantCoverColour(tex.image, backFrac + spineFrac, backFrac);
+    if (sampled) project.coverColour = sampled;
+
     const [frontMaterial, backMaterial, , , spineMaterial] = book.material;
     frontMaterial.map = slice(backFrac + spineFrac, backFrac);
     frontMaterial.needsUpdate = true;
@@ -1298,9 +1381,16 @@ function buildBookshelf(shelfData) {
   const shelfBooks = [];
   const leftEdgeX = -shelfWidth / 2 + bookWidth / 2 + 0.04;
 
-  projects.forEach((project, i) => {
-    const row = numberOfRows - 1 - Math.floor(i / booksPerRow); // fill the top row first
-    const col = i % booksPerRow;
+  // Row 1 is the top row, Row 2 the one below it (see rowContainers). Books
+  // beyond what fits across a row wrap onto the next row down.
+  const takenPerRow = new Map();
+  projects.forEach((project) => {
+    const requestedRow = project.row ?? 1;
+    const taken = takenPerRow.get(requestedRow) ?? 0;
+    takenPerRow.set(requestedRow, taken + 1);
+    const rowsFromTop = requestedRow - 1 + Math.floor(taken / booksPerRow);
+    const row = Math.max(0, numberOfRows - 1 - rowsFromTop);
+    const col = taken % booksPerRow;
 
     const geometry = new RoundedBoxGeometry(bookWidth, bookHeight, bookDepth, 3, 0.006);
     // white when a cover image is coming — a material multiplies its map
@@ -1642,10 +1732,31 @@ const arrowGapFromCenter = outerWidth / 2 + 0.55;
 const arrowZ = shelfDepth / 2 + 0.15;
 const arrowY = shadowCatcher.position.y + 0.002; // just above the shadow catcher to avoid z-fighting
 
+// A png dropped into src/assets/arrows/ replaces the arrow the code draws.
+// With only "arrow.png" there, the left arrow is the same image flipped
+// horizontally (repeat.x = -1), so one file is enough for both sides; a
+// dedicated "arrow-left.png" is used exactly as supplied instead.
+function arrowTexture(direction) {
+  const side = direction < 0 ? "arrow-left" : "arrow-right";
+  const sided = assetByStem(arrowImageModules, [side]);
+  const shared = assetByStem(arrowImageModules, ["arrow"]);
+  const url = sided || shared;
+  if (!url) return createRotateArrowTexture(direction < 0);
+  const texture = textureLoader.load(url, () => invalidate());
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = maxAnisotropy;
+  if (!sided && direction < 0) {
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.repeat.x = -1;
+    texture.offset.x = 1;
+  }
+  return texture;
+}
+
 function createArrowMesh(direction) {
   const geometry = new THREE.PlaneGeometry(arrowWidth, arrowHeight);
   const material = new THREE.MeshBasicMaterial({
-    map: createRotateArrowTexture(direction < 0),
+    map: arrowTexture(direction),
     transparent: true,
   });
   const mesh = new THREE.Mesh(geometry, material);
@@ -1677,8 +1788,32 @@ function updateArrowVisibility() {
 updateArrowVisibility();
 portraitQuery.addEventListener("change", updateArrowVisibility);
 
-document.getElementById("nav-prev").addEventListener("click", () => navigateCarousel(-1));
-document.getElementById("nav-next").addEventListener("click", () => navigateCarousel(1));
+const navPrevButton = document.getElementById("nav-prev");
+const navNextButton = document.getElementById("nav-next");
+navPrevButton.addEventListener("click", () => navigateCarousel(-1));
+navNextButton.addEventListener("click", () => navigateCarousel(1));
+
+// The same png drives these two buttons, so replacing the arrow art changes
+// the portrait controls as well as the floor arrows. The ‹ › glyphs in
+// library.html are the fallback and are hidden only once an image is found.
+(function applyNavArrowImages() {
+  const shared = assetByStem(arrowImageModules, ["arrow"]);
+  const pairs = [
+    [navPrevButton, assetByStem(arrowImageModules, ["arrow-left"]) || shared, true],
+    [navNextButton, assetByStem(arrowImageModules, ["arrow-right"]) || shared, false],
+  ];
+  for (const [button, url, flip] of pairs) {
+    if (!button || !url) continue;
+    button.classList.add("has-image");
+    button.style.backgroundImage = `url("${url}")`;
+    // only a shared arrow.png needs mirroring; a left-specific file does not.
+    // A class rather than an inline transform, so the :active press-in still
+    // applies on top of it (see .nav-arrow.mirrored:active in style.css).
+    if (flip && !assetByStem(arrowImageModules, ["arrow-left"])) {
+      button.classList.add("mirrored");
+    }
+  }
+})();
 
 // Pushes back any book pulled partway out and closes the drawer on a
 // shelf that's about to swing away from the front, so it always cycles
@@ -2059,7 +2194,8 @@ function ensureOpenBookBuilt(project, single = false) {
     pageEdgeMaterial,
     pageEdgeMaterial,
     pageEdgeMaterial,
-    new THREE.MeshBasicMaterial({ map: createBackCoverTexture(project), toneMapped: false }),
+    // the inside of the back board, in the same cover colour as the front
+    new THREE.MeshBasicMaterial({ color: innerCoverColour(project), map: blankPixel, toneMapped: false }),
     pageEdgeMaterial,
   ]);
   backCover.position.set(pageWidth / 2 + 0.01, 0, backCoverZ);
@@ -3884,6 +4020,62 @@ function noiseBurst(t, { dur, type, freq, freqEnd, q = 0.7, gain, attack = 0.01,
   src.stop(t + dur + 0.02);
 }
 
+// ---- Replaceable sound files ------------------------------------------
+// Any mp3 dropped into src/assets/sounds/ (see the glob in section 3)
+// takes over from the synthesised sound of the same name. Files are fetched
+// and decoded once, on the first play, so an empty folder costs nothing and
+// a visit that never makes a sound never downloads one.
+const sampleBuffers = new Map(); // slot -> AudioBuffer, or null if it won't decode
+const samplePending = new Map();
+
+function loadSample(slot, url) {
+  if (samplePending.has(slot)) return samplePending.get(slot);
+  const job = fetch(url)
+    .then((response) => response.arrayBuffer())
+    .then((bytes) => audioCtx.decodeAudioData(bytes))
+    .then((decoded) => {
+      sampleBuffers.set(slot, decoded);
+      return decoded;
+    })
+    .catch(() => {
+      // a corrupt or unsupported file falls back to the synthesised sound
+      // rather than leaving that moment silent for the rest of the visit
+      sampleBuffers.set(slot, null);
+      return null;
+    });
+  samplePending.set(slot, job);
+  return job;
+}
+
+// Returns true when a replacement file has handled this sound, false to let
+// the synthesised version play. The very first call for a slot starts the
+// download and returns true: that one moment is silent, and every one after
+// it is the real file. Playing the synth for that first moment and the file
+// for the rest would be a worse trade, because the sound would audibly
+// change character a second into the visit.
+function playSample(slot, { when = 0, gain = 1, vary = 0 } = {}) {
+  const url = assetByStem(soundModules, [slot]);
+  if (!url) return false;
+  const ctx = getAudio();
+  if (!ctx) return false;
+  const buffer = sampleBuffers.get(slot);
+  if (buffer === undefined) {
+    loadSample(slot, url);
+    return true;
+  }
+  if (buffer === null) return false;
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  // the synthesised sounds all vary slightly per play so repeats don't grate;
+  // a sample gets the same treatment through a small playback-rate wobble
+  if (vary) source.playbackRate.value = 1 + (Math.random() * 2 - 1) * vary;
+  const level = ctx.createGain();
+  level.gain.value = gain;
+  source.connect(level).connect(ctx.destination);
+  source.start(ctx.currentTime + when);
+  return true;
+}
+
 // A page turn is two sounds: the airy "fwip" of the page cutting through the
 // air, and a soft papery tick when it lands on the pile. A multi-page jump
 // is ONE quick riffle of ticks, never a row of separate full sounds, and
@@ -3896,6 +4088,10 @@ function playFlipSound(count = 1) {
   const nowMs = performance.now();
   if (nowMs - lastFlipSoundAt < 90) return;
   lastFlipSoundAt = nowMs;
+  // riffle.mp3 covers the multi-page jump if it exists; without one, a
+  // supplied page-turn.mp3 stands in for both
+  if (count > 1 && playSample("riffle", { vary: 0.04 })) return;
+  if (playSample("page-turn", { vary: 0.06 })) return;
   const t = ctx.currentTime + 0.01;
   const v = 0.85 + Math.random() * 0.3; // no two turns sound identical
   if (count <= 1) {
@@ -3928,6 +4124,7 @@ function playHoverSound() {
   const nowMs = performance.now();
   if (nowMs - lastHoverSoundAt < 70) return;
   lastHoverSoundAt = nowMs;
+  if (playSample("hover", { vary: 0.08 })) return;
   const ctx = audioCtx;
   const t = ctx.currentTime + 0.005;
   const v = 0.9 + Math.random() * 0.25;
@@ -3954,6 +4151,7 @@ function playPageLand() {
   if (!soundOn || reduceMotionQuery.matches) return;
   const ctx = getAudio();
   if (!ctx) return;
+  if (playSample("page-land", { vary: 0.06 })) return;
   const t = ctx.currentTime + 0.005;
   const v = 0.85 + Math.random() * 0.3;
   noiseBurst(t, { dur: 0.06, type: "bandpass", freq: 2600 * v, q: 1.1, gain: 0.07 * v, attack: 0.004 });
@@ -3965,6 +4163,7 @@ function playCloseSound(delaySeconds = 0) {
   if (!soundOn || reduceMotionQuery.matches) return;
   const ctx = getAudio();
   if (!ctx) return;
+  if (playSample("close", { when: delaySeconds })) return;
   const t = ctx.currentTime + delaySeconds;
   noiseBurst(t, { dur: 0.16, type: "lowpass", freq: 900, freqEnd: 300, q: 0.7, gain: 0.12, attack: 0.006 });
   const osc = ctx.createOscillator();
@@ -3984,6 +4183,7 @@ function playThud() {
   if (!soundOn || reduceMotionQuery.matches) return;
   const ctx = getAudio();
   if (!ctx) return;
+  if (playSample("open", { when: 0.3 })) return;
   const t = ctx.currentTime + 0.3;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -4176,4 +4376,3 @@ function animate(now) {
 animate(performance.now());
 
 // read-only handle for the performance checks in the case study / DevTools
-window.__bookshelfDebug = { renderer, gsap, activeTweens: () => gsap.globalTimeline.getChildren(false, true, true).length, queued: () => uploadQueue.length };
