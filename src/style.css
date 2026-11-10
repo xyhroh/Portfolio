@@ -577,8 +577,34 @@ a:focus-visible {
   letter-spacing: 0.02em;
   pointer-events: none;
 }
+/* While a book is open the hint stays, but says something different (main.js
+   swaps the text): the shelf keys do nothing in here, and Z does nothing out
+   there, so advertising both at once would be advertising dead keys half the
+   time. The backdrop is nearly black while reading, so the grey flips light:
+   7.52:1 against the dim sheet, which clears AAA. */
 body.reading-active #key-hint {
-  display: none;
+  color: #9da1a5;
+  /* clear of #reading-panel, which is docked at bottom:24px, is about 37px
+     tall and sits above this at z-index 30: left where it was, the panel
+     covered the middle of the hint entirely */
+  bottom: 74px;
+  /* and above the canvas. At its browsing z-index of 5 the hint sits UNDER
+     #app, which is fine while the canvas is transparent, but the dimming
+     sheet painted inside that canvas hid the hint completely once a book
+     was open. */
+  z-index: 31;
+  /* the open book's own page can reach this far down, and grey text on a
+     cream page is unreadable, so the hint carries its own backdrop here the
+     way #reading-panel and #toast do */
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(18, 19, 21, 0.72);
+}
+
+/* #toast is docked at bottom:76px, which is exactly where the reading hint
+   now sits, so it steps up out of the way while a book is open. */
+body.reading-active #toast {
+  bottom: 124px;
 }
 /* touch devices have no keyboard */
 @media (hover: none), (orientation: portrait) {
@@ -722,7 +748,7 @@ body.reading-active .nav-arrow {
    --------------------------------------------------------------- */
 .reading-ui { opacity: 0; pointer-events: none; transition: opacity .35s ease .45s, transform .15s ease, background-color .15s ease; z-index: 30; }
 body.reading-active .reading-ui { opacity: 1; pointer-events: auto; }
-body.reading-active #home-link, body.reading-active #hero, body.reading-active #shelf-info, body.reading-active #key-hint { opacity: 0; pointer-events: none; }
+body.reading-active #home-link, body.reading-active #hero, body.reading-active #shelf-info { opacity: 0; pointer-events: none; }
 #home-link, #hero, #shelf-info, #key-hint { transition: opacity .4s ease; }
 
 .reading-edge, .tool-btn {

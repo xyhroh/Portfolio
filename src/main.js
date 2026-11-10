@@ -2073,6 +2073,19 @@ function setReadingSharpness(on) {
 // land on five invisible controls before reaching anything real. `inert`
 // takes them out of the tab order and out of the accessibility tree while
 // they are faded out, and nothing else has to change.
+// The bottom hint line describes whichever keys are actually live: the shelf
+// keys while browsing, the page keys while reading. Z zooms only inside an
+// open book and the shelf keys do nothing in there, so each set is offered
+// only where it works, rather than listing every key all the time and leaving
+// the reader to find out which half is dead.
+const keyHintEl = document.getElementById("key-hint");
+const shelfKeyHintText = keyHintEl ? keyHintEl.textContent : "";
+const readingKeyHintText = "\u2190 \u2192 turn page \u00b7 drag a page \u00b7 Z zoom \u00b7 Esc back";
+function setKeyHintMode(reading) {
+  if (!keyHintEl) return;
+  keyHintEl.textContent = reading ? readingKeyHintText : shelfKeyHintText;
+}
+
 const readingUiElements = Array.from(document.querySelectorAll(".reading-ui"));
 function setReadingUiReachable(reachable) {
   for (const element of readingUiElements) element.inert = !reachable;
@@ -2713,6 +2726,7 @@ function openPaperView(paper) {
   // value) and enterReadingControls (bases maxDistance on it).
   document.body.classList.add("reading-active");
   setReadingUiReachable(true);
+  setKeyHintMode(true);
   refitCameraFraming();
   enterReadingControls();
 
@@ -2729,6 +2743,7 @@ function closePaperView() {
 
   document.body.classList.remove("reading-active");
   setReadingUiReachable(false);
+  setKeyHintMode(false);
   refitCameraFraming();
 
   gsap.to(camera.position, { ...overviewCameraPos, duration: T(motion.close), ease: motion.inOut });
@@ -2846,6 +2861,7 @@ function openBook(book) {
 
   document.body.classList.add("reading-active");
   setReadingUiReachable(true);
+  setKeyHintMode(true);
   refitCameraFraming();
   enterReadingControls();
 
@@ -2949,6 +2965,7 @@ function closeBook() {
   setPagePeek(null);
   document.body.classList.remove("reading-active");
   setReadingUiReachable(false);
+  setKeyHintMode(false);
   refitCameraFraming();
 
   // The opening played backwards: pages turn back to the start (if you were
@@ -4375,6 +4392,27 @@ function handleViewportResize() {
 }
 
 window.addEventListener("resize", handleViewportResize);
+
+// The canvas is sized from #app's own box, but that box can change without
+// the window changing size at all. In portrait #app sits in a flex row whose
+// height only settles once fonts and images have loaded, and opening a book
+// switches it between flowed and full-screen. Listening for window resize
+// alone therefore left the canvas at a stale height, overflowing its
+// container by tens of pixels: the 3D floor stopped partway down the page
+// and the plain white page showed below it as a brighter band. Watching the
+// element itself catches every one of those cases, at every window size.
+if (typeof ResizeObserver === "function") {
+  let lastWidth = 0;
+  let lastHeight = 0;
+  new ResizeObserver(() => {
+    const { width, height } = getViewportSize();
+    if (width === 0 || height === 0) return; // hidden, nothing to fit to
+    if (width === lastWidth && height === lastHeight) return;
+    lastWidth = width;
+    lastHeight = height;
+    refitCameraFraming();
+  }).observe(appEl);
+}
 
 // Rubber-bands the camera's horizontal orbit back toward azimuthSoftLimit
 // once it's exceeded, instead of OrbitControls' hard instant clamp — see
