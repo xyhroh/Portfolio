@@ -2091,7 +2091,7 @@ function setReadingSharpness(on) {
 // the reader to find out which half is dead.
 const keyHintEl = document.getElementById("key-hint");
 const shelfKeyHintText = keyHintEl ? keyHintEl.textContent : "";
-const readingKeyHintText = "\u2190 \u2192 turn page \u00b7 drag a page \u00b7 Z zoom \u00b7 Esc back";
+const readingKeyHintText = "\u2190 \u2192 turn page \u00b7 drag a page \u00b7 scroll to zoom \u00b7 Esc back";
 function setKeyHintMode(reading) {
   if (!keyHintEl) return;
   keyHintEl.textContent = reading ? readingKeyHintText : shelfKeyHintText;
@@ -2106,8 +2106,14 @@ setReadingUiReachable(false);
 function enterReadingControls() {
   controls.enabled = true;
   controls.enableRotate = false;
+  // Zooming and panning are simply available the whole time a book is open:
+  // the reader scrolls or pinches to get closer and drags with two fingers or
+  // the right mouse button to move around, with no mode to switch on first.
+  // One-finger and left-button drags are untouched, so they still turn pages.
   controls.enableZoom = true;
-  controls.minDistance = 0.4;
+  controls.enablePan = true;
+  controls.screenSpacePanning = true;
+  controls.minDistance = 0.25;
   controls.maxDistance = readingCameraPos.z - readingTarget.z + 1.5;
 }
 
@@ -3919,7 +3925,7 @@ function setReadingZoom(on, side = 1) {
   // turns the page, so panning rides on right-drag and two fingers
   controls.enablePan = on;
   controls.screenSpacePanning = true;
-  controls.minDistance = on ? 0.25 : 0.4;
+  controls.minDistance = 0.25; // free zoom stays available either way
   syncZoomButton();
   announce(on ? "Zoomed in. Drag with two fingers or the right mouse button to move around the page." : "Zoomed out to the whole page.");
 }
