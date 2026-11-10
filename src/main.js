@@ -2991,6 +2991,34 @@ function syncBookList(rebuild = false) {
   });
 }
 
+// The single owner of "which book is currently pulled out". Three different
+// things choose a book — the mouse, the keyboard and the chips — and each
+// used to put the previous one back itself. Any path that cleared hoveredBook
+// without doing so (or a mouse that simply left the canvas) stranded a book
+// off the shelf, and a second one could then be pulled out beside it. Every
+// one of them now goes through here, and the sweep below makes the rule
+// "exactly one book out at a time" true by construction rather than by every
+// caller remembering to tidy up.
+function setHoveredBook(book, { sound = false } = {}) {
+  if (hoveredBook === book) return;
+  if (hoveredBook && hoveredBook.userData.state === "out") pushBack(hoveredBook);
+  hoveredBook = book;
+  if (hoveredBook && hoveredBook.userData.state === "shelved") {
+    pullOut(hoveredBook);
+    if (sound) playHoverSound();
+  }
+  // belt and braces: anything else still standing proud of this shelf goes
+  // back, whatever left it there. The open book is exempt — it is not on the
+  // shelf at all while it is being read.
+  for (const other of activeShelf.shelfBooks) {
+    if (other === hoveredBook) continue;
+    if (other.userData.state !== "out") continue;
+    if (readingState && readingState.project === other.userData.project) continue;
+    pushBack(other);
+  }
+  updatePreviewPanel();
+}
+
 function selectBookFromList(book) {
   if (readingState || paperReadingState || isCarouselRotating) return;
   if (hoveredBook === book && book.userData.state === "out") {
@@ -3000,11 +3028,8 @@ function selectBookFromList(book) {
     syncBookList();
     return;
   }
-  if (hoveredBook && hoveredBook.userData.state === "out") pushBack(hoveredBook);
-  hoveredBook = book;
   keyboardBookIndex = activeShelf.shelfBooks.indexOf(book);
-  if (book.userData.state === "shelved") pullOut(book);
-  updatePreviewPanel();
+  setHoveredBook(book, { sound: true });
   announce(`${book.userData.project.title}. Tap again to open.`);
 }
 
@@ -3421,7 +3446,15 @@ renderer.domElement.style.touchAction = "none";
 window.addEventListener("pointerup", (e) => activePointers.delete(e.pointerId));
 window.addEventListener("pointercancel", (e) => activePointers.delete(e.pointerId));
 renderer.domElement.addEventListener("pointerleave", (e) => {
-  if (e.pointerType === "mouse") setPagePeek(null);
+  if (e.pointerType !== "mouse") return; // a finger that lifts has not "left"
+  setPagePeek(null);
+  // Nothing is hovered once the cursor is off the canvas. Without this a book
+  // stayed pulled out for good when the mouse wandered onto the text beside
+  // the shelf, and the next book hovered came out alongside it.
+  if (!readingState && !paperReadingState && !isCarouselRotating) {
+    keyboardBookIndex = -1;
+    setHoveredBook(null);
+  }
 });
 renderer.domElement.addEventListener("pointerdown", onPointerDown);
 renderer.domElement.addEventListener("pointerup", onPointerUp);
@@ -3548,17 +3581,7 @@ function onPointerMove(event) {
 
   setCursor(hovered || overDrawer || arrowHits.length > 0 ? "pointer" : event.buttons ? "grabbing" : "grab");
 
-  if (hovered !== hoveredBook) {
-    if (hoveredBook && hoveredBook.userData.state === "out") {
-      pushBack(hoveredBook);
-    }
-    hoveredBook = hovered;
-    if (hoveredBook && hoveredBook.userData.state === "shelved") {
-      pullOut(hoveredBook);
-      playHoverSound();
-    }
-    updatePreviewPanel();
-  }
+  setHoveredBook(hovered, { sound: true });
 }
 
 renderer.domElement.addEventListener("pointermove", onPointerMove);
@@ -3577,13 +3600,9 @@ let keyboardBookIndex = -1;
 function keyboardPickBook(delta) {
   const books = activeShelf.shelfBooks;
   if (books.length === 0) return;
-  if (hoveredBook && hoveredBook.userData.state === "out") pushBack(hoveredBook);
   if (keyboardBookIndex === -1) keyboardBookIndex = delta > 0 ? 0 : books.length - 1;
   else keyboardBookIndex = (keyboardBookIndex + delta + books.length) % books.length;
-  hoveredBook = books[keyboardBookIndex];
-  if (hoveredBook.userData.state === "shelved") pullOut(hoveredBook);
-  playHoverSound();
-  updatePreviewPanel();
+  setHoveredBook(books[keyboardBookIndex], { sound: true });
   announce(`${hoveredBook.userData.project.title}. Press Enter to open.`);
 }
 
