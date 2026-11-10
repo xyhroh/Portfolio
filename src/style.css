@@ -317,11 +317,23 @@ canvas {
   background-position: center;
   background-size: 56% auto;
 }
-.nav-arrow.mirrored {
-  transform: translateY(-50%) scaleX(-1);
+/* These two buttons stand in for the floor arrows in portrait, so they have
+   to show the image exactly the way the floor arrows do: flipped vertically
+   (see arrowTexture in main.js, which does the same thing for the same
+   reason), and mirrored on the left when one shared arrow.png serves both
+   sides. Without the vertical flip the phone arrows curved the opposite way
+   to the desktop ones from the very same file. */
+.nav-arrow.has-image {
+  transform: translateY(-50%) scaleY(-1);
 }
-.nav-arrow.mirrored:active {
-  transform: translateY(-50%) scaleX(-1) scale(0.93);
+.nav-arrow.has-image.mirrored {
+  transform: translateY(-50%) scale(-1, -1);
+}
+.nav-arrow.has-image:active {
+  transform: translateY(-50%) scaleY(-1) scale(0.93);
+}
+.nav-arrow.has-image.mirrored:active {
+  transform: translateY(-50%) scale(-1, -1) scale(0.93);
 }
 
 #nav-prev {
@@ -409,6 +421,21 @@ canvas {
   }
   .nav-arrow:active {
     transform: scale(0.93);
+  }
+  /* `transform: none` above wiped out the flip and the left-side mirroring,
+     so both phone arrows pointed the same way. Restated here without the
+     translateY, which portrait does not use. */
+  .nav-arrow.has-image {
+    transform: scaleY(-1);
+  }
+  .nav-arrow.has-image.mirrored {
+    transform: scale(-1, -1);
+  }
+  .nav-arrow.has-image:active {
+    transform: scaleY(-1) scale(0.93);
+  }
+  .nav-arrow.has-image.mirrored:active {
+    transform: scale(-1, -1) scale(0.93);
   }
 
   /* While reading, #app breaks out of the #main-row flex flow entirely

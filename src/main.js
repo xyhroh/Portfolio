@@ -2001,7 +2001,18 @@ function framePortraitOnBooks() {
   }
   if (!Number.isFinite(minX) || !Number.isFinite(minY)) return false;
 
-  const distance = fitDistance((maxX - minX) * 1.5, (maxY - minY) * 1.6, framingMargin);
+  // Fit the books, but never closer than the cabinet itself: fitting the book
+  // cluster alone pushed the camera so close that the shelf they stand on
+  // left the frame, and a row of spines floating with no furniture around
+  // them loses the point of the metaphor. The vertical centring on the active
+  // row below is what actually fixed the original problem (books stranded in
+  // the top sixth of an empty cabinet); the zoom only ever needed to stop
+  // wasting the screen, not to crop the shelf out of it.
+  const distance = fitDistance(
+    Math.max((maxX - minX) * 1.5, outerWidth * 1.08),
+    (maxY - minY) * 1.6,
+    framingMargin
+  );
   // Then keep the frame inside the cabinet. Books sit on one row, usually off
   // to one side, so a frame centred on them alone hangs over the carcass edge
   // and fills the gap with empty background, which just looks broken.
