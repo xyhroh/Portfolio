@@ -1745,6 +1745,14 @@ function arrowTexture(direction) {
   const texture = textureLoader.load(url, () => invalidate());
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = maxAnisotropy;
+  // The plane lies flat on the floor (rotation.x = -90 degrees), which maps
+  // the image's top edge to the FAR side of the floor. Art drawn to be read
+  // head-on therefore lands upside down from the camera's point of view: an
+  // arrow that curves upwards on the page curves downwards on the floor.
+  // Flipping V puts the top of the image nearest the viewer, as drawn.
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.y = -1;
+  texture.offset.y = 1;
   if (!sided && direction < 0) {
     texture.wrapS = THREE.RepeatWrapping;
     texture.repeat.x = -1;
@@ -2058,6 +2066,18 @@ function setReadingSharpness(on) {
   pixelRatio = target;
   applyPixelRatio();
 }
+
+// The reading bar is hidden with opacity and pointer-events (see .reading-ui
+// in style.css), which hides it from the mouse but NOT from the keyboard: the
+// five buttons stay in the tab order, so tabbing through the shelf used to
+// land on five invisible controls before reaching anything real. `inert`
+// takes them out of the tab order and out of the accessibility tree while
+// they are faded out, and nothing else has to change.
+const readingUiElements = Array.from(document.querySelectorAll(".reading-ui"));
+function setReadingUiReachable(reachable) {
+  for (const element of readingUiElements) element.inert = !reachable;
+}
+setReadingUiReachable(false);
 
 function enterReadingControls() {
   controls.enabled = true;
@@ -2692,6 +2712,7 @@ function openPaperView(paper) {
   // before both the tween below (captures readingCameraPos as its end
   // value) and enterReadingControls (bases maxDistance on it).
   document.body.classList.add("reading-active");
+  setReadingUiReachable(true);
   refitCameraFraming();
   enterReadingControls();
 
@@ -2707,6 +2728,7 @@ function closePaperView() {
   exitReadingControls();
 
   document.body.classList.remove("reading-active");
+  setReadingUiReachable(false);
   refitCameraFraming();
 
   gsap.to(camera.position, { ...overviewCameraPos, duration: T(motion.close), ease: motion.inOut });
@@ -2800,8 +2822,9 @@ function openBook(book) {
     leftCoverZ,
     tabs,
     maxIndex: single ? pageHinges.length - 1 : pageHinges.length, // a phone never turns its last page away
-    busy: true, // ignore page turns / close until the opening animation has finished
+    busy: true, // defer page turns / close until the opening animation has finished
   };
+  closeRequestedWhileBusy = false; // nothing carried over from the last book
   updateLeafWindow(built, 0);
   updateReadingUI();
 
@@ -2822,6 +2845,7 @@ function openBook(book) {
   openBookGroup.visible = false;
 
   document.body.classList.add("reading-active");
+  setReadingUiReachable(true);
   refitCameraFraming();
   enterReadingControls();
 
@@ -2836,6 +2860,12 @@ function openBook(book) {
   const tl = gsap.timeline({
     onComplete: () => {
       if (readingState) readingState.busy = false;
+      // an Escape or close press that arrived mid-opening is honoured here
+      if (closeRequestedWhileBusy) {
+        closeRequestedWhileBusy = false;
+        closeBook();
+        return;
+      }
       setReadingSharpness(true);
       nudgeNextPage();
     },
@@ -2884,7 +2914,7 @@ function openBook(book) {
       if (single) cover.hinge.visible = false;
     },
   });
-  playFlipSound(1);
+  playCoverSwish();
 
   gsap.to(camera.position, { ...readingCameraPos, duration: beat1 + beat2, ease: "sine.inOut", overwrite: "auto" });
   gsap.to(controls.target, { ...readingTarget, duration: beat1 + beat2, ease: "sine.inOut", overwrite: "auto" });
@@ -2892,8 +2922,21 @@ function openBook(book) {
   playThud();
 }
 
+// Escape and the close button used to be dropped on the floor if they came in
+// while the book was still opening — roughly a two second window in which the
+// app looked responsive and silently ignored you, so the natural response was
+// to press again and then wonder which press had worked. The request is now
+// remembered and runs the moment the opening animation finishes: never lost,
+// only deferred.
+let closeRequestedWhileBusy = false;
+
 function closeBook() {
-  if (!readingState || readingState.busy) return;
+  if (!readingState) return;
+  if (readingState.busy) {
+    closeRequestedWhileBusy = true;
+    return;
+  }
+  closeRequestedWhileBusy = false;
   const state = readingState;
   const book = activeShelfBook;
   const built = state.built;
@@ -2905,6 +2948,7 @@ function closeBook() {
   setHoveredTab(null); // reset any tab left mid-glow/scaled from hovering
   setPagePeek(null);
   document.body.classList.remove("reading-active");
+  setReadingUiReachable(false);
   refitCameraFraming();
 
   // The opening played backwards: pages turn back to the start (if you were
@@ -4109,6 +4153,23 @@ function playFlipSound(count = 1) {
     }
     noiseBurst(t, { dur: 0.3, type: "bandpass", freq: 2000, freqEnd: 4500, q: 0.5, gain: 0.05, attack: 0.08 });
   }
+}
+
+// The front cover swinging open. This used to borrow playFlipSound, which was
+// harmless while every sound was synthesised — the swish of a cover and the
+// swish of a page are much the same noise — but it meant that supplying a
+// page-turn.mp3 made opening a book play the page-turn sound before a single
+// page had turned. The cover now has its own "cover" slot, and with no file
+// supplied it falls back to the synthesised swish rather than to page-turn.
+function playCoverSwish() {
+  if (!soundOn || reduceMotionQuery.matches) return;
+  const ctx = getAudio();
+  if (!ctx) return;
+  if (playSample("cover", { vary: 0.05 })) return;
+  const t = ctx.currentTime + 0.01;
+  const v = 0.85 + Math.random() * 0.3;
+  noiseBurst(t, { dur: 0.34, type: "bandpass", freq: 1800 * v, freqEnd: 4200 * v, q: 0.55, gain: 0.1 * v, attack: 0.07, rate: 0.9 + Math.random() * 0.2 });
+  noiseBurst(t, { dur: 0.3, type: "lowpass", freq: 700, freqEnd: 350, q: 0.5, gain: 0.05 * v, attack: 0.08 });
 }
 
 // Hovering a book: a soft wooden/paper "tick" as it slides out of the shelf,
