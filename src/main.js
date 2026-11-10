@@ -2857,6 +2857,7 @@ function openBook(book) {
     busy: true, // defer page turns / close until the opening animation has finished
   };
   closeRequestedWhileBusy = false; // nothing carried over from the last book
+  const openingState = readingState; // identity check for the late callbacks below
   updateLeafWindow(built, 0);
   updateReadingUI();
 
@@ -2913,7 +2914,17 @@ function openBook(book) {
     // Once the sheet is fully opaque the cabinet behind it cannot be seen, so
     // stop drawing it at all: that is most of the scene's draw calls and its
     // whole shadow pass, gone for as long as the book is open.
-    onComplete: () => setCabinetVisible(false),
+    //
+    // Only if the book is still open, though. Pressing Escape while the book
+    // is opening queues a close that runs the instant the opening timeline
+    // finishes, and this tween can land in that very same frame -- after the
+    // close has already brought the cabinet back. Hiding it then left the
+    // book flying home to an empty room, and a near-miss of the same race
+    // showed up as an occasional one-frame flash of the shelf.
+    onComplete: () => {
+      if (readingState !== openingState || openingState.closing) return;
+      setCabinetVisible(false);
+    },
   });
   tl.to(
     book.position,
@@ -2974,6 +2985,7 @@ function closeBook() {
   const book = activeShelfBook;
   const built = state.built;
   state.busy = true;
+  state.closing = true; // any still-running opening callback must now stand down
   bookDrag = null;
   setCabinetVisible(true); // the book is about to fly back into it
   readingPanel.classList.remove("visible");
@@ -4468,7 +4480,14 @@ function animate(now) {
     return;
   }
   framesToRender--;
-  renderer.shadowMap.needsUpdate = !readingState && (animating || now < shadowDirtyUntil);
+  // Gate the shadow pass on whether the cabinet is actually being drawn, not
+  // on whether a book is open. readingState stays set for the whole closing
+  // animation, so keying off it suppressed shadows for the ~1.5 s the shelf
+  // was already back on screen and then let them snap in when the close
+  // finished -- a visible flash across the shelf. carouselGroup.visible is
+  // false exactly while the shelf is hidden behind the dim sheet, so this
+  // keeps the whole optimisation and loses the pop.
+  renderer.shadowMap.needsUpdate = carouselGroup.visible && (animating || now < shadowDirtyUntil);
   renderer.render(scene, camera);
 
   // adaptive resolution (see section 1a): only judge back-to-back frames
