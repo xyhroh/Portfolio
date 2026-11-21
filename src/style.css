@@ -1,9 +1,157 @@
+/* Same tokens, background and type as the home page (src/home/home.css).
+   Keep the two in step. The 3D fog reads --bg (applyTheme() in main.js). */
+:root {
+  --ink: #0d0d0d;
+  --muted: #5c5c5c;
+  --bg: #f5f6f8;
+  --on-ink: #fff;
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-edge: rgba(13, 13, 13, 0.08);
+  --glass-hi: rgba(255, 255, 255, 0.9);
+  --glass-shadow: 0 24px 48px -28px rgba(40, 55, 80, 0.26);
+  --mesh-1: rgba(110, 130, 160, 0.2);
+  --mesh-2: rgba(140, 150, 165, 0.14);
+  --mesh-3: rgba(110, 130, 160, 0.12);
+  --grain: 0.035;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #f2f2f2;
+  --muted: #b4b4b4;
+  --bg: #1c1d21;
+  --on-ink: #0d0d0d;
+  --glass: rgba(44, 47, 54, 0.7);
+  --glass-edge: rgba(255, 255, 255, 0.12);
+  --glass-hi: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.7);
+  --mesh-1: rgba(90, 110, 145, 0.18);
+  --mesh-2: rgba(120, 130, 150, 0.1);
+  --mesh-3: rgba(90, 110, 145, 0.1);
+  --grain: 0.05;
+}
+
+/* same toggle as the home page, bottom right */
+.theme-toggle {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 25; /* above the canvas (10), under the reading controls (30) */
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 50%;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  color: var(--ink);
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.3);
+  transition: opacity 0.4s ease;
+}
+.theme-toggle::before {
+  content: "☾";
+}
+:root[data-theme="dark"] .theme-toggle::before {
+  content: "☀";
+}
+body.reading-active .theme-toggle {
+  opacity: 0;
+  pointer-events: none;
+}
+@media (orientation: portrait) {
+  .theme-toggle {
+    top: 12px;
+    right: 12px;
+    bottom: auto;
+    width: 40px;
+    height: 40px;
+    font-size: 17px;
+  }
+}
+
 html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: #ffffff;
-  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Geist, Inter, system-ui, sans-serif;
+}
+
+/* the home page's slate mesh + grain, behind the transparent canvas */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+body::before {
+  background: radial-gradient(40vmax 40vmax at 8% 12%, var(--mesh-1), transparent 70%),
+    radial-gradient(36vmax 36vmax at 92% 38%, var(--mesh-2), transparent 70%),
+    radial-gradient(42vmax 42vmax at 30% 95%, var(--mesh-3), transparent 70%);
+}
+body::after {
+  opacity: var(--grain);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* glass, only behind text */
+#paper-panel,
+#preview-panel,
+.nav-arrow,
+.book-chip {
+  background: var(--glass) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--glass-edge) !important;
+  box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow) !important;
+}
+.book-chip.selected {
+  background: var(--ink) !important;
+  color: var(--on-ink) !important;
+}
+
+/* name top-left, like the home page; the pill (src/nav.css) takes the top centre */
+.nav {
+  position: fixed;
+  top: 24px;
+  left: 4vw;
+  z-index: 20;
+}
+.nav-name {
+  display: inline-flex;
+  flex-direction: column;
+  font-family: Montserrat, system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 1.2;
+  color: var(--ink);
+  text-decoration: none;
+}
+.nav-name span {
+  font-family: Geist, Inter, system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+body.reading-active .nav,
+body.reading-active .nav-pill {
+  opacity: 0;
+  pointer-events: none;
+}
+.nav,
+.nav-pill {
+  transition: opacity 0.4s ease;
+}
+@media (orientation: portrait) {
+  .nav {
+    display: none; /* the pill alone fits a phone's top edge */
+  }
 }
 
 /* The renderer clears to transparent (see main.js section 1), so the
@@ -52,7 +200,7 @@ canvas {
 
 #intro-left,
 #intro-right {
-  color: #2a2c2f;
+  color: var(--ink);
   font-family: inherit;
   line-height: 1.2;
   text-align: left;
@@ -75,10 +223,11 @@ canvas {
 
 #intro-role {
   display: inline-block;
-  font-weight: 700;
+  font-family: Montserrat, system-ui, sans-serif;
+  font-weight: 600;
   font-size: clamp(32px, 4.4vw, 64px);
-  letter-spacing: -0.01em;
-  color: #2a2c2f;
+  letter-spacing: -0.02em;
+  color: var(--ink);
   opacity: 1;
   transition: opacity 0.25s ease;
 }
@@ -149,11 +298,11 @@ canvas {
 
 #shelf-info-header {
   margin: 0;
-  color: #2a2c2f;
-  font-family: inherit;
-  font-weight: 700;
+  color: var(--ink);
+  font-family: Montserrat, system-ui, sans-serif;
+  font-weight: 600;
   font-size: clamp(26px, 3.2vw, 44px);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   line-height: 1.2;
   opacity: 1;
   transition: opacity 0.25s ease;
@@ -161,7 +310,7 @@ canvas {
 
 #shelf-info-body {
   margin: 0;
-  color: #55585c;
+  color: var(--muted);
   font-family: inherit;
   font-size: clamp(15px, 1.3vw, 18px);
   line-height: 1.5;
@@ -191,7 +340,7 @@ canvas {
   transform: translateX(-50%);
   background: rgba(250, 250, 248, 0.97);
   border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
+  border-radius: 20px;
   padding: 14px 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   text-align: center;
@@ -207,12 +356,12 @@ canvas {
 #paper-title,
 #reading-title {
   margin: 0 0 10px;
-  color: #202225;
+  color: var(--ink);
   font-size: 18px;
 }
 
 #preview-title {
-  color: #202225;
+  color: var(--ink);
   font-size: 18px;
   font-weight: bold;
 }
@@ -248,7 +397,7 @@ canvas {
 
 #reading-counter,
 #paper-counter {
-  color: #55585c;
+  color: var(--muted);
   font-size: 13px;
 }
 
@@ -297,7 +446,7 @@ canvas {
   border: none;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.85);
-  color: #2a2c2f;
+  color: var(--ink);
   font-size: 26px;
   line-height: 1;
   cursor: pointer;
@@ -456,21 +605,6 @@ canvas {
   }
 }
 
-/* Back to the home page (index.html). Above #app (z-index 10) so the
-   canvas never swallows the click. */
-#home-link {
-  position: fixed;
-  top: 16px;
-  right: 4vw;
-  z-index: 20;
-  color: #2a2c2f;
-  font-size: 15px;
-  font-weight: 600;
-  text-decoration: none;
-}
-#home-link:hover {
-  text-decoration: underline;
-}
 
 
 /* ---------------------------------------------------------------
@@ -499,8 +633,8 @@ canvas {
   align-items: center;
   justify-content: center;
   gap: 18px;
-  background: #ffffff;
-  color: #55585c;
+  background: var(--bg);
+  color: var(--muted);
   font-size: 14px;
   letter-spacing: 0.02em;
   transition: opacity 0.6s ease, visibility 0.6s;
@@ -551,14 +685,13 @@ body.ready #app canvas {
 }
 button:focus-visible,
 a:focus-visible {
-  outline: 3px solid #1f6feb;
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
 
 #reading-controls button,
 #paper-controls button,
-.nav-arrow,
-#home-link {
+.nav-arrow {
   transition: background-color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
 }
 #reading-controls button:active:not(:disabled),
@@ -569,7 +702,7 @@ a:focus-visible {
   transform: translateY(-50%) scale(0.93);
 }
 #reading-controls button[aria-pressed="true"] {
-  background: #1f6feb;
+  background: var(--ink);
 }
 
 #reading-panel,
@@ -588,7 +721,7 @@ a:focus-visible {
    text on the page for anyone who needed it. */
 .key-hint {
   margin: 10px 0 0;
-  color: #6f7276;
+  color: var(--muted);
   font-size: 12px;
 }
 
@@ -599,7 +732,7 @@ a:focus-visible {
   transform: translateX(-50%);
   z-index: 5;
   margin: 0;
-  color: #6f7276;
+  color: var(--muted);
   font-size: 12px;
   letter-spacing: 0.02em;
   pointer-events: none;
@@ -671,7 +804,7 @@ body.reading-active #toast {
 
 @media (orientation: portrait) {
   #hero {
-    padding: calc(env(safe-area-inset-top, 0px) + 40px) 5vw 0;
+    padding: calc(env(safe-area-inset-top, 0px) + 72px) 5vw 0; /* clears the nav pill */
     gap: 2px;
   }
   #intro-left {
@@ -729,8 +862,8 @@ body.reading-active #toast {
     border-radius: 22px;
     border: 1.5px solid #c9ccd0;
     background: #ffffff;
-    color: #2a2c2f;
-    font: 600 14px system-ui, sans-serif;
+    color: var(--ink);
+    font: 600 14px Geist, Inter, system-ui, sans-serif;
     white-space: nowrap;
     cursor: pointer;
     touch-action: manipulation;
@@ -775,8 +908,8 @@ body.reading-active .nav-arrow {
    --------------------------------------------------------------- */
 .reading-ui { opacity: 0; pointer-events: none; transition: opacity .35s ease .45s, transform .15s ease, background-color .15s ease; z-index: 30; }
 body.reading-active .reading-ui { opacity: 1; pointer-events: auto; }
-body.reading-active #home-link, body.reading-active #hero, body.reading-active #shelf-info { opacity: 0; pointer-events: none; }
-#home-link, #hero, #shelf-info, #key-hint { transition: opacity .4s ease; }
+body.reading-active #hero, body.reading-active #shelf-info { opacity: 0; pointer-events: none; }
+#hero, #shelf-info, #key-hint { transition: opacity .4s ease; }
 
 .reading-edge, .tool-btn {
   display: inline-flex; align-items: center; justify-content: center;

@@ -1,7 +1,61 @@
 :root {
   --ink: #0d0d0d;
-  --accent: #767676; /* the grey words in the headline; 4.5:1 on white */
-  --muted: #6b6b6b;
+  --muted: #5c5c5c; /* ≥ 5.5:1 on the glass and the page */
+  --bg: #f5f6f8;
+  --on-ink: #fff; /* text on --ink buttons */
+  --ink-hover: #333;
+  --line: rgba(13, 13, 13, 0.1);
+
+  /* glass: only behind text, never over screenshots */
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-edge: rgba(13, 13, 13, 0.08);
+  --glass-hi: rgba(255, 255, 255, 0.9); /* 1px top highlight */
+  --glass-shadow: 0 24px 48px -28px rgba(40, 55, 80, 0.26); /* slate-tinted, soft */
+
+  /* the stage the screenshots sit on: solid, not glass */
+  --stage: #e8ebef;
+  --shot-edge: rgba(13, 13, 13, 0.12);
+
+  /* one desaturated slate hue behind everything, so the glass has something to frost */
+  --mesh-1: rgba(110, 130, 160, 0.2);
+  --mesh-2: rgba(140, 150, 165, 0.14);
+  --mesh-3: rgba(110, 130, 160, 0.12);
+  --grain: 0.035;
+}
+
+/* the toggle (bottom right) sets data-theme on <html>; see the <head> script */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #f2f2f2;
+  --muted: #b4b4b4;
+  --bg: #1c1d21;
+  --on-ink: #0d0d0d;
+  --ink-hover: #d0d0d0;
+  --line: rgba(255, 255, 255, 0.12);
+
+  --glass: rgba(44, 47, 54, 0.7);
+  --glass-edge: rgba(255, 255, 255, 0.12);
+  --glass-hi: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.7);
+
+  /* mid grey, so dark app screens (Pinpoint) don't sink into it */
+  --stage: #3d4148;
+  --shot-edge: rgba(255, 255, 255, 0.2);
+
+  --mesh-1: rgba(90, 110, 145, 0.18);
+  --mesh-2: rgba(120, 130, 150, 0.1);
+  --mesh-3: rgba(90, 110, 145, 0.1);
+  --grain: 0.05;
+}
+
+/* no backdrop-filter, or the viewer asked for less transparency: go opaque */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root { --glass: rgba(255, 255, 255, 0.95); }
+  :root[data-theme="dark"] { --glass: rgba(44, 47, 54, 0.97); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root { --glass: rgba(255, 255, 255, 0.95); }
+  :root[data-theme="dark"] { --glass: rgba(44, 47, 54, 0.97); }
 }
 
 * {
@@ -14,9 +68,65 @@ html {
 
 body {
   margin: 0;
-  background: #fff;
+  background: var(--bg);
   color: var(--ink);
-  font-family: Inter, system-ui, sans-serif;
+  font-family: Geist, Inter, system-ui, sans-serif;
+}
+
+h1, h2, h3 { text-wrap: balance; }
+p { text-wrap: pretty; }
+
+/* fine grain so the flat background doesn't feel sterile */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--grain);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+:where(a, button):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 70;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: var(--on-ink);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(40vmax 40vmax at 8% 12%, var(--mesh-1), transparent 70%),
+    radial-gradient(36vmax 36vmax at 92% 38%, var(--mesh-2), transparent 70%),
+    radial-gradient(42vmax 42vmax at 30% 95%, var(--mesh-3), transparent 70%);
+}
+
+.project {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow);
 }
 
 /* ---------- name top-left (the page nav pill is in src/nav.css) ---------- */
@@ -39,7 +149,7 @@ body {
 }
 
 .nav-name span {
-  font-family: Inter, system-ui, sans-serif;
+  font-family: Geist, Inter, system-ui, sans-serif;
   font-weight: 500;
   font-size: 12px;
   letter-spacing: 0.04em;
@@ -57,20 +167,27 @@ body {
 }
 
 .hero h1 {
-  max-width: 780px;
+  max-width: 760px;
   margin: 0;
   font-family: Montserrat, system-ui, sans-serif;
   font-weight: 600;
-  font-size: clamp(40px, 4.8vw, 72px);
-  line-height: 1.2;
+  font-size: clamp(38px, 4.6vw, 64px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.hero-sub {
+  max-width: 600px;
+  margin: 24px 0 0;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--muted);
 }
 
 .eyebrow {
   margin: 0 0 20px;
   font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: 500;
   color: var(--muted);
 }
 
@@ -78,8 +195,9 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 28px;
-  margin-top: 40px;
+  gap: 12px;
+  margin-top: 36px;
+  max-width: 760px;
 }
 
 .hero-actions a {
@@ -92,20 +210,86 @@ body {
 .hero-cta {
   display: inline-block;
   padding: 16px 26px;
-  border-radius: 12px;
+  border-radius: 999px;
   background: var(--ink);
-  color: #fff !important;
+  color: var(--on-ink) !important;
   font-size: 16px;
   font-weight: 600;
   text-decoration: none;
 }
 
-.hero-cta:hover {
-  background: #333;
+.hero-cta,
+.project-button,
+.library-link {
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
-.accent {
-  color: var(--accent);
+.hero-cta:hover {
+  background: var(--ink-hover);
+}
+
+.hero-cta:active,
+.project-button:active,
+.library-link:active,
+.icon-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* icon-only links (resume, LinkedIn, email); aria-label is the name and the tooltip */
+.icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 50%;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow);
+  color: var(--ink);
+  transition: transform 0.2s ease, background 0.2s;
+}
+
+.icon-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.icon-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* tooltip on hover AND keyboard focus (a title attribute only does hover) */
+.icon-btn::after {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--on-ink);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.icon-btn:hover::after,
+.icon-btn:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-btn:hover { transform: none; }
+  .icon-btn::after { transition: none; }
 }
 
 /* Just a marker box: the badge hangs from above its top edge, at its size.
@@ -115,7 +299,7 @@ body {
   top: 0;
   right: -1vw;
   bottom: 0;
-  width: clamp(340px, 34vw, 520px);
+  width: clamp(300px, 30vw, 480px);
 }
 
 #lanyard-layer {
@@ -125,171 +309,196 @@ body {
   pointer-events: none;
 }
 
-/* ---------- featured projects ---------- */
+/* ---------- selected work ---------- */
 
 main {
   scroll-margin-top: 80px; /* clear the sticky nav on #work jumps */
-  padding: 0 5vw 140px;
+  padding: 0 5vw 120px;
   max-width: 1300px;
   margin: 0 auto;
 }
 
 .section-label {
-  margin: 0 0 56px;
+  margin: 0 0 40px;
   font-family: Montserrat, system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 24px;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--muted);
+  font-weight: 600;
+  font-size: clamp(28px, 3vw, 40px);
+  letter-spacing: -0.01em;
 }
 
 #projects {
   display: flex;
   flex-direction: column;
-  gap: 56px;
+  gap: 40px;
 }
 
 .project {
   display: grid;
-  grid-template-columns: 45fr 55fr;
-  min-height: 480px;
+  grid-template-columns: minmax(300px, 38fr) 62fr;
   overflow: hidden;
-  border-radius: 32px;
-  background: #fff;
-  box-shadow: 0 14px 22px -8px rgba(0, 0, 0, 0.32);
+  border-radius: 28px;
 }
 
 .project-body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 44px;
+  padding: 44px 40px;
 }
 
-.project-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0 0 16px;
-}
-
-.project-status,
-.project-tag {
-  padding: 5px 11px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.project-status {
-  background: var(--ink);
-  color: #fff;
-}
-
-.project-tag {
-  background: #f0f0f2;
-  color: #444;
-}
-
-.project h3 {
-  margin: 0 0 8px;
-  font-size: 34px;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-}
-
-.project-desc {
-  margin: 0 0 22px;
-  max-width: 420px;
-  font-size: 15px;
-  line-height: 1.5;
-}
-
-.project-feedback {
-  margin: 0 0 56px;
-  padding: 12px 14px;
-  background: #f4f4f4;
-  border-left: 3px solid var(--ink);
-  border-radius: 4px 12px 12px 4px;
-}
-
-.project-feedback strong {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.project-feedback p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.45;
-}
-
-.project-stats {
-  display: flex;
-  gap: 32px;
-  margin: 0 0 30px;
-  padding-top: 26px;
-  border-top: 1px solid #ddd;
-}
-
-.project-stats strong {
-  display: block;
-  font-size: 26px;
+.project-role {
+  margin: 0 0 10px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.04em;
-}
-
-.project-stats span {
-  display: block;
-  max-width: 110px;
-  font-size: 12px;
-  line-height: 1.3;
   color: var(--muted);
 }
 
-.project-button {
+.project h3 {
+  margin: 0 0 18px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.project-problem,
+.project-outcome {
+  margin: 0 0 12px;
+  max-width: 420px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.project-outcome {
+  font-weight: 600;
+}
+
+/* the numbers a recruiter's eye lands on: big value, small label */
+.project-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 420px;
+  margin: 20px 0;
+  padding: 16px 0;
+  border-block: 1px solid var(--line);
+}
+
+.project-stats dt {
+  font-family: Montserrat, system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.project-stats dd {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.project-finding {
+  margin: 0 0 12px;
+  max-width: 420px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.project-tags {
+  margin: 8px 0 28px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.project-button,
+.project-soon {
   align-self: flex-start;
-  padding: 14px 22px;
-  border-radius: 10px;
-  background: var(--ink);
-  color: #fff;
+  padding: 13px 20px;
+  border-radius: 999px;
   font-size: 14px;
   font-weight: 600;
+}
+
+.project-button {
+  background: var(--ink);
+  color: var(--on-ink);
   text-decoration: none;
 }
 
 .project-button:hover {
-  background: #2a2a2a;
+  background: var(--ink-hover);
 }
 
-/* Right-hand panel: the gradient shows until/unless image.png is dropped in. */
-.project-image {
+.project-soon {
+  border: 1px dashed var(--line);
+  color: var(--muted);
+}
+
+/* Screenshots: flat, sharp, nothing laid over them. Entry → key screen →
+   result, the middle one full size, the outer two a touch smaller. */
+.project-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4%;
+  margin: 12px;
+  /* Fixed height, sized for the ENLARGED screen, so hovering never resizes
+     the card. All % here are of the stage width (W): content 0.9W, big screen
+     32% of that, phone screens ≤ 2.23 tall:wide → 0.642W, + 0.08W padding.
+     ponytail: assumes phone-shaped screens; a taller export needs a lower ratio. */
+  aspect-ratio: 1 / 0.73;
+  padding: 4% 5%;
+  border-radius: 20px;
+  background: var(--stage);
+}
+
+.project-stage img {
   display: block;
-  background: linear-gradient(135deg, #ececec 0%, #f6f6f6 55%, #efefef 100%);
+  width: 27%;
+  min-width: 0;
+  height: auto;
+  border: 1px solid var(--shot-edge);
+  border-radius: 18px;
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.35);
+  transition: transform 0.25s ease;
 }
 
-.project-image img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.project-stage img:nth-child(2) { width: 32%; }
+.project-stage img:only-child { width: 70%; }
+.project-stage:has(img:only-child),
+.project-stage:empty { aspect-ratio: auto; min-height: 360px; }
+
+/* desktop mouse only: the hovered screen takes the big slot, the others step
+   back. Leaving the stage (or a gap) returns the middle screen to the front. */
+@media (hover: hover) and (min-width: 861px) {
+  .project-stage img {
+    transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.25s ease;
+  }
+  .project-stage:has(img:hover) img:not(:only-child) { width: 27%; }
+  .project-stage:has(img:hover) img:not(:only-child):hover { width: 32%; }
 }
 
-a.project-image:hover img {
-  opacity: 0.94;
+.project:hover .project-stage img {
+  transform: translateY(-4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-stage img { transition: none; }
+  .project:hover .project-stage img { transform: none; }
 }
 
 .library-link {
   display: table; /* shrink to fit, centred */
-  margin: 56px auto 0;
+  margin: 48px auto 0;
   padding: 16px 28px;
   border: 2px solid var(--ink);
-  border-radius: 12px;
+  border-radius: 999px;
   font-family: Montserrat, system-ui, sans-serif;
   font-weight: 500;
   font-size: 18px;
@@ -299,72 +508,228 @@ a.project-image:hover img {
 
 .library-link:hover {
   background: var(--ink);
-  color: #fff;
+  color: var(--on-ink);
+}
+
+/* ---------- how I work ---------- */
+
+.how {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 5vw 120px;
+}
+
+/* a roadmap: numbered stops on one line (vertical on phones) */
+.how-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.how-grid::before {
+  content: "";
+  position: absolute;
+  top: 21px;
+  left: 22px;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--muted), var(--line));
+}
+
+.how-grid li {
+  position: relative;
+}
+
+.how-num {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 24px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--bg);
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.how-grid h3 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.how-grid p {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.how-extra {
+  margin: 28px 0 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.how-extra a {
+  color: var(--ink);
+  font-weight: 600;
+  text-underline-offset: 4px;
 }
 
 /* ---------- footer ---------- */
 
+/* same palette as the page (no sudden black band): a glass panel in the column */
 .footer {
-  padding: 100px 5vw;
-  background: var(--ink);
-  color: #fff;
-  text-align: center;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 5vw 120px;
 }
 
-.footer h2 {
-  margin: 0 0 28px;
-  font-family: Montserrat, system-ui, sans-serif;
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+/* the email itself, readable and copyable, is the call to action */
+.footer-email {
+  color: var(--ink);
+  font-size: clamp(18px, 2.4vw, 28px);
   font-weight: 600;
-  font-size: clamp(32px, 4vw, 52px);
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  text-underline-offset: 6px;
+  overflow-wrap: anywhere;
+}
+
+.footer-email:hover {
+  text-decoration: underline;
 }
 
 .footer-links {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 32px;
+  gap: 14px;
 }
 
-.footer-links a {
-  color: #fff;
-  font-size: 17px;
+/* ---------- dark/light toggle, bottom right ---------- */
+
+.theme-toggle {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 60; /* above the badge canvas (50) */
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 50%;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  color: var(--ink);
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.3);
 }
 
-.footer-links a:hover {
-  color: #aaa;
+.theme-toggle::before {
+  content: "☾";
 }
 
-/* ---------- narrow screens: lanyard on top, cards stack ---------- */
+:root[data-theme="dark"] .theme-toggle::before {
+  content: "☀";
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* ---------- narrow screens: text first, badge below it, cards stack ---------- */
 
 @media (max-width: 860px) {
   .hero {
-    padding-top: 0;
+    padding-top: 40px;
     min-height: 0;
   }
   #lanyard {
     position: relative;
     inset: auto;
     width: 100%;
-    height: 460px;
-  }
-  .hero h1 {
-    margin-top: 12px;
+    height: 420px;
   }
   main {
-    padding-top: 56px;
+    padding-top: 24px;
   }
   .project {
     grid-template-columns: 1fr;
   }
-  .project-image {
-    min-height: 260px;
+  .project-body {
+    padding: 32px 24px 8px;
+  }
+  /* screenshots swipe sideways, the next one peeking in */
+  .project-stage {
+    justify-content: flex-start;
+    aspect-ratio: auto;
+    min-height: 0;
+    padding: 24px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+  .project-stage img,
+  .project-stage img:nth-child(2) {
+    flex: 0 0 72%;
+    width: 72%;
+    scroll-snap-align: center;
+  }
+  .project-stage img:only-child {
+    flex-basis: 100%;
+    width: 100%;
+  }
+  .project-stage:empty {
+    min-height: 200px;
+  }
+  .how-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+  }
+  .how-grid::before {
+    top: 22px;
+    bottom: 0;
+    left: 21px;
+    width: 2px;
+    height: auto;
+    background: linear-gradient(180deg, var(--muted), var(--line));
+  }
+  .how-grid li {
+    padding-left: 64px;
+  }
+  .how-num {
+    position: absolute;
+    top: -10px;
+    left: 0;
   }
 }
 
-/* ---------- phones: the pill takes the top, the name moves to the eyebrow ---------- */
+/* ---------- phones: the pill takes the top; the name is in the h1 ---------- */
 
 @media (max-width: 520px) {
   .nav-name {
     display: none;
+  }
+  .hero {
+    padding-top: 84px;
+  }
+  .hero-sub {
+    font-size: 16px;
   }
 }

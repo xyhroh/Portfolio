@@ -14,7 +14,7 @@ const scene = new THREE.Scene();
 // index.html, sitting behind the canvas in stacking order, shows through
 // everywhere the 3D scene doesn't draw over it. Fog still fades distant
 // geometry toward white, matching the page's actual white background.
-scene.fog = new THREE.Fog(0xffffff, 9, 22);
+scene.fog = new THREE.Fog(0xf5f6f8, 9, 22); // colour is re-read from --bg in applyTheme()
 
 // #app isn't always the full viewport — in portrait (see style.css) it's
 // a left column beside the shelf-info blurb, so the renderer/camera are
@@ -326,7 +326,7 @@ const palette = [0x2f3c4c, 0x4a4038, 0x3a4a42, 0x4a3838, 0x3d3d3d, 0x39445a];
 // if it already has files).
 // -----------------------------------------------------------------------
 
-const knownShelfNames = ["Bookshelf 1", "Bookshelf 2"];
+const knownShelfNames = ["Bookshelf 1"];
 
 // Which folder a book sits in decides which shelf row it lands on:
 //   <Shelf>/Row 1/<Book>/   the top row
@@ -408,9 +408,10 @@ function assetByStem(modules, names) {
 }
 
 // The header + body blurb shown on the right of the screen (see the
-// #shelf-info panel in index.html) for each shelf — one info.txt per
-// shelf, its first line the header and everything after that the body.
-const shelfInfoModules = import.meta.glob("/src/shelves/*/info.txt", {
+// #shelf-info panel in library.html): first line the header, the rest the
+// body. One per row (<Shelf>/Row 1/info.txt, Row 2/info.txt), shown for
+// whichever row the hovered book sits on; <Shelf>/info.txt is the fallback.
+const shelfInfoModules = import.meta.glob(["/src/shelves/*/info.txt", "/src/shelves/*/Row */info.txt"], {
   eager: true,
   query: "?raw",
   import: "default",
@@ -556,8 +557,9 @@ function buildProjectsForShelf(shelfName) {
   // top row first, then the row below it, alphabetical within each — which is
   // also the order the chips and the up/down keys walk through
   const entries = Array.from(projectFoldersByShelf.get(shelfName) ?? new Map()).sort(
-    ([aFolder, a], [bFolder, b]) => a.row - b.row || aFolder.localeCompare(bFolder)
-  );
+    ([aFolder, a], [bFolder, b]) =>
+      a.row - b.row || (bFolder === "CV") - (aFolder === "CV") || aFolder.localeCompare(bFolder)
+  ); // the CV always leads its row, far left
   const projects = entries.map(([folder, where], i) => ({
     title: folder,
     slug: slugify(folder),
@@ -593,16 +595,31 @@ function buildPapersForShelf(shelfName) {
 // its info.txt is the header, everything after that (trimmed) is the
 // body. No info.txt yet? A friendly placeholder pointing at where to
 // add one, same spirit as the "drop images here" placeholders above.
+function parseInfo(content) {
+  const [firstLine, ...rest] = content.split("\n");
+  return { header: firstLine.trim(), body: rest.join("\n").trim() };
+}
+
 function buildInfoForShelf(shelfName) {
-  const content = shelfInfoModules[`/src/shelves/${shelfName}/info.txt`];
+  const content =
+    shelfInfoModules[`/src/shelves/${shelfName}/info.txt`] ?? shelfInfoModules[`/src/shelves/${shelfName}/Row 1/info.txt`];
   if (!content) {
     return {
       header: shelfName,
-      body: `Add src/shelves/${shelfName}/info.txt to customize this text — first line is the header, the rest is the body.`,
+      body: `Add src/shelves/${shelfName}/Row 1/info.txt to customize this text — first line is the header, the rest is the body.`,
     };
   }
-  const [firstLine, ...rest] = content.split("\n");
-  return { header: firstLine.trim(), body: rest.join("\n").trim() };
+  return parseInfo(content);
+}
+
+// row number -> { header, body }, for rows that have their own info.txt
+function buildRowInfoForShelf(shelfName) {
+  const rowInfo = {};
+  for (const [container, row] of Object.entries(rowContainers)) {
+    const content = shelfInfoModules[`/src/shelves/${shelfName}/${container}/info.txt`];
+    if (content) rowInfo[row] = parseInfo(content);
+  }
+  return rowInfo;
 }
 
 const shelvesData = shelfNames.map((name) => ({
@@ -610,6 +627,7 @@ const shelvesData = shelfNames.map((name) => ({
   projects: buildProjectsForShelf(name),
   papers: buildPapersForShelf(name),
   info: buildInfoForShelf(name),
+  rowInfo: buildRowInfoForShelf(name),
 }));
 
 // -----------------------------------------------------------------------
@@ -648,147 +666,36 @@ const outerWidth = shelfWidth + frameThickness * 2;
 const outerHeight = numberOfRows * bookAreaHeight + (numberOfRows + 1) * frameThickness;
 const shelfBaseY = 0; // where the bottom-most row's books sit
 
-// The drawer (built in section 5b) is a cavity recessed inside the same
-// cabinet carcass, not a separate box bolted underneath — so its extent
-// has to be known here too, before the side/back panels below are sized
-// to wrap around both the shelf rows and the drawer as one shell.
-const drawerHeight = 0.55;
-const drawerGapBelowShelf = 0.03;
-const drawerCenterY = shelfBaseY - frameThickness - drawerGapBelowShelf - drawerHeight / 2;
-const drawerBottomY = drawerCenterY - drawerHeight / 2;
 
-// Procedural wood grain: a tileable color map plus a matching bump map, so
-// the cabinet reads as varnished hardwood rather than a flat, low-poly
-// brown box. No external texture files — both are drawn on a canvas the
-// same way the spine/tab labels already are. Generated once and shared
-// across every shelf instance, so every cabinet in the carousel has the
-// exact same finish.
-function createWoodGrainTextures(baseHex, grainHex, seed = 1) {
-  const width = 512;
-  const height = 512;
-  const colorCanvas = document.createElement("canvas");
-  colorCanvas.width = width;
-  colorCanvas.height = height;
-  const colorCtx = colorCanvas.getContext("2d");
+// A plain matte finish, no wood grain: the page is flat greys and glass, so
+// the cabinet is too. Its colour follows the theme (see applyTheme), a step
+// off the page background so it still reads as an object, never a hole.
+// The back panel is a shade deeper so the rows have some depth.
+const woodMaterial = new THREE.MeshStandardMaterial({ roughness: 0.9, metalness: 0 });
+const backWoodMaterial = new THREE.MeshStandardMaterial({ roughness: 0.95, metalness: 0 });
+const cabinetColours = {
+  light: { body: "#e3e6eb", back: "#d6dae0" },
+  dark: { body: "#33363d", back: "#2a2d33" },
+};
 
-  const bumpCanvas = document.createElement("canvas");
-  bumpCanvas.width = width;
-  bumpCanvas.height = height;
-  const bumpCtx = bumpCanvas.getContext("2d");
-
-  colorCtx.fillStyle = baseHex;
-  colorCtx.fillRect(0, 0, width, height);
-  bumpCtx.fillStyle = "#808080";
-  bumpCtx.fillRect(0, 0, width, height);
-
-  // a simple seeded PRNG so the same "seed" always draws the same grain,
-  // instead of a fresh random pattern (and a fresh flash of visual noise)
-  // on every reload
-  let s = seed * 9301 + 49297;
-  function rand() {
-    s = (s * 9301 + 49297) % 233280;
-    return s / 233280;
-  }
-
-  const grainLines = 46;
-  for (let i = 0; i < grainLines; i++) {
-    const y = (i / grainLines) * height + (rand() - 0.5) * 10;
-    const alpha = 0.08 + rand() * 0.16;
-    const lift = rand() > 0.5;
-
-    [colorCtx, bumpCtx].forEach((ctx, ctxIndex) => {
-      ctx.strokeStyle =
-        ctxIndex === 0 ? grainHex : lift ? `rgba(255,255,255,${alpha})` : `rgba(0,0,0,${alpha})`;
-      ctx.globalAlpha = ctxIndex === 0 ? alpha : 1;
-      ctx.lineWidth = 1 + rand() * 2.5;
-      ctx.beginPath();
-      let x = 0;
-      ctx.moveTo(x, y);
-      while (x < width) {
-        x += 24 + rand() * 40;
-        const wobble = (rand() - 0.5) * 14;
-        ctx.lineTo(x, y + wobble);
-      }
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-    });
-  }
-
-  // fine speckle noise on top, so it doesn't read as perfectly smooth
-  // repeating streaks up close
-  for (let i = 0; i < 2200; i++) {
-    const x = rand() * width;
-    const y = rand() * height;
-    const shade = rand() * 40 - 20;
-    bumpCtx.fillStyle = `rgba(${128 + shade},${128 + shade},${128 + shade},0.5)`;
-    bumpCtx.fillRect(x, y, 1.5, 1.5);
-  }
-
-  const colorTexture = new THREE.CanvasTexture(colorCanvas);
-  colorTexture.colorSpace = THREE.SRGBColorSpace;
-  colorTexture.wrapS = THREE.RepeatWrapping;
-  colorTexture.wrapT = THREE.RepeatWrapping;
-  colorTexture.repeat.set(2.5, 2.5);
-
-  const bumpTexture = new THREE.CanvasTexture(bumpCanvas);
-  bumpTexture.wrapS = THREE.RepeatWrapping;
-  bumpTexture.wrapT = THREE.RepeatWrapping;
-  bumpTexture.repeat.set(2.5, 2.5);
-
-  return { colorTexture, bumpTexture };
-}
-
-// A dark, cool-toned walnut/espresso finish (rather than a bright orange
-// "toy wood") — the kind of understated furniture finish that reads as
-// institutional/office-grade instead of playful.
-const mainWoodGrain = createWoodGrainTextures("#3f342a", "#2a2119", 7);
-const backWoodGrain = createWoodGrainTextures("#332a22", "#221b15", 13);
-
-// MeshPhysicalMaterial with only a hair of clearcoat — enough to avoid a
-// completely dead-flat matte look, but far short of the glossy "lacquered
-// toy" sheen a higher clearcoat gives.
-const woodMaterial = new THREE.MeshPhysicalMaterial({
-  map: mainWoodGrain.colorTexture,
-  bumpMap: mainWoodGrain.bumpTexture,
-  bumpScale: 0.5,
-  color: 0xffffff,
-  roughness: 0.75,
-  metalness: 0.03,
-  clearcoat: 0.05,
-  clearcoatRoughness: 0.7,
-});
-const backWoodMaterial = new THREE.MeshPhysicalMaterial({
-  map: backWoodGrain.colorTexture,
-  bumpMap: backWoodGrain.bumpTexture,
-  bumpScale: 0.5,
-  color: 0xffffff,
-  roughness: 0.8,
-  metalness: 0.03,
-  clearcoat: 0.03,
-  clearcoatRoughness: 0.75,
-});
-
-// A small chamfer, not a rounded pill edge — enough to soften the harsh
-// CAD-model look of a perfectly sharp 90° edge under light, without
-// reading as the puffy, toy-like rounding of a much larger radius.
+// A slight edge radius: crisp, flat-faced boards for a clean, minimal cabinet,
+// just soft enough not to look knife-edged. (Books are rounder: see buildBookshelf.)
 function roundedBox(width, height, depth) {
-  return new RoundedBoxGeometry(width, height, depth, 3, 0.008);
+  return new RoundedBoxGeometry(width, height, depth, 3, 0.015);
 }
 
 const shelfCenterY = shelfBaseY + outerHeight / 2 - frameThickness / 2;
 const shelfDepth = bookDepth + 0.25;
 
-// The cabinet's outer shell spans from the top of the shelf rows all the
-// way down past the drawer cavity and a closing base board beneath it,
-// so the drawer sits enclosed inside continuous side/back paneling
-// instead of hanging underneath as its own exposed box.
+// The side and back panels run from the top board
+// down to the bottom board (there is no drawer any more).
 const cabinetTopEdgeY = shelfBaseY - frameThickness + outerHeight;
-const cabinetFloorY = drawerBottomY - frameThickness;
+const cabinetFloorY = shelfBaseY - frameThickness;
 const cabinetHeight = cabinetTopEdgeY - cabinetFloorY;
 const cabinetCenterY = (cabinetTopEdgeY + cabinetFloorY) / 2;
 
 // A ground-level shadow catcher — invisible except where a shadow falls
-// on it — so the cabinet and legs read as resting on a surface instead of
+// on it — so the cabinet reads as resting on a surface instead of
 // floating in empty space against the flat background color. One shared
 // floor under the whole carousel, not per-shelf.
 const shadowCatcher = new THREE.Mesh(
@@ -796,9 +703,26 @@ const shadowCatcher = new THREE.Mesh(
   new THREE.ShadowMaterial({ opacity: 0.18 })
 );
 shadowCatcher.rotation.x = -Math.PI / 2;
-shadowCatcher.position.y = cabinetFloorY - 0.22 - 0.001;
+shadowCatcher.position.y = cabinetFloorY - 0.001; // no legs: the cabinet sits on the floor
 shadowCatcher.receiveShadow = true;
 scene.add(shadowCatcher);
+
+// Light/dark follows <html data-theme> (set in library.html's <head> from the
+// home page's saved choice, and by the toggle). The fog fades distant
+// geometry into the page colour, so it reads --bg; the floor shadow needs
+// to be darker to show up on a dark page.
+function applyTheme() {
+  const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
+  if (bg) scene.fog.color.set(bg);
+  const dark = document.documentElement.dataset.theme === "dark";
+  const colours = cabinetColours[dark ? "dark" : "light"];
+  woodMaterial.color.set(colours.body);
+  backWoodMaterial.color.set(colours.back);
+  shadowCatcher.material.opacity = dark ? 0.4 : 0.18;
+  invalidate(2);
+}
+applyTheme();
+new MutationObserver(applyTheme).observe(document.documentElement, { attributeFilter: ["data-theme"] });
 
 // -----------------------------------------------------------------------
 // 4. TEXTURE HELPERS
@@ -1267,40 +1191,11 @@ function applyCoverWrap(book, imageUrl) {
 // color, not get multiplied by the cabinet's warm lights (which is what
 // was giving pages and spines a dark, shadowed, hard-to-read tint).
 const pageEdgeMaterial = new THREE.MeshBasicMaterial({ color: 0xe6e6e3, toneMapped: false });
-const paperEdgeMaterial = new THREE.MeshBasicMaterial({ color: 0xe6e6e3, toneMapped: false });
-
-// Brushed steel, not polished brass — a neutral gunmetal gray with
-// moderate roughness reads as understated hardware, while a warm, shiny
-// metal would look more like a decorative trinket. Shared by every
-// shelf's drawer handle.
-const drawerHandleMaterial = new THREE.MeshStandardMaterial({
-  color: 0x3b3d40,
-  roughness: 0.45,
-  metalness: 0.75,
-});
-
-const legHeight = 0.22;
-const legInset = 0.09;
-const legMaterial = new THREE.MeshStandardMaterial({ color: 0x2b2420, roughness: 0.65, metalness: 0.05 });
-
-const drawerWidth = shelfWidth;
-const drawerDepth = shelfDepth;
-const trayInnerWidth = shelfWidth - 0.1;
-const trayInnerDepth = drawerDepth - frameThickness;
-const trayWallHeight = 0.07;
-const paperWidth = 0.32;
-const paperDepth = 0.42;
-const paperThickness = 0.006;
-const paperGap = 0.06;
-
-const drawerClosedZ = 0;
-const drawerPeekZ = 0.16;
-const drawerOpenZ = drawerDepth * 0.65;
 
 // -----------------------------------------------------------------------
 // 5. BOOKSHELF FACTORY
-// Builds one complete, independent cabinet — boards, panels, books,
-// drawer, and legs — from a { name, projects, papers } shelf record.
+// Builds one complete, independent cabinet — boards, panels
+// and books — from a { name, projects } shelf record.
 // Every shelf in the carousel (section 6) is one call to this function,
 // so they're all built identically. Books fill each row from the left
 // ("flush left"), wrapping to the next row once `booksPerRow` is reached.
@@ -1343,7 +1238,7 @@ function dropShelfIntoPlace(group, { duration = 0.35, delay = 0 } = {}) {
 }
 
 function buildBookshelf(shelfData) {
-  const { projects, papers } = shelfData;
+  const { projects } = shelfData;
   const shelfGroup = new THREE.Group();
 
   // horizontal boards: one below each shelf row, plus one on top of the stack
@@ -1354,13 +1249,6 @@ function buildBookshelf(shelfData) {
     board.receiveShadow = true;
     shelfGroup.add(board);
   }
-
-  // a closed base board beneath the drawer cavity, so pulling the drawer
-  // out doesn't reveal an open underside
-  const bottomCap = new THREE.Mesh(roundedBox(outerWidth, frameThickness, shelfDepth), woodMaterial);
-  bottomCap.position.y = cabinetFloorY + frameThickness / 2;
-  bottomCap.receiveShadow = true;
-  shelfGroup.add(bottomCap);
 
   const leftPanel = new THREE.Mesh(roundedBox(frameThickness, cabinetHeight, shelfDepth), woodMaterial);
   leftPanel.position.set(-(shelfWidth / 2 + frameThickness / 2), cabinetCenterY, 0);
@@ -1392,7 +1280,7 @@ function buildBookshelf(shelfData) {
     const row = Math.max(0, numberOfRows - 1 - rowsFromTop);
     const col = taken % booksPerRow;
 
-    const geometry = new RoundedBoxGeometry(bookWidth, bookHeight, bookDepth, 3, 0.006);
+    const geometry = new RoundedBoxGeometry(bookWidth, bookHeight, bookDepth, 5, 0.03) // soft corners, not knife edges;
     // white when a cover image is coming — a material multiplies its map
     // by this color, so anything but white would tint the artwork (see
     // the identical note on the page-front material above)
@@ -1451,114 +1339,14 @@ function buildBookshelf(shelfData) {
     shelfBooks.push(book);
   });
 
-  // ---- drawer ----
+  // No drawer any more. These stand-ins keep the drawer/paper code paths
+  // elsewhere inert: an empty group is never hit by a raycast.
   const drawerGroup = new THREE.Group();
-  drawerGroup.position.set(0, drawerCenterY, 0); // closed: front flush with the cabinet
-  shelfGroup.add(drawerGroup);
-
-  const drawerFrontPanel = new THREE.Mesh(roundedBox(drawerWidth, drawerHeight, frameThickness), woodMaterial);
-  drawerFrontPanel.position.z = drawerDepth / 2 - frameThickness / 2;
-  drawerFrontPanel.castShadow = true;
-  drawerFrontPanel.receiveShadow = true;
-  drawerGroup.add(drawerFrontPanel);
-
-  const drawerHandle = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.012, 0.012, drawerWidth * 0.22, 16),
-    drawerHandleMaterial
-  );
-  drawerHandle.rotation.z = Math.PI / 2;
-  drawerHandle.castShadow = true;
-  drawerHandle.position.set(0, 0, drawerFrontPanel.position.z + frameThickness / 2 + 0.02);
-  drawerGroup.add(drawerHandle);
-
-  const trayFloor = new THREE.Mesh(new THREE.BoxGeometry(trayInnerWidth, 0.02, trayInnerDepth), backWoodMaterial);
-  trayFloor.position.y = -drawerHeight / 2 + 0.01;
-  drawerGroup.add(trayFloor);
-
-  function addTrayWall(width, depth, x, z) {
-    const wall = new THREE.Mesh(new THREE.BoxGeometry(width, trayWallHeight, depth), backWoodMaterial);
-    wall.position.set(x, -drawerHeight / 2 + trayWallHeight / 2 + 0.02, z);
-    drawerGroup.add(wall);
-  }
-  addTrayWall(trayInnerWidth, 0.03, 0, -trayInnerDepth / 2 + 0.015);
-  addTrayWall(0.03, trayInnerDepth, -trayInnerWidth / 2 + 0.015, 0);
-  addTrayWall(0.03, trayInnerDepth, trayInnerWidth / 2 - 0.015, 0);
-
-  const papersPerRow = Math.max(1, Math.floor(trayInnerWidth / (paperWidth + paperGap)));
-  const paperRowCount = Math.max(1, Math.ceil(papers.length / papersPerRow));
+  const drawerFrontPanel = drawerGroup;
   const paperMeshes = [];
-
-  papers.forEach((paper, i) => {
-    const row = Math.floor(i / papersPerRow);
-    const col = i % papersPerRow;
-    const rowCount = Math.min(papersPerRow, papers.length - row * papersPerRow);
-    const rowStartX = -((rowCount - 1) * (paperWidth + paperGap)) / 2;
-
-    const topMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    textureLoader.load(paper.pages[0], (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace;
-      topMaterial.map = tex;
-      topMaterial.needsUpdate = true;
-    });
-
-    // Box face order [+x,-x,+y,-y,+z,-z] — +y is the top, facing up out of the drawer
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(paperWidth, paperThickness, paperDepth), [
-      paperEdgeMaterial,
-      paperEdgeMaterial,
-      topMaterial,
-      paperEdgeMaterial,
-      paperEdgeMaterial,
-      paperEdgeMaterial,
-    ]);
-    mesh.position.set(
-      rowStartX + col * (paperWidth + paperGap),
-      -drawerHeight / 2 + 0.02 + paperThickness / 2,
-      -((paperRowCount - 1) * (paperDepth + paperGap)) / 2 + row * (paperDepth + paperGap)
-    );
-    mesh.userData.paper = paper;
-    drawerGroup.add(mesh);
-    paperMeshes.push(mesh);
-  });
-
-  let drawerState = "closed"; // 'closed' -> 'peek' -> 'open'
-
-  function slideDrawerTo(z, duration) {
-    gsap.to(drawerGroup.position, { z, duration, ease: "power2.inOut" });
-  }
-  function peekDrawer() {
-    if (drawerState !== "closed") return;
-    drawerState = "peek";
-    slideDrawerTo(drawerPeekZ, 0.35);
-  }
-  function unpeekDrawer() {
-    if (drawerState !== "peek") return;
-    drawerState = "closed";
-    slideDrawerTo(drawerClosedZ, 0.35);
-  }
-  function openDrawer() {
-    drawerState = "open";
-    slideDrawerTo(drawerOpenZ, 0.6);
-  }
-  function closeDrawer() {
-    drawerState = "closed";
-    slideDrawerTo(drawerClosedZ, 0.6);
-  }
-
-  // ---- legs ----
-  // Fixed to the cabinet, not the drawer group, so they stay put while
-  // the drawer slides in front of them.
-  [
-    [-(drawerWidth / 2 - legInset), -(drawerDepth / 2 - legInset)],
-    [drawerWidth / 2 - legInset, -(drawerDepth / 2 - legInset)],
-    [-(drawerWidth / 2 - legInset), drawerDepth / 2 - legInset],
-    [drawerWidth / 2 - legInset, drawerDepth / 2 - legInset],
-  ].forEach(([x, z]) => {
-    const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.025, legHeight, 16), legMaterial);
-    leg.position.set(x, cabinetFloorY - legHeight / 2, z);
-    leg.castShadow = true;
-    leg.receiveShadow = true;
-    shelfGroup.add(leg);
-  });
+  const drawerState = "closed";
+  const noop = () => {};
+  const [peekDrawer, unpeekDrawer, openDrawer, closeDrawer] = [noop, noop, noop, noop];
 
   // ---- spawn-in ----
   // The cabinet lands with a quick squash and the books drop into place
@@ -1570,6 +1358,7 @@ function buildBookshelf(shelfData) {
   return {
     name: shelfData.name,
     info: shelfData.info,
+    rowInfo: shelfData.rowInfo,
     group: shelfGroup,
     shelfBooks,
     drawerGroup,
@@ -1597,10 +1386,33 @@ const shelfInfoHeader = document.getElementById("shelf-info-header");
 const shelfInfoBody = document.getElementById("shelf-info-body");
 const shelfInfoSwapMs = 250; // must match the CSS transition on #shelf-info's header/body
 
+// Which row's blurb is showing. It stays on the last hovered row when the
+// cursor leaves the books, so the text doesn't flicker between spines.
+let infoRow = 1;
+const infoFor = (shelf, row) => shelf.rowInfo[row] ?? shelf.info;
+
+// Hovering a book on another row swaps the blurb to that row's info.txt.
+function showInfoForRow(row) {
+  if (row === infoRow) return;
+  const before = infoFor(activeShelf, infoRow);
+  infoRow = row;
+  if (infoFor(activeShelf, row) === before) return;
+  shelfInfoPanel.classList.add("swapping");
+  clearTimeout(showInfoForRow.timer);
+  showInfoForRow.timer = setTimeout(() => {
+    const info = infoFor(activeShelf, infoRow);
+    shelfInfoHeader.textContent = info.header;
+    shelfInfoBody.textContent = info.body;
+    shelfInfoPanel.classList.remove("swapping");
+  }, shelfInfoSwapMs);
+}
+
 function updateShelfInfoPanel({ animate = true } = {}) {
+  infoRow = 1;
   const apply = () => {
-    shelfInfoHeader.textContent = activeShelf.info.header;
-    shelfInfoBody.textContent = activeShelf.info.body;
+    const info = infoFor(activeShelf, infoRow);
+    shelfInfoHeader.textContent = info.header;
+    shelfInfoBody.textContent = info.body;
     syncBookList(true);
   };
   if (!animate) {
@@ -1790,7 +1602,7 @@ const portraitQuery = window.matchMedia("(orientation: portrait)");
 function updateArrowVisibility() {
   const portrait = portraitQuery.matches;
   carouselArrows.forEach((arrow) => {
-    arrow.visible = !portrait;
+    arrow.visible = !portrait && shelves.length > 1; // one shelf: nothing to rotate to
   });
 }
 updateArrowVisibility();
@@ -1800,6 +1612,10 @@ const navPrevButton = document.getElementById("nav-prev");
 const navNextButton = document.getElementById("nav-next");
 navPrevButton.addEventListener("click", () => navigateCarousel(-1));
 navNextButton.addEventListener("click", () => navigateCarousel(1));
+if (shelves.length < 2) {
+  navPrevButton.style.display = "none";
+  navNextButton.style.display = "none";
+}
 
 // The same png drives these two buttons, so replacing the arrow art changes
 // the portrait controls as well as the floor arrows. The ‹ › glyphs in
@@ -1843,7 +1659,7 @@ function navigateCarousel(direction) {
   // the arrows sit on the floor near the overview camera position; while
   // reading, the camera's up close to an open book and they're not a
   // meaningful thing to click, so ignore stray hits during that state
-  if (readingState || paperReadingState || isCarouselRotating) return;
+  if (readingState || paperReadingState || isCarouselRotating || shelves.length < 2) return;
   isCarouselRotating = true;
 
   const outgoing = activeShelf;
@@ -1914,7 +1730,7 @@ const pageThickness = 0.0018; // paper-thin — a 50-page pile should stay slim,
 // padding sceneBottomY past arrowY keeps them from clipping the bottom
 // of the frame. They also flank the shelf wider than the cabinet itself,
 // so the horizontal fit below uses their spread, not just outerWidth.
-const sceneBottomY = Math.min(cabinetFloorY - legHeight, arrowY) - 0.4;
+const sceneBottomY = Math.min(cabinetFloorY, arrowY) - 0.4;
 const sceneCenterY = (cabinetTopEdgeY + sceneBottomY) / 2;
 const sceneHeight = cabinetTopEdgeY - sceneBottomY;
 
@@ -3242,6 +3058,7 @@ function setHoveredBook(book, { sound = false } = {}) {
     if (readingState && readingState.project === other.userData.project) continue;
     pushBack(other);
   }
+  if (hoveredBook) showInfoForRow(hoveredBook.userData.project.row ?? 1);
   updatePreviewPanel();
 }
 
@@ -3376,7 +3193,7 @@ function onClick(event) {
     return;
   }
 
-  const arrowHits = raycaster.intersectObjects(carouselArrows);
+  const arrowHits = raycaster.intersectObjects(carouselArrows.filter((arrow) => arrow.visible));
   if (arrowHits.length > 0) {
     navigateCarousel(arrowHits[0].object.userData.direction);
     return;
@@ -3788,7 +3605,7 @@ function onPointerMove(event) {
   }
   setPointerFromEvent(event);
 
-  const arrowHits = raycaster.intersectObjects(carouselArrows);
+  const arrowHits = raycaster.intersectObjects(carouselArrows.filter((arrow) => arrow.visible));
   setHoveredArrow(arrowHits.length > 0 ? arrowHits[0].object : null);
 
   let overDrawer = false;
@@ -4354,6 +4171,22 @@ function maybeAnnounceSound() {
 // in, instead of the shelf popping in half-textured.
 // -----------------------------------------------------------------------
 
+// library.html?book=<folder name> (the home page's "View process book"
+// buttons) opens that book once the shelf has settled: the first tap pulls
+// it out, the second opens it, same as tapping its chip twice.
+function openBookFromUrl() {
+  const wanted = new URLSearchParams(location.search).get("book")?.toLowerCase();
+  if (!wanted) return;
+  const book = activeShelf.shelfBooks.find((b) => b.userData.project.folder.toLowerCase() === wanted);
+  if (!book) return;
+  setTimeout(() => {
+    selectBookFromList(book);
+    setTimeout(() => {
+      if (hoveredBook === book) selectBookFromList(book);
+    }, 600);
+  }, 1200);
+}
+
 let libraryReady = false;
 function markLibraryReady() {
   if (libraryReady) return;
@@ -4370,6 +4203,7 @@ function markLibraryReady() {
   }
   dirtyShadows(4000); // the shelf and books are still settling into place
   maybeAnnounceSound();
+  openBookFromUrl();
   // Compile the open-book shaders now, while the reader is still getting their
   // bearings, rather than during the first book's opening swing.
   const whenIdle = window.requestIdleCallback || ((fn) => setTimeout(fn, 800));

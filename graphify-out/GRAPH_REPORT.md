@@ -1,26 +1,26 @@
-# Graph Report - Portfolio  (2026-10-14)
+# Graph Report - Portfolio  (2026-11-22)
 
 ## Corpus Check
-- 57 files · ~742,163 words
+- 78 files · ~1,192,463 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 4 file(s) not represented in the graph (top: .css 3, (none) 1)
 
 ## Summary
-- 753 nodes · 838 edges · 74 communities (55 shown, 19 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 17 edges (avg confidence: 0.88)
+- 895 nodes · 1148 edges · 98 communities (61 shown, 37 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4b27400a`
+- Built from commit: `f240cfbe`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - main.js
 - Lanyard.jsx
-- onClick
-- buildBookshelf
-- refitCameraFraming
+- package.json
+- openBook
+- updateShelfInfoPanel
 - buildProjectsForShelf
 - ensureOpenBookBuilt
 - brandkit/SKILL.md
@@ -28,12 +28,21 @@
 - home.js
 - CLAUDE.md
 - lanyard/README.md
-- projects/README.md
+- ChatGPT/title/README.md
 - CORE DIRECTIVE: PREMIUM MOBILE APP IMAGE DIRECTION
 - High-Agency Frontend Skill
-- createWoodGrainTextures
+- Claude/title/README.md
+- Lovable/title/README.md
+- playSample
+- Facebook/title/README.md
+- GAM/title/README.md
 - Appendix B - Canonical Sources (read these before reinventing)
 - Design Audit
+- optimise-images.js
+- dependencies
+- HealthBuddy/title/README.md
+- HOOK/title/README.md
+- OneMoreCast/title/README.md
 - Analysis & Synthesis Instructions
 - Agent Skill: Principal UI/UX Architect & Motion Choreographer (Awwwards-Tier)
 - SKILL: Industrial Brutalism & Tactical Telemetry UI
@@ -47,7 +56,7 @@
 - Protocol: Premium Utilitarian Minimalism UI Architect
 - 11. COMPONENT EXECUTION GUIDELINES
 - 18. EXTRA CREATIVITY & IMPLEMENTATION EDGE
-- onPointerMove
+- animate
 - 9. AI TELLS (Forbidden Patterns)
 - 12. THE COMBINATORIAL VARIATION ENGINE
 - 8. ANTI-AI-SLOP RULES
@@ -61,13 +70,14 @@
 - tasteskill: Anti-Slop Frontend Skill
 - 29. ANTI-AI-SLOP RULES
 - 5. IMAGE COUNT & PAGE SLICING
+- scripts
 - 0. BRIEF INFERENCE (Read the Room Before Anything Else)
 - 12. THE BLOCK LIBRARY (Contract - Implementations Land Here Iteratively)
 - 5. CONTEXT-AWARE PROACTIVITY
 - 8. DARK MODE PROTOCOL
 - 21. MOBILE ANTI-AI-TELLS RULE
-- 1. THE THREE DIALS (Core Configuration)
-- 7. DIAL DEFINITIONS (Technical Reference)
+- arrowTexture
+- Project Two/title/README.md
 - 33. DEFAULT SECTION PACKS
 - 14. HERO MINIMALISM RULES
 - 37. EXAMPLE INTERPRETATIONS
@@ -76,21 +86,32 @@
 - 15. DEFAULT SITE PACKS
 - 20. EXAMPLE INTERPRETATIONS
 - imagegen-frontend-web/SKILL.md
+- devDependencies
+- Arrows
+- Sounds
+- numberOfRows
+- CV/title/README.md
+- Bookshelf 1/Row 1/README.md
+- Bookshelf 1/Row 2/README.md
+- navigateCarousel
+- 1. THE THREE DIALS (Core Configuration)
 
 ## God Nodes (most connected - your core abstractions)
 1. `CORE DIRECTIVE: IMAGE-FIRST WEBSITE DESIGN TO CODE` - 39 edges
 2. `CORE DIRECTIVE: PREMIUM MOBILE APP IMAGE DIRECTION` - 39 edges
-3. `CORE DIRECTIVE: AWWWARDS-LEVEL IMAGE ART DIRECTION` - 22 edges
-4. `tasteskill: Anti-Slop Frontend Skill` - 16 edges
-5. `onClick()` - 15 edges
-6. `Appendix B - Canonical Sources (read these before reinventing)` - 15 edges
-7. `buildBookshelf()` - 14 edges
-8. `2. THE COMBINATORIAL VARIATION ENGINE` - 14 edges
-9. `4. DESIGN ENGINEERING DIRECTIVES (Bias Correction)` - 12 edges
-10. `High-Agency Frontend Skill` - 11 edges
+3. `openBook()` - 24 edges
+4. `closeBook()` - 22 edges
+5. `CORE DIRECTIVE: AWWWARDS-LEVEL IMAGE ART DIRECTION` - 22 edges
+6. `invalidate()` - 21 edges
+7. `T()` - 17 edges
+8. `tasteskill: Anti-Slop Frontend Skill` - 16 edges
+9. `Appendix B - Canonical Sources (read these before reinventing)` - 15 edges
+10. `jumpToIndex()` - 14 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `How the project is organized` --references--> `navigateCarousel()`  [INFERRED]
+  README.md → src/main.js
+- `How the pieces fit together` --references--> `buildOpenBook()`  [INFERRED]
   README.md → src/main.js
 - `How the pieces fit together` --references--> `createSpineTexture()`  [INFERRED]
   README.md → src/main.js
@@ -98,41 +119,39 @@
   README.md → src/main.js
 - `How the pieces fit together` --references--> `navigateCarousel()`  [INFERRED]
   README.md → src/main.js
-- `How the pieces fit together` --references--> `buildOpenBook()`  [INFERRED]
-  README.md → src/main.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (74 total, 19 thin omitted)
+## Communities (98 total, 37 thin omitted)
 
 ### Community 0 - "main.js"
-Cohesion: 0.03
-Nodes (74): activePointers, animate(), appEl, backWoodGrain, backWoodMaterial, bookOpenPivot, camera, carouselArrows (+66 more)
+Cohesion: 0.02
+Nodes (105): activePointers, appEl, applyTheme(), arrowImageModules, backWoodMaterial, blankPixel, bookBoxTmp, bookListEl (+97 more)
 
 ### Community 1 - "Lanyard.jsx"
-Cohesion: 0.05
-Nodes (39): dependencies, gsap, meshline, react, react-dom, @react-three/drei, @react-three/fiber, @react-three/rapier (+31 more)
+Cohesion: 0.11
+Nodes (12): loadLanyard(), cardBack, cardFront, cardShape, chain, coreGeometry, faceGeometry, faceMaterialProps (+4 more)
 
-### Community 2 - "onClick"
-Cohesion: 0.20
-Nodes (17): animateFlip(), enterReadingControls(), flipNext(), flipPrev(), jumpToIndex(), onClick(), onPointerUp(), openBook() (+9 more)
+### Community 2 - "package.json"
+Cohesion: 0.15
+Nodes (12): name, private, type, version, gsap, meshline, react, react-dom (+4 more)
 
-### Community 3 - "buildBookshelf"
-Cohesion: 0.10
-Nodes (25): Adding real pages (no code editing required), Deploying for grading, Editing the intro line, Editing the per-shelf blurb, Grouping pages into sticky tabs, How the pieces fit together, How the project is organized, Known simplifications (worth knowing about, not bugs) (+17 more)
+### Community 3 - "openBook"
+Cohesion: 0.07
+Nodes (68): animateFlip(), announce(), useTexture(), applyPixelRatio(), beginBookDrag(), buildOpenBook(), closeBook(), closePaperView() (+60 more)
 
-### Community 4 - "refitCameraFraming"
-Cohesion: 0.25
-Nodes (8): closePaperView(), exitReadingControls(), fitDistance(), getViewportSize(), handleViewportResize(), refitCameraFraming(), updateArrowVisibility(), updateCameraFraming()
+### Community 4 - "updateShelfInfoPanel"
+Cohesion: 0.67
+Nodes (3): infoFor(), showInfoForRow(), updateShelfInfoPanel()
 
 ### Community 5 - "buildProjectsForShelf"
-Cohesion: 0.18
-Nodes (13): applyCoverWrap(), slice(), buildInfoForShelf(), buildPapersForShelf(), buildProjectsForShelf(), coverForFolder(), leadingNumber(), naturalCompare() (+5 more)
+Cohesion: 0.19
+Nodes (14): buildInfoForShelf(), buildPapersForShelf(), buildProjectsForShelf(), buildRowInfoForShelf(), coverForFolder(), leadingNumber(), naturalCompare(), pagesAndSectionsForFolder() (+6 more)
 
 ### Community 6 - "ensureOpenBookBuilt"
-Cohesion: 0.15
-Nodes (11): applyLeafContent(), applyPageSide(), buildLeaves(), buildTabs(), createPagePlaceholderTexture(), createTabTexture(), createTitlePageTexture(), ensureOpenBookBuilt() (+3 more)
+Cohesion: 0.17
+Nodes (13): applyLeafBend(), applyLeafContent(), applyPageSide(), buildLeaves(), buildTabs(), createPagePlaceholderTexture(), createTabTexture(), ensureOpenBookBuilt() (+5 more)
 
 ### Community 7 - "brandkit/SKILL.md"
 Cohesion: 0.04
@@ -143,8 +162,8 @@ Cohesion: 0.06
 Nodes (34): 10. IMAGE-FIRST CODEX WEBSITE WORKFLOW, 11. WHEN TO TRIGGER IMAGE GENERATION FIRST, 13. WEBSITE REFERENCE RULE, 15. RESPONSIVE FIRST-VIEW RULE, 16. ANTI-NESTED-BOX RULE, 17. REDUCE MICRO-UI CLUTTER RULE, 18. SECTION IMAGE GENERATION RULE, 19. WEBSITE IMAGE SYSTEM RULE (+26 more)
 
 ### Community 9 - "home.js"
-Cohesion: 0.43
-Nodes (6): buildCard(), cardFiles, el(), imageFiles, link(), projects
+Cohesion: 0.29
+Nodes (8): buildCard(), byName(), cardFiles, el(), imageFiles, link(), projects, Selected work
 
 ### Community 13 - "CORE DIRECTIVE: PREMIUM MOBILE APP IMAGE DIRECTION"
 Cohesion: 0.06
@@ -154,6 +173,10 @@ Nodes (34): 10. DEVICE MOCKUP FRAME RULE, 11. ONBOARDING FLOW RULE, 12. FIRST SC
 Cohesion: 0.06
 Nodes (30): 10. FINAL PRE-FLIGHT CHECK, 1. ACTIVE BASELINE CONFIGURATION, 2. DEFAULT ARCHITECTURE & CONVENTIONS, 3. DESIGN ENGINEERING DIRECTIVES (Bias Correction), 4. CREATIVE PROACTIVITY (Anti-Slop Implementation), 5. PERFORMANCE GUARDRAILS, 6. TECHNICAL REFERENCE (Dial Definitions), 7. AI TELLS (Forbidden Patterns) (+22 more)
 
+### Community 20 - "playSample"
+Cohesion: 0.35
+Nodes (11): getAudio(), loadSample(), noiseBurst(), playCloseSound(), playCoverSwish(), playFlipSound(), playHoverSound(), playPageLand() (+3 more)
+
 ### Community 23 - "Appendix B - Canonical Sources (read these before reinventing)"
 Cohesion: 0.09
 Nodes (21): APPENDICES - Real Source-Backed Reference Material, Appendix A - Install Commands per Design System, Appendix B - Canonical Sources (read these before reinventing), Appendix C - Apple Liquid Glass: Honest Web Approximation, Apple Liquid Glass (Apple platforms only), Atlassian, Bootstrap, Carbon (+13 more)
@@ -161,6 +184,14 @@ Nodes (21): APPENDICES - Real Source-Backed Reference Material, Appendix A - Ins
 ### Community 24 - "Design Audit"
 Cohesion: 0.10
 Nodes (19): Code Quality, Color and Surfaces, Component Patterns, Content, Design Audit, Fix Priority, How This Works, Iconography (+11 more)
+
+### Community 25 - "optimise-images.js"
+Cohesion: 0.22
+Nodes (6): ref_node_crypto, ref_node_fs, ref_node_path, sharp, vite, optimiseImages()
+
+### Community 26 - "dependencies"
+Cohesion: 0.22
+Nodes (9): dependencies, gsap, meshline, react, react-dom, @react-three/drei, @react-three/fiber, @react-three/rapier (+1 more)
 
 ### Community 30 - "Analysis & Synthesis Instructions"
 Cohesion: 0.11
@@ -214,9 +245,9 @@ Nodes (9): 11. COMPONENT EXECUTION GUIDELINES, 3D Cascading Card Deck, Diagonal 
 Cohesion: 0.22
 Nodes (9): 18. EXTRA CREATIVITY & IMPLEMENTATION EDGE, Composition variety check, Conversion focus, Cross-section contrast, CTA specificity, Cultural / tonal alignment, Data-viz restraint, Image variety inside one comp (+1 more)
 
-### Community 43 - "onPointerMove"
-Cohesion: 0.22
-Nodes (10): closeBook(), hoverTab(), onPointerMove(), pushBack(), resetShelfInteractionState(), setHoveredArrow(), setHoveredTab(), setPointerFromEvent() (+2 more)
+### Community 43 - "animate"
+Cohesion: 0.25
+Nodes (8): animate(), clampOrbitAzimuth(), currentSharpPages(), hideSharpPages(), placeSharpPage(), processUploadQueue(), projectToScreen(), updateSharpPages()
 
 ### Community 44 - "9. AI TELLS (Forbidden Patterns)"
 Cohesion: 0.25
@@ -259,8 +290,8 @@ Cohesion: 0.29
 Nodes (7): 4. HERO MINIMALISM RULES, Absolute Hero Rules, Graphic Restraint, Headline Rule, Hero Composition Bias, Pre-output check, Typography Execution
 
 ### Community 54 - "tasteskill: Anti-Slop Frontend Skill"
-Cohesion: 0.33
-Nodes (6): 13. OUT OF SCOPE, 14. FINAL PRE-FLIGHT CHECK, 2.A When to reach for a real design system (use official packages), 2.B When the brief is an aesthetic, not a system, 2. BRIEF → DESIGN SYSTEM MAP, tasteskill: Anti-Slop Frontend Skill
+Cohesion: 0.20
+Nodes (10): 13. OUT OF SCOPE, 14. FINAL PRE-FLIGHT CHECK, 2.A When to reach for a real design system (use official packages), 2.B When the brief is an aesthetic, not a system, 2. BRIEF → DESIGN SYSTEM MAP, 7. DIAL DEFINITIONS (Technical Reference), DESIGN_VARIANCE (Level 1-10), MOTION_INTENSITY (Level 1-10) (+2 more)
 
 ### Community 55 - "29. ANTI-AI-SLOP RULES"
 Cohesion: 0.33
@@ -269,6 +300,10 @@ Nodes (6): 29. ANTI-AI-SLOP RULES, Content slop, Density slop, Layout slop, Typo
 ### Community 56 - "5. IMAGE COUNT & PAGE SLICING"
 Cohesion: 0.33
 Nodes (6): 5. IMAGE COUNT & PAGE SLICING, Continuity Rule, Counting rule, Format, Section size variety, THIS IS THE PRIMARY OUTPUT RULE
+
+### Community 57 - "scripts"
+Cohesion: 0.50
+Nodes (4): scripts, build, dev, preview
 
 ### Community 58 - "0. BRIEF INFERENCE (Read the Room Before Anything Else)"
 Cohesion: 0.40
@@ -290,13 +325,9 @@ Nodes (5): 8.A Token Strategy (pick one, stick to it), 8.B Do Not Prescribe Spec
 Cohesion: 0.40
 Nodes (5): 21. MOBILE ANTI-AI-TELLS RULE, Copy AI tells, Layout AI tells, UI clutter tells, Visual AI tells
 
-### Community 63 - "1. THE THREE DIALS (Core Configuration)"
+### Community 63 - "arrowTexture"
 Cohesion: 0.50
-Nodes (4): 1.A Dial Inference (design read → dial values), 1.B Use-Case Presets, 1.C How the Dials Drive Output, 1. THE THREE DIALS (Core Configuration)
-
-### Community 64 - "7. DIAL DEFINITIONS (Technical Reference)"
-Cohesion: 0.50
-Nodes (4): 7. DIAL DEFINITIONS (Technical Reference), DESIGN_VARIANCE (Level 1-10), MOTION_INTENSITY (Level 1-10), VISUAL_DENSITY (Level 1-10)
+Nodes (4): arrowTexture(), assetByStem(), createArrowMesh(), createRotateArrowTexture()
 
 ### Community 65 - "33. DEFAULT SECTION PACKS"
 Cohesion: 0.50
@@ -326,25 +357,37 @@ Nodes (4): 12-section pack, 15. DEFAULT SITE PACKS, 4-section pack, 8-section pa
 Cohesion: 0.50
 Nodes (4): 20. EXAMPLE INTERPRETATIONS, Example 1, Example 2, Example 3
 
+### Community 75 - "devDependencies"
+Cohesion: 0.67
+Nodes (3): devDependencies, sharp, vite
+
+### Community 104 - "navigateCarousel"
+Cohesion: 0.08
+Nodes (31): Adding real pages (no code editing required), Deploying for grading, Editing the intro line, Editing the per-shelf blurb, Grouping pages into sticky tabs, How the pieces fit together, How the project is organized, Known simplifications (worth knowing about, not bugs) (+23 more)
+
+### Community 105 - "1. THE THREE DIALS (Core Configuration)"
+Cohesion: 0.50
+Nodes (4): 1.A Dial Inference (design read → dial values), 1.B Use-Case Presets, 1.C How the Dials Drive Output, 1. THE THREE DIALS (Core Configuration)
+
 ## Knowledge Gaps
-- **539 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+534 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 582 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **582 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+577 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 643 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **37 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `three` connect `Lanyard.jsx` to `main.js`?**
-  _High betweenness centrality (0.019) - this node is a cross-community bridge._
-- **Why does `tasteskill: Anti-Slop Frontend Skill` connect `tasteskill: Anti-Slop Frontend Skill` to `7. DIAL DEFINITIONS (Technical Reference)`, `4. DESIGN ENGINEERING DIRECTIVES (Bias Correction)`, `10. REFERENCE VOCABULARY (Pattern Names the Agent Should Know)`, `9. AI TELLS (Forbidden Patterns)`, `11. REDESIGN PROTOCOL`, `3. DEFAULT ARCHITECTURE & CONVENTIONS`, `6. PERFORMANCE & ACCESSIBILITY GUARDRAILS`, `Appendix B - Canonical Sources (read these before reinventing)`, `0. BRIEF INFERENCE (Read the Room Before Anything Else)`, `12. THE BLOCK LIBRARY (Contract - Implementations Land Here Iteratively)`, `5. CONTEXT-AWARE PROACTIVITY`, `8. DARK MODE PROTOCOL`, `1. THE THREE DIALS (Core Configuration)`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
-- **Why does `CORE DIRECTIVE: AWWWARDS-LEVEL IMAGE ART DIRECTION` connect `CORE DIRECTIVE: AWWWARDS-LEVEL IMAGE ART DIRECTION` to `2. THE COMBINATORIAL VARIATION ENGINE`, `15. DEFAULT SITE PACKS`, `20. EXAMPLE INTERPRETATIONS`, `imagegen-frontend-web/SKILL.md`, `11. COMPONENT EXECUTION GUIDELINES`, `18. EXTRA CREATIVITY & IMPLEMENTATION EDGE`, `8. ANTI-AI-SLOP RULES`, `13. COLOR & MATERIAL RULES`, `4. HERO MINIMALISM RULES`, `5. IMAGE COUNT & PAGE SLICING`?**
-  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **Why does `three` connect `package.json` to `main.js`, `Lanyard.jsx`?**
+  _High betweenness centrality (0.026) - this node is a cross-community bridge._
+- **Why does `tasteskill: Anti-Slop Frontend Skill` connect `tasteskill: Anti-Slop Frontend Skill` to `4. DESIGN ENGINEERING DIRECTIVES (Bias Correction)`, `10. REFERENCE VOCABULARY (Pattern Names the Agent Should Know)`, `1. THE THREE DIALS (Core Configuration)`, `9. AI TELLS (Forbidden Patterns)`, `11. REDESIGN PROTOCOL`, `3. DEFAULT ARCHITECTURE & CONVENTIONS`, `6. PERFORMANCE & ACCESSIBILITY GUARDRAILS`, `Appendix B - Canonical Sources (read these before reinventing)`, `0. BRIEF INFERENCE (Read the Room Before Anything Else)`, `12. THE BLOCK LIBRARY (Contract - Implementations Land Here Iteratively)`, `5. CONTEXT-AWARE PROACTIVITY`, `8. DARK MODE PROTOCOL`?**
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **Why does `gsap` connect `package.json` to `main.js`?**
+  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+- **Are the 2 inferred relationships involving `closeBook()` (e.g. with `main.js` and `invalidate()`) actually correct?**
+  _`closeBook()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _539 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _582 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `main.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.02596559558584875 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.01834862385321101 - nodes in this community are weakly interconnected._
 - **Should `Lanyard.jsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.04810360777058279 - nodes in this community are weakly interconnected._
-- **Should `buildBookshelf` be split into smaller, more focused modules?**
-  _Cohesion score 0.09686609686609686 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1111111111111111 - nodes in this community are weakly interconnected._

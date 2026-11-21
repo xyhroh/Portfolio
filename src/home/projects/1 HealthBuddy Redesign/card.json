@@ -1,33 +1,13 @@
 {
-  "status": "Case Study Available",
-  "tags": [
-    "Mobile App",
-    "UX Research",
-    "Redesign",
-    "Healthcare"
-  ],
-  "title": "HealthBuddy Redesign",
-  "description": "Outpatients and elderly users struggled to book appointments through a cluttered public healthcare app. I redesigned the home screen around booking as the primary action, backed by survey data and three research-led personas.",
-  "feedback": {
-    "label": "Key user feedback:",
-    "text": "Survey respondents struggled to book an appointment without hassle due to a cluttered homescreen, so that became the primary action."
-  },
+  "role": "UX/UI Designer · School project · 2025",
+  "title": "HealthBuddy — SingHealth app redesign",
+  "problem": "Patients found the app helpful but cluttered: appointments, queue status and payments were buried across screens.",
   "stats": [
-    {
-      "value": "16",
-      "label": "survey respondents"
-    },
-    {
-      "value": "3",
-      "label": "personas designed for"
-    },
-    {
-      "value": "50%",
-      "label": "found the old app confusing"
-    }
+    ["17", "people surveyed"],
+    ["3", "personas"],
+    ["43%", "rated navigation bad"]
   ],
-  "button": {
-    "label": "Read case study →",
-    "link": "library.html"
-  }
+  "finding": "Every user books appointments in the app, yet nothing on the home screen shows them at a glance.",
+  "tags": ["UX Research", "Personas", "Hi-fi Prototyping"],
+  "link": "library.html?book=HealthBuddy"
 }

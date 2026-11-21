@@ -18,7 +18,10 @@ Notes
 -----
 - The old `pages/` folder still works and behaves as Row 1, so books you
   have not moved yet stay where they are.
-- Books are laid out left to right in alphabetical order within their row.
+- Books are laid out left to right in alphabetical order within their row,
+  except a book named CV, which is always first (far left).
+- `info.txt` in a row folder is the text shown on the right while a book
+  on that row is hovered: first line the header, the rest the body.
 - Put more than 8 books on one row and the extras wrap onto the row below.
 - The order the chips and the up/down arrow keys walk through is Row 1
   first, then Row 2.

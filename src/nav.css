@@ -16,7 +16,7 @@
   background: rgba(244, 244, 244, 0.82);
   backdrop-filter: blur(14px) saturate(1.2);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px -12px rgba(0, 0, 0, 0.18);
-  font-family: Inter, system-ui, sans-serif;
+  font-family: Geist, Inter, system-ui, sans-serif;
 }
 
 .nav-pill a {
@@ -50,4 +50,24 @@
     padding: 8px 14px;
     font-size: 13px;
   }
+}
+
+/* dark theme (home/about toggle) */
+:root[data-theme="dark"] .nav-pill {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(52, 54, 58, 0.85);
+}
+
+:root[data-theme="dark"] .nav-pill a {
+  color: #bbb;
+}
+
+:root[data-theme="dark"] .nav-pill a:hover {
+  background: #4a4d52;
+  color: #f2f2f2;
+}
+
+:root[data-theme="dark"] .nav-pill a[aria-current="page"] {
+  background: #f2f2f2;
+  color: #0d0d0d;
 }

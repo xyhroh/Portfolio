@@ -3,7 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bookshelf Portfolio — Prototype</title>
+    <title>Library — Javier Low</title>
+    <meta name="description" content="Javier Low's process books: the research, iterations and decisions behind each project." />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Montserrat:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Theme before first paint: whatever the visitor picked on the home page, else the OS setting. -->
+    <script>
+      document.documentElement.dataset.theme =
+        localStorage.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    </script>
+    <link rel="stylesheet" href="/src/nav.css" />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
@@ -12,7 +26,15 @@
       <span>Setting up the library&hellip;</span>
     </div>
     <p id="sr-status" class="sr-only" role="status" aria-live="polite"></p>
-    <a id="home-link" href="./">&larr; Home</a>
+    <nav class="nav">
+      <a class="nav-name" href="./">Javier Low<span>UX / Product Designer</span></a>
+    </nav>
+    <nav class="nav-pill" aria-label="Main">
+      <a href="./">Home</a>
+      <a href="about.html">About</a>
+      <a href="library.html" aria-current="page">Library</a>
+      <a href="resume.pdf" target="_blank" rel="noopener">Resume</a>
+    </nav>
 
     <!-- Sits behind the (transparent-background) 3D canvas — see the
          renderer alpha setup in main.js section 1 — so the shelf visually
@@ -100,6 +122,13 @@
         <button id="paper-close" type="button" class="icon-btn" aria-label="Close paper" title="Close paper (Esc)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
     </div>
+
+    <button
+      class="theme-toggle"
+      type="button"
+      aria-label="Toggle dark mode"
+      onclick="const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = localStorage.theme = t;"
+    ></button>
 
     <script type="module" src="/src/main.js"></script>
   </body>

@@ -4,12 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>About — Javier Low</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Javier Low — UX / Product Designer" />
+    <meta property="og:description" content="Research-to-prototype loops with the interaction craft of game design. Based in Singapore." />
+    <meta property="og:url" content="https://xyhroh.github.io/Portfolio/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Montserrat:wght@500;600&display=swap"
       rel="stylesheet"
     />
+    <!-- Theme before first paint (no flash): saved choice, else the OS setting. -->
+    <script>
+      document.documentElement.dataset.theme =
+        localStorage.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    </script>
     <link rel="stylesheet" href="/src/nav.css" />
     <link rel="stylesheet" href="/src/home/home.css" />
     <style>
@@ -52,7 +62,7 @@
       }
       .about li {
         padding: 12px 0;
-        border-bottom: 1px solid #e6e6e6;
+        border-bottom: 1px solid var(--line);
         font-size: 16px;
       }
       @media (max-width: 760px) {
@@ -64,17 +74,19 @@
     </style>
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to content</a>
     <nav class="nav">
-      <a class="nav-name" href="./">Javier Low<span>UX Designer</span></a>
+      <a class="nav-name" href="./">Javier Low<span>UX / Product Designer</span></a>
     </nav>
     <nav class="nav-pill" aria-label="Main">
       <a href="./">Home</a>
       <a href="about.html" aria-current="page">About</a>
       <a href="library.html">Library</a>
+      <a href="resume.pdf" target="_blank" rel="noopener">Resume</a>
     </nav>
 
     <!-- TODO: everything in [brackets] is a placeholder — replace with your own words. -->
-    <main class="about">
+    <main class="about" id="main">
       <p class="eyebrow">About</p>
       <h1>I'm Javier, a UX designer who starts with what users actually do, not what we assume they do.</h1>
 
@@ -101,12 +113,21 @@
     </main>
 
     <footer class="footer" id="contact">
-      <h2>Let's work together.</h2>
       <div class="footer-links">
-        <a href="mailto:you@example.com">you@example.com</a>
-        <a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
-        <a href="resume.png" target="_blank" rel="noopener">Resume</a>
+          <a class="icon-btn" href="https://www.linkedin.com/in/javier-low/" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z" /></svg>
+          </a>
+          <a class="icon-btn" href="resume.pdf" target="_blank" rel="noopener" aria-label="Resume (PDF)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" /><path d="M14 3v6h6M8 13h8M8 17h5" /></svg>
+          </a>
       </div>
+      <a class="footer-email" href="mailto:lowyushengjavier@gmail.com">lowyushengjavier@gmail.com</a>
     </footer>
+    <button
+      class="theme-toggle"
+      type="button"
+      aria-label="Toggle dark mode"
+      onclick="const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = localStorage.theme = t;"
+    ></button>
   </body>
 </html>

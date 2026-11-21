@@ -1,33 +1,13 @@
 {
-  "status": "In Progress",
-  "tags": [
-    "UX Research",
-    "Usability Audit",
-    "Heuristic Evaluation",
-    "Team Project"
-  ],
-  "title": "Facebook Usability Research",
-  "description": "With 3 billion monthly users and a decade of added features, Facebook's interface has become hard to navigate. Our team audited the app's core flows to find where that complexity breaks usability, and what to fix first.",
-  "feedback": {
-    "label": "Key finding:",
-    "text": "[Your strongest single finding from the report]"
-  },
+  "role": "UX Researcher · Team project",
+  "title": "Facebook usability audit",
+  "problem": "Years of added features make simple tasks a fight: users struggle to post, curate their feed and find things.",
   "stats": [
-    {
-      "value": "[n]",
-      "label": "[participants]"
-    },
-    {
-      "value": "[n]",
-      "label": "[usability issues found]"
-    },
-    {
-      "value": "[n]",
-      "label": "[recommendations]"
-    }
+    ["27", "users surveyed"],
+    ["3", "personas mapped"],
+    ["3", "task flows redesigned"]
   ],
-  "button": {
-    "label": "Case study dropping soon",
-    "link": "library.html"
-  }
+  "finding": "Facebook scored severity 2–3 on all 9 heuristics tested; Instagram and TikTok scored 0 on 8 of 9.",
+  "tags": ["Usability Testing", "Heuristic Evaluation", "Research"],
+  "link": "library.html?book=Facebook"
 }

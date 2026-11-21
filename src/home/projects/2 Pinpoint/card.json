@@ -1,33 +1,13 @@
 {
-  "status": "Case Study Dropping Soon",
-  "tags": [
-    "Mobile App",
-    "Product Design",
-    "Design System",
-    "Concept"
-  ],
-  "title": "Pinpoint — Bowling Coach",
-  "description": "Amateur bowlers have no simple way to review and learn from their own technique. Pinpoint is a coaching app concept that turns recorded throws into a personal video library, documented end to end in a full product design doc.",
-  "feedback": {
-    "label": "Design focus:",
-    "text": "[One sentence on the core insight, e.g. what users said about reviewing their throws]"
-  },
+  "role": "Product Designer · End-to-end · 2026",
+  "title": "Pinpoint — bowling coach app",
+  "problem": "Casual bowlers without a coach can't see what's going wrong in their throw, or where to start fixing it.",
   "stats": [
-    {
-      "value": "[n]",
-      "label": "[users interviewed / tested]"
-    },
-    {
-      "value": "[n]",
-      "label": "[key flows designed]"
-    },
-    {
-      "value": "1",
-      "label": "complete design system"
-    }
+    ["5/5", "bowlers chose the new build"],
+    ["2.4s", "from menu to recording"],
+    ["6", "competitors analysed"]
   ],
-  "button": {
-    "label": "Case study dropping soon",
-    "link": "library.html"
-  }
+  "finding": "71% of surveyed bowlers worried about camera setup, so the app opens with a guided tripod setup and a frame check.",
+  "tags": ["Product Design", "Prototyping", "Android"],
+  "link": "library.html?book=GAM"
 }
