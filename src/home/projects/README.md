@@ -31,6 +31,8 @@ Each folder holds:
   - `prototype`: a Figma prototype link (Share > Copy prototype link, with
     access set to "Anyone with the link can view"). Adds a "Try prototype"
     button, and clicking the screens opens it in a popup on the page.
+  - `status`: a short note for work in progress, shown with an amber dot
+    above the buttons.
   - `hidden: true` keeps the card off the page (for unfinished projects).
 
 - Screenshots: any png/jpg/jpeg/webp in the folder. Up to 3, in filename

@@ -23,29 +23,66 @@
     <link rel="stylesheet" href="/src/nav.css" />
     <link rel="stylesheet" href="/src/home/home.css" />
     <style>
+      /* A bento of glass panels instead of one column of paragraphs: each
+         panel is one idea, readable on its own in a few seconds. */
       .about {
         max-width: 1300px;
         margin: 0 auto;
         padding: 100px 5vw 140px;
       }
+      .bento {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .panel {
+        grid-column: span 12;
+        padding: 32px;
+        border: 1px solid var(--glass-edge);
+        border-radius: 28px;
+        background: var(--glass);
+        -webkit-backdrop-filter: blur(20px) saturate(140%);
+        backdrop-filter: blur(20px) saturate(140%);
+        box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow);
+      }
+      .span-7 { grid-column: span 7; }
+      .span-5 { grid-column: span 5; }
+      .span-4 { grid-column: span 4; }
+      .span-3 { grid-column: span 3; }
+
+      .about-intro {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr);
+        gap: 40px;
+        align-items: center;
+        padding: 40px;
+      }
+      .portrait {
+        width: 100%;
+        height: auto; /* the height="400" attribute would otherwise win over aspect-ratio and stretch it into an oval */
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 1px solid var(--glass-edge);
+      }
       .about h1 {
-        max-width: 820px;
-        margin: 0 0 64px;
+        margin: 0 0 16px;
         font-family: Montserrat, system-ui, sans-serif;
         font-weight: 600;
-        font-size: clamp(36px, 4.2vw, 60px);
-        line-height: 1.2;
+        font-size: clamp(30px, 3.4vw, 48px);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
       }
-      .about-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 64px;
-        max-width: 1000px;
-      }
+      .about .eyebrow { margin-bottom: 12px; }
       .about p {
-        margin: 0 0 18px;
-        font-size: 17px;
-        line-height: 1.65;
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .lede {
+        max-width: 60ch;
+        font-size: 18px !important;
+        color: var(--muted);
       }
       .about h2 {
         margin: 0 0 16px;
@@ -55,21 +92,90 @@
         text-transform: uppercase;
         color: var(--muted);
       }
-      .about ul {
-        margin: 0 0 40px;
+
+      /* the loop, as four steps instead of a sentence */
+      .loop {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 18px;
         padding: 0;
         list-style: none;
       }
-      .about li {
-        padding: 12px 0;
-        border-bottom: 1px solid var(--line);
-        font-size: 16px;
+      .loop li {
+        padding: 8px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
       }
-      @media (max-width: 760px) {
-        .about-grid {
+      .loop li + li::before {
+        content: "→ ";
+        color: var(--muted);
+      }
+
+      .numbers {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px 16px;
+        margin: 0;
+      }
+      .numbers dt {
+        font-family: Montserrat, system-ui, sans-serif;
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+      }
+      .numbers dd {
+        margin: 4px 0 0;
+        font-size: 13px;
+        line-height: 1.4;
+        color: var(--muted);
+      }
+
+      .about ul.list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .about ul.list li {
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 15px;
+      }
+      .about ul.list li:last-child { border-bottom: 0; }
+      .about h2.sub { margin-top: 28px; }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0 0 24px;
+        padding: 0;
+        list-style: none;
+      }
+      .chips li {
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: var(--line);
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .chips:last-child { margin-bottom: 0; }
+
+      @media (max-width: 960px) {
+        .span-7, .span-5, .span-4, .span-3 { grid-column: span 12; }
+      }
+      @media (max-width: 640px) {
+        .about { padding-top: 84px; }
+        .about-intro {
           grid-template-columns: 1fr;
           gap: 24px;
+          padding: 28px;
         }
+        .portrait { width: 140px; }
+        .panel { padding: 24px; }
       }
     </style>
   </head>
@@ -85,37 +191,69 @@
       <a href="resume.pdf" target="_blank" rel="noopener">Resume</a>
     </nav>
 
-    <!-- TODO: everything in [brackets] is a placeholder — replace with your own words. -->
-    <main class="about" id="main">
-      <p class="eyebrow">About</p>
-      <h1>I'm Javier, a UX designer who starts with what users actually do, not what we assume they do.</h1>
+    <main class="about bento" id="main">
+      <section class="panel about-intro">
+        <img class="portrait" src="portrait.jpg" alt="Javier Low" width="400" height="400" />
+        <div>
+          <p class="eyebrow">About</p>
+          <h1>From buildings to screens, I design for the people using them.</h1>
+          <p class="lede">I trained in Environment Design at Temasek Polytechnic, shaping spaces around how people actually move through them. The medium changed when I moved into UX; the goal didn't. Now at DigiPen Institute of Technology (User Experience &amp; Game Design, 2024–2028), I bring that same focus to digital products, aiming to build human-centred services for public good.</p>
+        </div>
+      </section>
 
-      <div class="about-grid">
-        <div>
-          <p>I'm studying User Experience and Game Design at DigiPen Institute of Technology, Singapore (2024–2028), and I want to build human-centred digital services for public good.</p>
-          <p>I work in fast research-to-prototype loops: sketch it, put it in front of users, change what fails, ship the next version. On HealthBuddy I was the sole designer and researcher, from a 17-person survey and 3 personas to a hi-fi prototype. On Pinpoint, the first prototype tested as too game-like for a utility app, so I rebuilt it; 5 of 5 bowlers then chose the new build.</p>
-          <p>Before design school I spent three years as a Security Administrator in the Republic of Singapore Air Force, analysing incident reports, gathering requirements from operations and command staff, and leading a team through time-critical system upgrades. It taught me how constrained systems and shift-based teams really work.</p>
-          <p>I also built this site myself, in Three.js and GSAP, and usability tested it with 10 designers and students.</p>
-        </div>
-        <div>
-          <h2>What I do</h2>
-          <ul>
-            <li>User research: interviews, observation, surveys</li>
-            <li>Usability testing &amp; heuristic evaluation</li>
-            <li>Task flows &amp; journey mapping</li>
-            <li>Wireframes, rapid prototypes &amp; hi-fi UI</li>
-          </ul>
-          <h2>Tools</h2>
-          <ul>
-            <li>Figma, Canva, Google Forms</li>
-            <li>HTML, CSS, JavaScript, Three.js, GSAP, C#</li>
-          </ul>
-          <h2>Languages</h2>
-          <ul>
-            <li>English &amp; Chinese (fluent)</li>
-          </ul>
-        </div>
-      </div>
+      <section class="panel span-7">
+        <h2>How I work</h2>
+        <ol class="loop">
+          <li>Sketch</li>
+          <li>Test with users</li>
+          <li>Change what fails</li>
+          <li>Ship</li>
+        </ol>
+        <p>On HealthBuddy I was the sole designer and researcher, from survey to hi-fi prototype. On Pinpoint the first prototype tested as too game-like for a utility app, so I rebuilt it.</p>
+      </section>
+
+      <section class="panel span-5">
+        <h2>In numbers</h2>
+        <dl class="numbers">
+          <div><dt>17</dt><dd>patients surveyed for HealthBuddy</dd></div>
+          <div><dt>5/5</dt><dd>bowlers chose the rebuilt Pinpoint</dd></div>
+          <div><dt>27</dt><dd>users surveyed for the Facebook audit</dd></div>
+          <div><dt>10</dt><dd>people tested this site, which I built</dd></div>
+        </dl>
+      </section>
+
+      <section class="panel span-5">
+        <h2>Before design school</h2>
+        <p>3 years as a Security Administrator in the Republic of Singapore Air Force: analysing incident reports, gathering requirements from operations and command staff, and leading a team through time-critical system upgrades. It taught me how constrained systems and shift-based teams really work.</p>
+      </section>
+
+      <section class="panel span-4">
+        <h2>What I do</h2>
+        <ul class="list">
+          <li>User research &amp; surveys</li>
+          <li>Usability testing &amp; heuristics</li>
+          <li>Task flows &amp; journey maps</li>
+          <li>Wireframes to hi-fi prototypes</li>
+        </ul>
+        <h2 class="sub">Product management</h2>
+        <ul class="list">
+          <li>Scoping to real constraints</li>
+          <li>Competitor analysis &amp; positioning</li>
+          <li>Agile sprints &amp; dev handoff</li>
+          <li>Stakeholder requirements</li>
+        </ul>
+      </section>
+
+      <section class="panel span-3">
+        <h2>Tools</h2>
+        <ul class="chips">
+          <li>Figma</li><li>Illustrator</li><li>Photoshop</li><li>Premiere Pro</li><li>Canva</li><li>Claude</li><li>Google Forms</li><li>HTML/CSS/JS</li><li>Three.js</li><li>GSAP</li><li>C#</li>
+        </ul>
+        <h2>Languages</h2>
+        <ul class="chips">
+          <li>English</li><li>Chinese</li>
+        </ul>
+      </section>
     </main>
 
     <footer class="footer" id="contact">

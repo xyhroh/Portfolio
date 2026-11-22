@@ -12,9 +12,9 @@
     "semantic_hash": ""
   },
   "src/home/home.js": {
-    "mtime": 1795295011.0187619,
-    "seen": 1795295022.6894708,
-    "ast_hash": "534140c6f85a30553d8ae64e6c6b9ffc",
+    "mtime": 1795358814.273504,
+    "seen": 1795358826.6128175,
+    "ast_hash": "ee0984e527495990328e4b262b64c4b4",
     "semantic_hash": ""
   },
   "src/home/lanyard/Lanyard.jsx": {
@@ -24,15 +24,15 @@
     "semantic_hash": ""
   },
   "src/home/projects/1 HealthBuddy Redesign/card.json": {
-    "mtime": 1795295189.962054,
-    "seen": 1795295244.9265223,
-    "ast_hash": "b52b26dd9781863e2c95d54486ade078",
+    "mtime": 1795326819.992016,
+    "seen": 1795357863.98239,
+    "ast_hash": "4d09ea1cfeb92cc801904cc88e24f331",
     "semantic_hash": ""
   },
   "src/main.js": {
-    "mtime": 1795295204.9465451,
-    "seen": 1795295244.9265275,
-    "ast_hash": "5689dfdd9207ba9891d71f1b335a95cc",
+    "mtime": 1795358739.3715308,
+    "seen": 1795358754.3083103,
+    "ast_hash": "1b95180dfde0b014efd34aeb986896bd",
     "semantic_hash": ""
   },
   "vite.config.js": {
@@ -60,15 +60,15 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1795294264.566175,
-    "seen": 1795294299.5132153,
-    "ast_hash": "dcdcdb1d4be085c41c12037f0efde93e",
+    "mtime": 1795328962.3716085,
+    "seen": 1795357863.9824438,
+    "ast_hash": "1bb957940162ae07cba035e58fc4d12e",
     "semantic_hash": ""
   },
   "library.html": {
-    "mtime": 1795295210.061125,
-    "seen": 1795295244.9265733,
-    "ast_hash": "2ceb9121dbce452ae6e9888781fe67a3",
+    "mtime": 1795358731.1735523,
+    "seen": 1795358754.3083565,
+    "ast_hash": "c7107f318c51b85719c0819beccf75f4",
     "semantic_hash": ""
   },
   "public/pages/README.md": {
@@ -90,9 +90,9 @@
     "semantic_hash": ""
   },
   "src/home/projects/README.md": {
-    "mtime": 1795294696.3364887,
-    "seen": 1795294708.1462402,
-    "ast_hash": "1ff37d1f7cbb29aba7c48cda80246428",
+    "mtime": 1795358815.49342,
+    "seen": 1795358826.6128812,
+    "ast_hash": "56bc7a9457f2ea999d420bdfe9928990",
     "semantic_hash": ""
   },
   "src/home/lanyard/card-back.png": {
@@ -126,15 +126,15 @@
     "semantic_hash": ""
   },
   "src/home/projects/2 Pinpoint/card.json": {
-    "mtime": 1795295190.0521195,
-    "seen": 1795295244.926524,
-    "ast_hash": "889e2c3dba10195fdd2a4554dedbb14b",
+    "mtime": 1795358815.3852122,
+    "seen": 1795358826.6128242,
+    "ast_hash": "0737cd2e838c46a97aab0befce0f35dc",
     "semantic_hash": ""
   },
   "src/home/projects/3 Facebook Research/card.json": {
-    "mtime": 1795295190.0208545,
-    "seen": 1795295244.926525,
-    "ast_hash": "1e0daa55a364d65c72a72a948046d8bd",
+    "mtime": 1795326820.763259,
+    "seen": 1795357863.9823935,
+    "ast_hash": "bc5ccd1619b400f5ea684e0941ae1e1d",
     "semantic_hash": ""
   },
   "src/home/projects/4 HOOK/card.json": {
@@ -318,9 +318,9 @@
     "semantic_hash": ""
   },
   "about.html": {
-    "mtime": 1795295199.2123666,
-    "seen": 1795295244.926571,
-    "ast_hash": "5af163698e190d9f04770c2f2d9ed775",
+    "mtime": 1795358623.654955,
+    "seen": 1795358754.3083541,
+    "ast_hash": "dfe3bbde598a8fc9944124aa14ef4604",
     "semantic_hash": ""
   },
   "src/home/lanyard/lanyard-boot.js": {
@@ -849,6 +849,12 @@
     "mtime": 1795295235.182084,
     "seen": 1795295244.926644,
     "ast_hash": "80b49ac073a0a25fe3d1d94523a4e23d",
+    "semantic_hash": ""
+  },
+  "public/portrait.jpg": {
+    "mtime": 1795357815.8990283,
+    "seen": 1795357863.9825013,
+    "ast_hash": "c2ec7da99d08d43533de2b967477d1ec",
     "semantic_hash": ""
   }
 }

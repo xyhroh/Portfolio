@@ -60,16 +60,7 @@
          and both children stay independently `position: fixed` exactly as
          before. -->
     <div id="main-row">
-      <!-- Portrait-only carousel controls (hidden on desktop by default
-           — see .nav-arrow in style.css); the floor-mounted 3D arrows
-           main.js draws into the scene are hidden in portrait in favor
-           of these, since they're fiddly to tap precisely on a touch
-           screen. Children of #app so they hug ITS edges via
-           position: absolute, wherever that column ends up. -->
-      <div id="app">
-        <button id="nav-prev" class="nav-arrow" type="button" aria-label="Previous shelf">&#8249;</button>
-        <button id="nav-next" class="nav-arrow" type="button" aria-label="Next shelf">&#8250;</button>
-      </div>
+      <div id="app"></div>
 
       <!-- Mirrors #hero on the opposite side: a per-bookshelf blurb,
            sourced from that shelf's own info.txt (see main.js section 2)
@@ -112,7 +103,7 @@
       <p class="key-hint">drag a page, or &larr; &rarr; to turn &middot; Home / End &middot; Esc close</p>
     </div>
 
-    <p id="key-hint" aria-hidden="true">&larr; &rarr; switch shelf &middot; &uarr; &darr; choose a book &middot; Enter open &middot; Esc back</p>
+    <p id="key-hint" aria-hidden="true">&uarr; &darr; choose a book &middot; Enter open &middot; Esc back</p>
 
     <div id="paper-panel" role="region" aria-label="Paper controls">
       <h2 id="paper-title"></h2>

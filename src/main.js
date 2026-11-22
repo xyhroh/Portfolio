@@ -52,7 +52,7 @@ renderer.domElement.tabIndex = 0;
 renderer.domElement.setAttribute("role", "application");
 renderer.domElement.setAttribute(
   "aria-label",
-  "Interactive 3D bookshelf. Left and right arrow keys switch shelf, up and down choose a book, Enter opens it, Escape goes back."
+  "Interactive 3D bookshelf. Up and down arrow keys choose a book, Enter opens it, Escape goes back."
 );
 renderer.domElement.style.cursor = "grab";
 
@@ -1683,107 +1683,15 @@ const portraitQuery = window.matchMedia("(orientation: portrait)");
 function updateArrowVisibility() {
   const portrait = portraitQuery.matches;
   carouselArrows.forEach((arrow) => {
-    arrow.visible = !portrait && shelves.length > 1; // one shelf: nothing to rotate to
+    arrow.visible = false; // shelf switching is switched off: one shelf only
   });
 }
 updateArrowVisibility();
 portraitQuery.addEventListener("change", updateArrowVisibility);
 
-const navPrevButton = document.getElementById("nav-prev");
-const navNextButton = document.getElementById("nav-next");
-navPrevButton.addEventListener("click", () => navigateCarousel(-1));
-navNextButton.addEventListener("click", () => navigateCarousel(1));
-if (shelves.length < 2) {
-  navPrevButton.style.display = "none";
-  navNextButton.style.display = "none";
-}
-
-// The same png drives these two buttons, so replacing the arrow art changes
-// the portrait controls as well as the floor arrows. The ‹ › glyphs in
-// library.html are the fallback and are hidden only once an image is found.
-(function applyNavArrowImages() {
-  const shared = assetByStem(arrowImageModules, ["arrow"]);
-  const pairs = [
-    [navPrevButton, assetByStem(arrowImageModules, ["arrow-left"]) || shared, true],
-    [navNextButton, assetByStem(arrowImageModules, ["arrow-right"]) || shared, false],
-  ];
-  for (const [button, url, flip] of pairs) {
-    if (!button || !url) continue;
-    button.classList.add("has-image");
-    button.style.backgroundImage = `url("${url}")`;
-    // only a shared arrow.png needs mirroring; a left-specific file does not.
-    // A class rather than an inline transform, so the :active press-in still
-    // applies on top of it (see .nav-arrow.mirrored:active in style.css).
-    if (flip && !assetByStem(arrowImageModules, ["arrow-left"])) {
-      button.classList.add("mirrored");
-    }
-  }
-})();
-
-// Pushes back any book pulled partway out and closes the drawer on a
-// shelf that's about to swing away from the front, so it always cycles
-// back around in a clean, closed state rather than however it was left.
-function resetShelfInteractionState(shelf) {
-  if (shelf.getDrawerState() !== "closed") shelf.closeDrawer();
-  shelf.shelfBooks.forEach((book) => {
-    if (book.userData.state === "out") pushBack(book);
-  });
-}
-
-// Guards against a second arrow click landing mid-swing: overlapping
-// navigateCarousel() calls would fight over the same carouselGroup
-// rotation tween (and over which shelf's visibility gets turned back
-// off), leaving the carousel visibly stuck at a wrong in-between angle.
-let isCarouselRotating = false;
-
-function navigateCarousel(direction) {
-  // the arrows sit on the floor near the overview camera position; while
-  // reading, the camera's up close to an open book and they're not a
-  // meaningful thing to click, so ignore stray hits during that state
-  if (readingState || paperReadingState || isCarouselRotating || shelves.length < 2) return;
-  isCarouselRotating = true;
-
-  const outgoing = activeShelf;
-  resetShelfInteractionState(outgoing);
-  if (hoveredBook && outgoing.shelfBooks.includes(hoveredBook)) {
-    hoveredBook = null;
-    updatePreviewPanel();
-  }
-
-  keyboardBookIndex = -1;
-  currentShelfIndex = (currentShelfIndex + direction + shelves.length) % shelves.length;
-  activeShelf = shelves[currentShelfIndex];
-  carouselRotationY -= direction * stepAngle;
-  updateShelfInfoPanel();
-  // a phone frames on the books themselves, and the incoming shelf's may be
-  // on a different row — glide the camera there as the carousel turns
-  if (portraitQuery.matches) {
-    updateCameraFraming();
-    gsap.to(camera.position, { ...overviewCameraPos, duration: T(motion.carousel), ease: motion.out, overwrite: "auto", onUpdate: invalidate });
-    gsap.to(controls.target, { ...overviewTarget, duration: T(motion.carousel), ease: motion.out, overwrite: "auto", onUpdate: invalidate });
-  }
-
-  // The incoming shelf's appearance pop fires partway through the
-  // rotation's tail end rather than waiting for it to come to a full
-  // stop first — it's already popping into place as it arrives, not
-  // standing still and then playing.
-  let hasAppeared = false;
-  gsap.to(carouselGroup.rotation, {
-    y: carouselRotationY,
-    duration: T(motion.carousel),
-    ease: motion.out,
-    onUpdate: function () {
-      if (!hasAppeared && this.progress() > 0.6) {
-        hasAppeared = true;
-        dropShelfIntoPlace(activeShelf.group);
-        dropBooksIntoPlace(activeShelf.shelfBooks);
-      }
-    },
-    onComplete: () => {
-      isCarouselRotating = false;
-    },
-  });
-}
+// Shelf switching is gone (one shelf), so the carousel never rotates. Kept
+// as a constant false because several input handlers still check it.
+const isCarouselRotating = false;
 
 // -----------------------------------------------------------------------
 // 7. THE OPEN-BOOK READING VIEW
@@ -3296,11 +3204,6 @@ function onClick(event) {
     return;
   }
 
-  const arrowHits = raycaster.intersectObjects(carouselArrows.filter((arrow) => arrow.visible));
-  if (arrowHits.length > 0) {
-    navigateCarousel(arrowHits[0].object.userData.direction);
-    return;
-  }
 
   if (activeShelf.getDrawerState() === "open") {
     const paperHits = raycaster.intersectObjects(activeShelf.paperMeshes);
@@ -3743,7 +3646,7 @@ renderer.domElement.addEventListener("pointermove", onPointerMove);
 // -----------------------------------------------------------------------
 // 11d. KEYBOARD CONTROLS
 // Everything the mouse does is reachable from the keyboard:
-//   overview : <- / -> switch shelf, Up / Down choose a book, Enter open it,
+//   overview : Up / Down choose a book, Enter open it,
 //              Esc put it back / close the drawer
 //   reading  : <- / -> (or PageUp/PageDown, Space) turn the page,
 //              Home / End first / last page, Esc close
@@ -3797,9 +3700,7 @@ function onKeyDown(event) {
     return;
   }
 
-  if (key === "ArrowLeft") navigateCarousel(-1);
-  else if (key === "ArrowRight") navigateCarousel(1);
-  else if (key === "ArrowDown") keyboardPickBook(1);
+  if (key === "ArrowDown") keyboardPickBook(1);
   else if (key === "ArrowUp") keyboardPickBook(-1);
   else if (key === "Enter" && hoveredBook && hoveredBook.userData.state === "out") {
     const book = hoveredBook;

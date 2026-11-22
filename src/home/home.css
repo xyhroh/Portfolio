@@ -472,6 +472,28 @@ main {
   color: var(--muted);
 }
 
+.project-status {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  max-width: 420px;
+  margin: 0 0 16px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+/* a small amber dot: "live, not finished" */
+.project-status::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e0a33a;
+  transform: translateY(-1px);
+}
+
 .project-actions {
   display: flex;
   flex-wrap: wrap;
@@ -542,54 +564,68 @@ button.project-stage {
 /* Screenshots: flat, sharp, nothing laid over them. Entry → key screen →
    result, the middle one full size, the outer two a touch smaller. */
 .project-stage {
+  position: relative;
+  isolation: isolate;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4%;
+  gap: 0;
   margin: 12px;
   /* Fixed height, sized for the ENLARGED screen, so hovering never resizes
      the card. All % here are of the stage width (W): content 0.9W, big screen
      32% of that, phone screens ≤ 2.23 tall:wide → 0.642W, + 0.08W padding.
      ponytail: assumes phone-shaped screens; a taller export needs a lower ratio. */
-  aspect-ratio: 1 / 0.73;
-  padding: 4% 5%;
+  aspect-ratio: 1 / 0.95;
+  padding: 4% 3%;
   border-radius: 20px;
   background: var(--stage);
 }
 
-.project-stage img {
-  display: block;
-  width: 27%;
-  min-width: 0;
-  height: auto;
-  border: 1px solid var(--shot-edge);
-  border-radius: 18px;
-  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.35);
-  transition: transform 0.25s ease;
+/* soft accent wash behind the screens. Set --stage-glow on a card to tint it. */
+.project-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: radial-gradient(58% 54% at 50% 44%, var(--stage-glow, rgba(96, 150, 255, 0.2)), transparent 72%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-.project-stage img:nth-child(2) { width: 32%; }
-.project-stage img:only-child { width: 70%; }
+/* The screens sit as a scattered stack rather than a centred row: overlapping,
+   staggered vertically and slightly rotated, so they fill the panel and read
+   bigger. Widths are % of the stage; offsets are % of each image's own height. */
+.project-stage img {
+  position: relative;
+  display: block;
+  width: 34%;
+  min-width: 0;
+  height: auto;
+  margin: 0 -3%;
+  border: 1px solid var(--shot-edge);
+  border-radius: 18px;
+  box-shadow: 0 30px 55px -22px rgba(0, 0, 0, 0.7);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.project-stage img:nth-child(1) { transform: translateY(9%) rotate(-6deg); z-index: 1; }
+.project-stage img:nth-child(2) { width: 42%; transform: translateY(-5%); z-index: 3; }
+.project-stage img:nth-child(3) { transform: translateY(15%) rotate(6deg); z-index: 2; }
+.project-stage img:only-child { width: 62%; margin: 0; transform: none; }
 .project-stage:has(img:only-child),
 .project-stage:empty { aspect-ratio: auto; min-height: 360px; }
 
 /* desktop mouse only: the hovered screen takes the big slot, the others step
    back. Leaving the stage (or a gap) returns the middle screen to the front. */
 @media (hover: hover) and (min-width: 861px) {
-  .project-stage img {
-    transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.25s ease;
-  }
-  .project-stage:has(img:hover) img:not(:only-child) { width: 27%; }
-  .project-stage:has(img:hover) img:not(:only-child):hover { width: 32%; }
-}
-
-.project:hover .project-stage img {
-  transform: translateY(-4px);
+  .project-stage img:hover { z-index: 4; }
+  .project-stage img:nth-child(1):hover { transform: translateY(3%) rotate(-3deg) scale(1.06); }
+  .project-stage img:nth-child(2):hover { transform: translateY(-10%) scale(1.06); }
+  .project-stage img:nth-child(3):hover { transform: translateY(9%) rotate(3deg) scale(1.06); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .project-stage img { transition: none; }
-  .project:hover .project-stage img { transform: none; }
 }
 
 .library-link {
@@ -789,10 +825,16 @@ button.project-stage {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
   }
+  /* the desktop scatter is undone here: on a phone these swipe, so they stay
+     upright, unrotated and side by side */
   .project-stage img,
-  .project-stage img:nth-child(2) {
+  .project-stage img:nth-child(1),
+  .project-stage img:nth-child(2),
+  .project-stage img:nth-child(3) {
     flex: 0 0 72%;
     width: 72%;
+    margin: 0;
+    transform: none;
     scroll-snap-align: center;
   }
   .project-stage img:only-child {

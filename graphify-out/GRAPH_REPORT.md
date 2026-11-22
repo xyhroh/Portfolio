@@ -1,17 +1,17 @@
 # Graph Report - Portfolio  (2026-11-22)
 
 ## Corpus Check
-- 78 files · ~1,189,632 words
+- 78 files · ~1,190,506 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 4 file(s) not represented in the graph (top: .css 3, (none) 1)
 
 ## Summary
-- 902 nodes · 1164 edges · 99 communities (62 shown, 37 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.87)
+- 898 nodes · 1147 edges · 99 communities (61 shown, 38 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 29 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d0a2e600`
+- Built from commit: `3cc43e6d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -20,6 +20,7 @@
 - Lanyard.jsx
 - package.json
 - openBook
+- maybeAnnounceSound
 - buildProjectsForShelf
 - ensureOpenBookBuilt
 - brandkit/SKILL.md
@@ -86,7 +87,7 @@
 - 15. DEFAULT SITE PACKS
 - 20. EXAMPLE INTERPRETATIONS
 - imagegen-frontend-web/SKILL.md
-- markLibraryReady
+- Portfolio Bookshelf — Starter
 - devDependencies
 - Arrows
 - Sounds
@@ -94,41 +95,38 @@
 - CV/title/README.md
 - Bookshelf 1/Row 1/README.md
 - Bookshelf 1/Row 2/README.md
-- Portfolio Bookshelf — Starter
 - 1. THE THREE DIALS (Core Configuration)
 
 ## God Nodes (most connected - your core abstractions)
 1. `CORE DIRECTIVE: IMAGE-FIRST WEBSITE DESIGN TO CODE` - 39 edges
 2. `CORE DIRECTIVE: PREMIUM MOBILE APP IMAGE DIRECTION` - 39 edges
 3. `openBook()` - 24 edges
-4. `invalidate()` - 22 edges
-5. `closeBook()` - 22 edges
-6. `CORE DIRECTIVE: AWWWARDS-LEVEL IMAGE ART DIRECTION` - 22 edges
-7. `T()` - 18 edges
+4. `closeBook()` - 22 edges
+5. `CORE DIRECTIVE: AWWWARDS-LEVEL IMAGE ART DIRECTION` - 22 edges
+6. `invalidate()` - 21 edges
+7. `T()` - 17 edges
 8. `tasteskill: Anti-Slop Frontend Skill` - 16 edges
 9. `Appendix B - Canonical Sources (read these before reinventing)` - 15 edges
 10. `jumpToIndex()` - 14 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `How the project is organized` --references--> `navigateCarousel()`  [INFERRED]
-  README.md → src/main.js
-- `How the pieces fit together` --references--> `navigateCarousel()`  [INFERRED]
+- `How the pieces fit together` --references--> `buildOpenBook()`  [INFERRED]
   README.md → src/main.js
 - `How the pieces fit together` --references--> `createSpineTexture()`  [INFERRED]
   README.md → src/main.js
 - `How the pieces fit together` --references--> `buildBookshelf()`  [INFERRED]
   README.md → src/main.js
-- `How the pieces fit together` --references--> `buildOpenBook()`  [INFERRED]
-  README.md → src/main.js
+- `Selected work` --references--> `link()`  [INFERRED]
+  src/home/projects/README.md → src/home/home.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (99 total, 37 thin omitted)
+## Communities (99 total, 38 thin omitted)
 
 ### Community 0 - "main.js"
 Cohesion: 0.02
-Nodes (103): activePointers, appEl, arrowImageModules, backWoodMaterial, blankPixel, bookBoxTmp, bookListEl, bookOpenPivot (+95 more)
+Nodes (101): activePointers, appEl, arrowImageModules, backWoodMaterial, blankPixel, bookBoxTmp, bookListEl, bookOpenPivot (+93 more)
 
 ### Community 1 - "Lanyard.jsx"
 Cohesion: 0.11
@@ -140,7 +138,7 @@ Nodes (12): name, private, type, version, gsap, meshline, react, react-dom (+4 m
 
 ### Community 3 - "openBook"
 Cohesion: 0.05
-Nodes (83): animate(), animateFlip(), announce(), useTexture(), applyPixelRatio(), applyTheme(), beginBookDrag(), clampOrbitAzimuth() (+75 more)
+Nodes (82): animate(), animateFlip(), announce(), useTexture(), applyPixelRatio(), applyTheme(), beginBookDrag(), buildOpenBook() (+74 more)
 
 ### Community 5 - "buildProjectsForShelf"
 Cohesion: 0.19
@@ -358,26 +356,22 @@ Nodes (4): 12-section pack, 15. DEFAULT SITE PACKS, 4-section pack, 8-section pa
 Cohesion: 0.50
 Nodes (4): 20. EXAMPLE INTERPRETATIONS, Example 1, Example 2, Example 3
 
-### Community 73 - "markLibraryReady"
-Cohesion: 0.14
-Nodes (18): How the pieces fit together, applyCoverWrap(), slice(), buildBookshelf(), buildOpenBook(), coverSettled(), createSpineTexture(), dominantCoverColour() (+10 more)
+### Community 73 - "Portfolio Bookshelf — Starter"
+Cohesion: 0.09
+Nodes (25): Adding real pages (no code editing required), Deploying for grading, Editing the intro line, Editing the per-shelf blurb, Grouping pages into sticky tabs, How the pieces fit together, How the project is organized, Known simplifications (worth knowing about, not bugs) (+17 more)
 
 ### Community 75 - "devDependencies"
 Cohesion: 0.67
 Nodes (3): devDependencies, sharp, vite
-
-### Community 104 - "Portfolio Bookshelf — Starter"
-Cohesion: 0.18
-Nodes (10): Adding real pages (no code editing required), Deploying for grading, Editing the intro line, Editing the per-shelf blurb, Grouping pages into sticky tabs, How the project is organized, Known simplifications (worth knowing about, not bugs), Portfolio Bookshelf — Starter (+2 more)
 
 ### Community 105 - "1. THE THREE DIALS (Core Configuration)"
 Cohesion: 0.50
 Nodes (4): 1.A Dial Inference (design read → dial values), 1.B Use-Case Presets, 1.C How the Dials Drive Output, 1. THE THREE DIALS (Core Configuration)
 
 ## Knowledge Gaps
-- **586 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+581 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 647 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **37 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **585 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+580 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 646 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **38 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -388,11 +382,11 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **Why does `gsap` connect `package.json` to `main.js`?**
   _High betweenness centrality (0.012) - this node is a cross-community bridge._
-- **Are the 4 inferred relationships involving `invalidate()` (e.g. with `closeBook()` and `navigateCarousel()`) actually correct?**
-  _`invalidate()` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 2 inferred relationships involving `closeBook()` (e.g. with `main.js` and `invalidate()`) actually correct?**
   _`closeBook()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _586 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _585 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `main.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.018691588785046728 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.01904761904761905 - nodes in this community are weakly interconnected._
+- **Should `Lanyard.jsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.1111111111111111 - nodes in this community are weakly interconnected._

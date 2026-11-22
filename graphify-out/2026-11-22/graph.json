@@ -37,7 +37,7 @@
       "file_type": "code",
       "norm_label": "syncsoundtoggle()",
       "source_file": "src/main.js",
-      "source_location": "L4247"
+      "source_location": "L4148"
     },
     {
       "id": "src_home_lanyard_lanyard_band",
@@ -121,7 +121,7 @@
       "file_type": "code",
       "norm_label": "fitdistance()",
       "source_file": "src/main.js",
-      "source_location": "L1849"
+      "source_location": "L1757"
     },
     {
       "id": "src_main_frameportraitonbooks",
@@ -133,7 +133,7 @@
       "file_type": "code",
       "norm_label": "frameportraitonbooks()",
       "source_file": "src/main.js",
-      "source_location": "L1874"
+      "source_location": "L1782"
     },
     {
       "id": "src_main_updatecameraframing",
@@ -145,7 +145,7 @@
       "file_type": "code",
       "norm_label": "updatecameraframing()",
       "source_file": "src/main.js",
-      "source_location": "L1931"
+      "source_location": "L1839"
     },
     {
       "id": "src_main_getaudio",
@@ -157,7 +157,7 @@
       "file_type": "code",
       "norm_label": "getaudio()",
       "source_file": "src/main.js",
-      "source_location": "L4007"
+      "source_location": "L3908"
     },
     {
       "id": "src_main_loadsample",
@@ -169,7 +169,7 @@
       "file_type": "code",
       "norm_label": "loadsample()",
       "source_file": "src/main.js",
-      "source_location": "L4049"
+      "source_location": "L3950"
     },
     {
       "id": "src_main_noiseburst",
@@ -181,7 +181,7 @@
       "file_type": "code",
       "norm_label": "noiseburst()",
       "source_file": "src/main.js",
-      "source_location": "L4022"
+      "source_location": "L3923"
     },
     {
       "id": "src_main_playclosesound",
@@ -193,7 +193,7 @@
       "file_type": "code",
       "norm_label": "playclosesound()",
       "source_file": "src/main.js",
-      "source_location": "L4197"
+      "source_location": "L4098"
     },
     {
       "id": "src_main_playcoverswish",
@@ -205,7 +205,7 @@
       "file_type": "code",
       "norm_label": "playcoverswish()",
       "source_file": "src/main.js",
-      "source_location": "L4138"
+      "source_location": "L4039"
     },
     {
       "id": "src_main_playflipsound",
@@ -217,7 +217,7 @@
       "file_type": "code",
       "norm_label": "playflipsound()",
       "source_file": "src/main.js",
-      "source_location": "L4102"
+      "source_location": "L4003"
     },
     {
       "id": "src_main_playhoversound",
@@ -229,7 +229,7 @@
       "file_type": "code",
       "norm_label": "playhoversound()",
       "source_file": "src/main.js",
-      "source_location": "L4153"
+      "source_location": "L4054"
     },
     {
       "id": "src_main_playpageland",
@@ -241,7 +241,7 @@
       "file_type": "code",
       "norm_label": "playpageland()",
       "source_file": "src/main.js",
-      "source_location": "L4185"
+      "source_location": "L4086"
     },
     {
       "id": "src_main_playsample",
@@ -253,7 +253,7 @@
       "file_type": "code",
       "norm_label": "playsample()",
       "source_file": "src/main.js",
-      "source_location": "L4074"
+      "source_location": "L3975"
     },
     {
       "id": "src_main_playthud",
@@ -265,7 +265,7 @@
       "file_type": "code",
       "norm_label": "playthud()",
       "source_file": "src/main.js",
-      "source_location": "L4217"
+      "source_location": "L4118"
     },
     {
       "id": "src_main_unlockaudio",
@@ -277,7 +277,7 @@
       "file_type": "code",
       "norm_label": "unlockaudio()",
       "source_file": "src/main.js",
-      "source_location": "L3997"
+      "source_location": "L3898"
     },
     {
       "id": "vite_plugins_optimise_images_maxwidthfor",
@@ -325,7 +325,7 @@
       "file_type": "code",
       "norm_label": "animate()",
       "source_file": "src/main.js",
-      "source_location": "L4410"
+      "source_location": "L4311"
     },
     {
       "id": "src_main_animateflip",
@@ -337,7 +337,7 @@
       "file_type": "code",
       "norm_label": "animateflip()",
       "source_file": "src/main.js",
-      "source_location": "L2472"
+      "source_location": "L2380"
     },
     {
       "id": "src_main_announce",
@@ -397,7 +397,19 @@
       "file_type": "code",
       "norm_label": "beginbookdrag()",
       "source_file": "src/main.js",
-      "source_location": "L3428"
+      "source_location": "L3331"
+    },
+    {
+      "id": "src_main_buildopenbook",
+      "label": "buildOpenBook()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "openBook",
+      "file_type": "code",
+      "norm_label": "buildopenbook()",
+      "source_file": "src/main.js",
+      "source_location": "L2150"
     },
     {
       "id": "src_main_clamporbitazimuth",
@@ -409,7 +421,7 @@
       "file_type": "code",
       "norm_label": "clamporbitazimuth()",
       "source_file": "src/main.js",
-      "source_location": "L4398"
+      "source_location": "L4299"
     },
     {
       "id": "src_main_closebook",
@@ -421,7 +433,7 @@
       "file_type": "code",
       "norm_label": "closebook()",
       "source_file": "src/main.js",
-      "source_location": "L2874"
+      "source_location": "L2782"
     },
     {
       "id": "src_main_closepaperview",
@@ -433,7 +445,7 @@
       "file_type": "code",
       "norm_label": "closepaperview()",
       "source_file": "src/main.js",
-      "source_location": "L2652"
+      "source_location": "L2560"
     },
     {
       "id": "src_main_curldepth",
@@ -445,7 +457,7 @@
       "file_type": "code",
       "norm_label": "curldepth()",
       "source_file": "src/main.js",
-      "source_location": "L2452"
+      "source_location": "L2360"
     },
     {
       "id": "src_main_dirtyshadows",
@@ -481,7 +493,7 @@
       "file_type": "code",
       "norm_label": "dragangle()",
       "source_file": "src/main.js",
-      "source_location": "L3474"
+      "source_location": "L3377"
     },
     {
       "id": "src_main_endbookdrag",
@@ -493,7 +505,7 @@
       "file_type": "code",
       "norm_label": "endbookdrag()",
       "source_file": "src/main.js",
-      "source_location": "L3525"
+      "source_location": "L3428"
     },
     {
       "id": "src_main_enterreadingcontrols",
@@ -505,7 +517,7 @@
       "file_type": "code",
       "norm_label": "enterreadingcontrols()",
       "source_file": "src/main.js",
-      "source_location": "L2003"
+      "source_location": "L1911"
     },
     {
       "id": "src_main_exitreadingcontrols",
@@ -517,7 +529,7 @@
       "file_type": "code",
       "norm_label": "exitreadingcontrols()",
       "source_file": "src/main.js",
-      "source_location": "L2017"
+      "source_location": "L1925"
     },
     {
       "id": "src_main_flipnext",
@@ -529,7 +541,7 @@
       "file_type": "code",
       "norm_label": "flipnext()",
       "source_file": "src/main.js",
-      "source_location": "L2563"
+      "source_location": "L2471"
     },
     {
       "id": "src_main_flipprev",
@@ -541,7 +553,7 @@
       "file_type": "code",
       "norm_label": "flipprev()",
       "source_file": "src/main.js",
-      "source_location": "L2568"
+      "source_location": "L2476"
     },
     {
       "id": "src_main_getleafshadow",
@@ -553,7 +565,7 @@
       "file_type": "code",
       "norm_label": "getleafshadow()",
       "source_file": "src/main.js",
-      "source_location": "L2378"
+      "source_location": "L2286"
     },
     {
       "id": "src_main_getviewportsize",
@@ -577,7 +589,7 @@
       "file_type": "code",
       "norm_label": "handleviewportresize()",
       "source_file": "src/main.js",
-      "source_location": "L4356"
+      "source_location": "L4257"
     },
     {
       "id": "src_main_hovertab",
@@ -589,7 +601,7 @@
       "file_type": "code",
       "norm_label": "hovertab()",
       "source_file": "src/main.js",
-      "source_location": "L3623"
+      "source_location": "L3526"
     },
     {
       "id": "src_main_infofor",
@@ -625,7 +637,7 @@
       "file_type": "code",
       "norm_label": "jumptoindex()",
       "source_file": "src/main.js",
-      "source_location": "L2525"
+      "source_location": "L2433"
     },
     {
       "id": "src_main_keyboardpickbook",
@@ -637,7 +649,7 @@
       "file_type": "code",
       "norm_label": "keyboardpickbook()",
       "source_file": "src/main.js",
-      "source_location": "L3754"
+      "source_location": "L3657"
     },
     {
       "id": "src_main_loadleaf",
@@ -652,18 +664,6 @@
       "source_location": "L1043"
     },
     {
-      "id": "src_main_navigatecarousel",
-      "label": "navigateCarousel()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "openBook",
-      "file_type": "code",
-      "norm_label": "navigatecarousel()",
-      "source_file": "src/main.js",
-      "source_location": "L1739"
-    },
-    {
       "id": "src_main_nudgenextpage",
       "label": "nudgeNextPage()",
       "_callable": true,
@@ -673,7 +673,7 @@
       "file_type": "code",
       "norm_label": "nudgenextpage()",
       "source_file": "src/main.js",
-      "source_location": "L3407"
+      "source_location": "L3310"
     },
     {
       "id": "src_main_onclick",
@@ -685,7 +685,7 @@
       "file_type": "code",
       "norm_label": "onclick()",
       "source_file": "src/main.js",
-      "source_location": "L3238"
+      "source_location": "L3146"
     },
     {
       "id": "src_main_onkeydown",
@@ -697,7 +697,7 @@
       "file_type": "code",
       "norm_label": "onkeydown()",
       "source_file": "src/main.js",
-      "source_location": "L3763"
+      "source_location": "L3666"
     },
     {
       "id": "src_main_onpointerdown",
@@ -709,7 +709,7 @@
       "file_type": "code",
       "norm_label": "onpointerdown()",
       "source_file": "src/main.js",
-      "source_location": "L3550"
+      "source_location": "L3453"
     },
     {
       "id": "src_main_onpointermove",
@@ -721,7 +721,7 @@
       "file_type": "code",
       "norm_label": "onpointermove()",
       "source_file": "src/main.js",
-      "source_location": "L3665"
+      "source_location": "L3568"
     },
     {
       "id": "src_main_onpointerup",
@@ -733,7 +733,7 @@
       "file_type": "code",
       "norm_label": "onpointerup()",
       "source_file": "src/main.js",
-      "source_location": "L3567"
+      "source_location": "L3470"
     },
     {
       "id": "src_main_openbook",
@@ -745,7 +745,7 @@
       "file_type": "code",
       "norm_label": "openbook()",
       "source_file": "src/main.js",
-      "source_location": "L2731"
+      "source_location": "L2639"
     },
     {
       "id": "src_main_openpaperview",
@@ -757,7 +757,7 @@
       "file_type": "code",
       "norm_label": "openpaperview()",
       "source_file": "src/main.js",
-      "source_location": "L2624"
+      "source_location": "L2532"
     },
     {
       "id": "src_main_paperflip",
@@ -769,7 +769,7 @@
       "file_type": "code",
       "norm_label": "paperflip()",
       "source_file": "src/main.js",
-      "source_location": "L2667"
+      "source_location": "L2575"
     },
     {
       "id": "src_main_pickbooknear",
@@ -781,7 +781,7 @@
       "file_type": "code",
       "norm_label": "pickbooknear()",
       "source_file": "src/main.js",
-      "source_location": "L3185"
+      "source_location": "L3093"
     },
     {
       "id": "src_main_posecoverleaf",
@@ -793,7 +793,7 @@
       "file_type": "code",
       "norm_label": "posecoverleaf()",
       "source_file": "src/main.js",
-      "source_location": "L2724"
+      "source_location": "L2632"
     },
     {
       "id": "src_main_posehinge",
@@ -805,7 +805,7 @@
       "file_type": "code",
       "norm_label": "posehinge()",
       "source_file": "src/main.js",
-      "source_location": "L2457"
+      "source_location": "L2365"
     },
     {
       "id": "src_main_posetabs",
@@ -817,7 +817,7 @@
       "file_type": "code",
       "norm_label": "posetabs()",
       "source_file": "src/main.js",
-      "source_location": "L2434"
+      "source_location": "L2342"
     },
     {
       "id": "src_main_processuploadqueue",
@@ -841,7 +841,7 @@
       "file_type": "code",
       "norm_label": "pullout()",
       "source_file": "src/main.js",
-      "source_location": "L2998"
+      "source_location": "L2906"
     },
     {
       "id": "src_main_pushback",
@@ -853,7 +853,7 @@
       "file_type": "code",
       "norm_label": "pushback()",
       "source_file": "src/main.js",
-      "source_location": "L3017"
+      "source_location": "L2925"
     },
     {
       "id": "src_main_queueupload",
@@ -877,7 +877,7 @@
       "file_type": "code",
       "norm_label": "readingfitdistance()",
       "source_file": "src/main.js",
-      "source_location": "L3848"
+      "source_location": "L3749"
     },
     {
       "id": "src_main_refitcameraframing",
@@ -889,7 +889,7 @@
       "file_type": "code",
       "norm_label": "refitcameraframing()",
       "source_file": "src/main.js",
-      "source_location": "L4345"
+      "source_location": "L4246"
     },
     {
       "id": "src_main_releasebooktextures",
@@ -904,18 +904,6 @@
       "source_location": "L1105"
     },
     {
-      "id": "src_main_resetshelfinteractionstate",
-      "label": "resetShelfInteractionState()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "openBook",
-      "file_type": "code",
-      "norm_label": "resetshelfinteractionstate()",
-      "source_file": "src/main.js",
-      "source_location": "L1726"
-    },
-    {
       "id": "src_main_returnbooktoshelf",
       "label": "returnBookToShelf()",
       "_callable": true,
@@ -925,7 +913,7 @@
       "file_type": "code",
       "norm_label": "returnbooktoshelf()",
       "source_file": "src/main.js",
-      "source_location": "L2692"
+      "source_location": "L2600"
     },
     {
       "id": "src_main_revealmaterial",
@@ -949,7 +937,7 @@
       "file_type": "code",
       "norm_label": "selectbookfromlist()",
       "source_file": "src/main.js",
-      "source_location": "L3168"
+      "source_location": "L3076"
     },
     {
       "id": "src_main_setbooklight",
@@ -973,7 +961,7 @@
       "file_type": "code",
       "norm_label": "setcabinetvisible()",
       "source_file": "src/main.js",
-      "source_location": "L2038"
+      "source_location": "L1946"
     },
     {
       "id": "src_main_setcursor",
@@ -985,7 +973,7 @@
       "file_type": "code",
       "norm_label": "setcursor()",
       "source_file": "src/main.js",
-      "source_location": "L3661"
+      "source_location": "L3564"
     },
     {
       "id": "src_main_sethoveredarrow",
@@ -997,7 +985,7 @@
       "file_type": "code",
       "norm_label": "sethoveredarrow()",
       "source_file": "src/main.js",
-      "source_location": "L3646"
+      "source_location": "L3549"
     },
     {
       "id": "src_main_sethoveredbook",
@@ -1009,7 +997,7 @@
       "file_type": "code",
       "norm_label": "sethoveredbook()",
       "source_file": "src/main.js",
-      "source_location": "L3146"
+      "source_location": "L3054"
     },
     {
       "id": "src_main_sethoveredtab",
@@ -1021,7 +1009,7 @@
       "file_type": "code",
       "norm_label": "sethoveredtab()",
       "source_file": "src/main.js",
-      "source_location": "L3637"
+      "source_location": "L3540"
     },
     {
       "id": "src_main_setkeyhintmode",
@@ -1033,7 +1021,7 @@
       "file_type": "code",
       "norm_label": "setkeyhintmode()",
       "source_file": "src/main.js",
-      "source_location": "L1992"
+      "source_location": "L1900"
     },
     {
       "id": "src_main_setleafshown",
@@ -1057,7 +1045,7 @@
       "file_type": "code",
       "norm_label": "setlitrow()",
       "source_file": "src/main.js",
-      "source_location": "L3126"
+      "source_location": "L3034"
     },
     {
       "id": "src_main_setpagepeek",
@@ -1069,7 +1057,7 @@
       "file_type": "code",
       "norm_label": "setpagepeek()",
       "source_file": "src/main.js",
-      "source_location": "L3372"
+      "source_location": "L3275"
     },
     {
       "id": "src_main_setpaperviewtexture",
@@ -1081,7 +1069,7 @@
       "file_type": "code",
       "norm_label": "setpaperviewtexture()",
       "source_file": "src/main.js",
-      "source_location": "L2590"
+      "source_location": "L2498"
     },
     {
       "id": "src_main_setpointerfromevent",
@@ -1093,7 +1081,7 @@
       "file_type": "code",
       "norm_label": "setpointerfromevent()",
       "source_file": "src/main.js",
-      "source_location": "L3226"
+      "source_location": "L3134"
     },
     {
       "id": "src_main_setreadingsharpness",
@@ -1105,7 +1093,7 @@
       "file_type": "code",
       "norm_label": "setreadingsharpness()",
       "source_file": "src/main.js",
-      "source_location": "L1970"
+      "source_location": "L1878"
     },
     {
       "id": "src_main_setreadinguireachable",
@@ -1117,7 +1105,7 @@
       "file_type": "code",
       "norm_label": "setreadinguireachable()",
       "source_file": "src/main.js",
-      "source_location": "L1998"
+      "source_location": "L1906"
     },
     {
       "id": "src_main_setreadingzoom",
@@ -1129,7 +1117,7 @@
       "file_type": "code",
       "norm_label": "setreadingzoom()",
       "source_file": "src/main.js",
-      "source_location": "L3853"
+      "source_location": "L3754"
     },
     {
       "id": "src_main_showinfoforrow",
@@ -1153,7 +1141,7 @@
       "file_type": "code",
       "norm_label": "syncbooklist()",
       "source_file": "src/main.js",
-      "source_location": "L3091"
+      "source_location": "L2999"
     },
     {
       "id": "src_main_synczoombutton",
@@ -1165,7 +1153,7 @@
       "file_type": "code",
       "norm_label": "synczoombutton()",
       "source_file": "src/main.js",
-      "source_location": "L3874"
+      "source_location": "L3775"
     },
     {
       "id": "src_main_t",
@@ -1189,7 +1177,7 @@
       "file_type": "code",
       "norm_label": "unhovertab()",
       "source_file": "src/main.js",
-      "source_location": "L3630"
+      "source_location": "L3533"
     },
     {
       "id": "src_main_unloadleaf",
@@ -1225,7 +1213,7 @@
       "file_type": "code",
       "norm_label": "updatebookdrag()",
       "source_file": "src/main.js",
-      "source_location": "L3482"
+      "source_location": "L3385"
     },
     {
       "id": "src_main_updatebooklistfade",
@@ -1237,7 +1225,7 @@
       "file_type": "code",
       "norm_label": "updatebooklistfade()",
       "source_file": "src/main.js",
-      "source_location": "L3078"
+      "source_location": "L2986"
     },
     {
       "id": "src_main_updateleafshadow",
@@ -1249,7 +1237,7 @@
       "file_type": "code",
       "norm_label": "updateleafshadow()",
       "source_file": "src/main.js",
-      "source_location": "L2413"
+      "source_location": "L2321"
     },
     {
       "id": "src_main_updateleafwindow",
@@ -1273,7 +1261,7 @@
       "file_type": "code",
       "norm_label": "updatepaperui()",
       "source_file": "src/main.js",
-      "source_location": "L2616"
+      "source_location": "L2524"
     },
     {
       "id": "src_main_updatepreviewpanel",
@@ -1285,7 +1273,7 @@
       "file_type": "code",
       "norm_label": "updatepreviewpanel()",
       "source_file": "src/main.js",
-      "source_location": "L3202"
+      "source_location": "L3110"
     },
     {
       "id": "src_main_updatereadingui",
@@ -1297,7 +1285,7 @@
       "file_type": "code",
       "norm_label": "updatereadingui()",
       "source_file": "src/main.js",
-      "source_location": "L2352"
+      "source_location": "L2260"
     },
     {
       "id": "src_main_updateshelfinfopanel",
@@ -1312,6 +1300,30 @@
       "source_location": "L1491"
     },
     {
+      "id": "src_main_maybeannouncesound",
+      "label": "maybeAnnounceSound()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "maybeAnnounceSound",
+      "file_type": "code",
+      "norm_label": "maybeannouncesound()",
+      "source_file": "src/main.js",
+      "source_location": "L4168"
+    },
+    {
+      "id": "src_main_showtoast",
+      "label": "showToast()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "maybeAnnounceSound",
+      "file_type": "code",
+      "norm_label": "showtoast()",
+      "source_file": "src/main.js",
+      "source_location": "L4139"
+    },
+    {
       "id": "src_main_currentsharppages",
       "label": "currentSharpPages()",
       "_callable": true,
@@ -1321,7 +1333,7 @@
       "file_type": "code",
       "norm_label": "currentsharppages()",
       "source_file": "src/main.js",
-      "source_location": "L3938"
+      "source_location": "L3839"
     },
     {
       "id": "src_main_hidesharppages",
@@ -1333,7 +1345,7 @@
       "file_type": "code",
       "norm_label": "hidesharppages()",
       "source_file": "src/main.js",
-      "source_location": "L3953"
+      "source_location": "L3854"
     },
     {
       "id": "src_main_placesharppage",
@@ -1345,7 +1357,7 @@
       "file_type": "code",
       "norm_label": "placesharppage()",
       "source_file": "src/main.js",
-      "source_location": "L3916"
+      "source_location": "L3817"
     },
     {
       "id": "src_main_projecttoscreen",
@@ -1357,7 +1369,7 @@
       "file_type": "code",
       "norm_label": "projecttoscreen()",
       "source_file": "src/main.js",
-      "source_location": "L3906"
+      "source_location": "L3807"
     },
     {
       "id": "src_main_updatesharppages",
@@ -1369,7 +1381,7 @@
       "file_type": "code",
       "norm_label": "updatesharppages()",
       "source_file": "src/main.js",
-      "source_location": "L3960"
+      "source_location": "L3861"
     },
     {
       "id": "src_main_buildinfoforshelf",
@@ -1525,7 +1537,7 @@
       "file_type": "code",
       "norm_label": "applyleafbend()",
       "source_file": "src/main.js",
-      "source_location": "L2080"
+      "source_location": "L1988"
     },
     {
       "id": "src_main_applyleafcontent",
@@ -1573,7 +1585,7 @@
       "file_type": "code",
       "norm_label": "buildtabs()",
       "source_file": "src/main.js",
-      "source_location": "L2301"
+      "source_location": "L2209"
     },
     {
       "id": "src_main_createpageplaceholdertexture",
@@ -1597,7 +1609,7 @@
       "file_type": "code",
       "norm_label": "createtabtexture()",
       "source_file": "src/main.js",
-      "source_location": "L2280"
+      "source_location": "L2188"
     },
     {
       "id": "src_main_ensureopenbookbuilt",
@@ -1609,7 +1621,7 @@
       "file_type": "code",
       "norm_label": "ensureopenbookbuilt()",
       "source_file": "src/main.js",
-      "source_location": "L2111"
+      "source_location": "L2019"
     },
     {
       "id": "src_main_getcoverleaf",
@@ -1621,7 +1633,7 @@
       "file_type": "code",
       "norm_label": "getcoverleaf()",
       "source_file": "src/main.js",
-      "source_location": "L2704"
+      "source_location": "L2612"
     },
     {
       "id": "src_main_innercovercolour",
@@ -1713,7 +1725,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "applycoverwrap()",
       "source_file": "src/main.js",
@@ -1725,7 +1737,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "slice()",
       "source_file": "src/main.js",
@@ -1737,23 +1749,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "buildbookshelf()",
       "source_file": "src/main.js",
       "source_location": "L1266"
-    },
-    {
-      "id": "src_main_buildopenbook",
-      "label": "buildOpenBook()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 73,
-      "community_name": "markLibraryReady",
-      "file_type": "code",
-      "norm_label": "buildopenbook()",
-      "source_file": "src/main.js",
-      "source_location": "L2242"
     },
     {
       "id": "src_main_coversettled",
@@ -1761,7 +1761,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "coversettled()",
       "source_file": "src/main.js",
@@ -1773,7 +1773,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "createspinetexture()",
       "source_file": "src/main.js",
@@ -1785,7 +1785,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "dominantcovercolour()",
       "source_file": "src/main.js",
@@ -1797,7 +1797,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "dropbooksintoplace()",
       "source_file": "src/main.js",
@@ -1809,7 +1809,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "dropshelfintoplace()",
       "source_file": "src/main.js",
@@ -1821,23 +1821,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "marklibraryready()",
       "source_file": "src/main.js",
-      "source_location": "L4302"
-    },
-    {
-      "id": "src_main_maybeannouncesound",
-      "label": "maybeAnnounceSound()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 73,
-      "community_name": "markLibraryReady",
-      "file_type": "code",
-      "norm_label": "maybeannouncesound()",
-      "source_file": "src/main.js",
-      "source_location": "L4267"
+      "source_location": "L4203"
     },
     {
       "id": "src_main_openbookfromurl",
@@ -1845,11 +1833,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "openbookfromurl()",
       "source_file": "src/main.js",
-      "source_location": "L4288"
+      "source_location": "L4189"
     },
     {
       "id": "src_main_roundedbox",
@@ -1857,23 +1845,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "roundedbox()",
       "source_file": "src/main.js",
       "source_location": "L683"
-    },
-    {
-      "id": "src_main_showtoast",
-      "label": "showToast()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 73,
-      "community_name": "markLibraryReady",
-      "file_type": "code",
-      "norm_label": "showtoast()",
-      "source_file": "src/main.js",
-      "source_location": "L4238"
     },
     {
       "id": "src_main_startintrorolerotation",
@@ -1881,7 +1857,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "startintrorolerotation()",
       "source_file": "src/main.js",
@@ -1893,11 +1869,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "warmopenbookshaders()",
       "source_file": "src/main.js",
-      "source_location": "L2967"
+      "source_location": "L2875"
     },
     {
       "id": "src_main_rowsneededfor",
@@ -1991,7 +1967,7 @@
       "file_type": "code",
       "norm_label": "activepointers",
       "source_file": "src/main.js",
-      "source_location": "L3359"
+      "source_location": "L3262"
     },
     {
       "id": "src_main_appel",
@@ -2046,7 +2022,7 @@
       "file_type": "code",
       "norm_label": "bookboxtmp",
       "source_file": "src/main.js",
-      "source_location": "L1873"
+      "source_location": "L1781"
     },
     {
       "id": "src_main_booklistel",
@@ -2068,7 +2044,7 @@
       "file_type": "code",
       "norm_label": "bookopenpivot",
       "source_file": "src/main.js",
-      "source_location": "L2686"
+      "source_location": "L2594"
     },
     {
       "id": "src_main_bookrestvec",
@@ -2079,7 +2055,7 @@
       "file_type": "code",
       "norm_label": "bookrestvec",
       "source_file": "src/main.js",
-      "source_location": "L1872"
+      "source_location": "L1780"
     },
     {
       "id": "src_main_booksizevec",
@@ -2090,7 +2066,7 @@
       "file_type": "code",
       "norm_label": "booksizevec",
       "source_file": "src/main.js",
-      "source_location": "L1871"
+      "source_location": "L1779"
     },
     {
       "id": "src_main_cabinetcolours",
@@ -2222,7 +2198,7 @@
       "file_type": "code",
       "norm_label": "keyhintel",
       "source_file": "src/main.js",
-      "source_location": "L1989"
+      "source_location": "L1897"
     },
     {
       "id": "src_main_keylight",
@@ -2302,28 +2278,6 @@
       "source_location": "L75"
     },
     {
-      "id": "src_main_navnextbutton",
-      "label": "navNextButton",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "main.js",
-      "file_type": "code",
-      "norm_label": "navnextbutton",
-      "source_file": "src/main.js",
-      "source_location": "L1693"
-    },
-    {
-      "id": "src_main_navprevbutton",
-      "label": "navPrevButton",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "main.js",
-      "file_type": "code",
-      "norm_label": "navprevbutton",
-      "source_file": "src/main.js",
-      "source_location": "L1692"
-    },
-    {
       "id": "src_main_nextarrow",
       "label": "nextArrow",
       "_origin": "ast",
@@ -2343,7 +2297,7 @@
       "file_type": "code",
       "norm_label": "openbookcache",
       "source_file": "src/main.js",
-      "source_location": "L2063"
+      "source_location": "L1971"
     },
     {
       "id": "src_main_openbookcachesingle",
@@ -2354,7 +2308,7 @@
       "file_type": "code",
       "norm_label": "openbookcachesingle",
       "source_file": "src/main.js",
-      "source_location": "L2064"
+      "source_location": "L1972"
     },
     {
       "id": "src_main_openbookgroup",
@@ -2365,7 +2319,7 @@
       "file_type": "code",
       "norm_label": "openbookgroup",
       "source_file": "src/main.js",
-      "source_location": "L2048"
+      "source_location": "L1956"
     },
     {
       "id": "src_main_orbitoffset",
@@ -2376,7 +2330,7 @@
       "file_type": "code",
       "norm_label": "orbitoffset",
       "source_file": "src/main.js",
-      "source_location": "L4396"
+      "source_location": "L4297"
     },
     {
       "id": "src_main_orbitspherical",
@@ -2387,7 +2341,7 @@
       "file_type": "code",
       "norm_label": "orbitspherical",
       "source_file": "src/main.js",
-      "source_location": "L4397"
+      "source_location": "L4298"
     },
     {
       "id": "src_main_overviewcamerapos",
@@ -2398,7 +2352,7 @@
       "file_type": "code",
       "norm_label": "overviewcamerapos",
       "source_file": "src/main.js",
-      "source_location": "L1858"
+      "source_location": "L1766"
     },
     {
       "id": "src_main_overviewtarget",
@@ -2409,7 +2363,7 @@
       "file_type": "code",
       "norm_label": "overviewtarget",
       "source_file": "src/main.js",
-      "source_location": "L1859"
+      "source_location": "L1767"
     },
     {
       "id": "src_main_pageedgematerial",
@@ -2464,7 +2418,7 @@
       "file_type": "code",
       "norm_label": "paperclose",
       "source_file": "src/main.js",
-      "source_location": "L3055"
+      "source_location": "L2963"
     },
     {
       "id": "src_main_papercounter",
@@ -2475,7 +2429,7 @@
       "file_type": "code",
       "norm_label": "papercounter",
       "source_file": "src/main.js",
-      "source_location": "L3052"
+      "source_location": "L2960"
     },
     {
       "id": "src_main_paperfoldersbyshelf",
@@ -2508,7 +2462,7 @@
       "file_type": "code",
       "norm_label": "papernext",
       "source_file": "src/main.js",
-      "source_location": "L3054"
+      "source_location": "L2962"
     },
     {
       "id": "src_main_paperpanel",
@@ -2519,7 +2473,7 @@
       "file_type": "code",
       "norm_label": "paperpanel",
       "source_file": "src/main.js",
-      "source_location": "L3050"
+      "source_location": "L2958"
     },
     {
       "id": "src_main_paperprev",
@@ -2530,7 +2484,7 @@
       "file_type": "code",
       "norm_label": "paperprev",
       "source_file": "src/main.js",
-      "source_location": "L3053"
+      "source_location": "L2961"
     },
     {
       "id": "src_main_papertitle",
@@ -2541,7 +2495,7 @@
       "file_type": "code",
       "norm_label": "papertitle",
       "source_file": "src/main.js",
-      "source_location": "L3051"
+      "source_location": "L2959"
     },
     {
       "id": "src_main_paperviewgroup",
@@ -2552,7 +2506,7 @@
       "file_type": "code",
       "norm_label": "paperviewgroup",
       "source_file": "src/main.js",
-      "source_location": "L2581"
+      "source_location": "L2489"
     },
     {
       "id": "src_main_paperviewmaterial",
@@ -2563,7 +2517,7 @@
       "file_type": "code",
       "norm_label": "paperviewmaterial",
       "source_file": "src/main.js",
-      "source_location": "L2586"
+      "source_location": "L2494"
     },
     {
       "id": "src_main_pickpoint",
@@ -2574,7 +2528,7 @@
       "file_type": "code",
       "norm_label": "pickpoint",
       "source_file": "src/main.js",
-      "source_location": "L3184"
+      "source_location": "L3092"
     },
     {
       "id": "src_main_pixelratio",
@@ -2607,7 +2561,7 @@
       "file_type": "code",
       "norm_label": "pointer",
       "source_file": "src/main.js",
-      "source_location": "L3224"
+      "source_location": "L3132"
     },
     {
       "id": "src_main_portraitquery",
@@ -2640,7 +2594,7 @@
       "file_type": "code",
       "norm_label": "previewpanel",
       "source_file": "src/main.js",
-      "source_location": "L3068"
+      "source_location": "L2976"
     },
     {
       "id": "src_main_previewtitle",
@@ -2651,7 +2605,7 @@
       "file_type": "code",
       "norm_label": "previewtitle",
       "source_file": "src/main.js",
-      "source_location": "L3069"
+      "source_location": "L2977"
     },
     {
       "id": "src_main_projectfoldersbyshelf",
@@ -2673,7 +2627,7 @@
       "file_type": "code",
       "norm_label": "raycaster",
       "source_file": "src/main.js",
-      "source_location": "L3223"
+      "source_location": "L3131"
     },
     {
       "id": "src_main_readingcamerapos",
@@ -2684,7 +2638,7 @@
       "file_type": "code",
       "norm_label": "readingcamerapos",
       "source_file": "src/main.js",
-      "source_location": "L1860"
+      "source_location": "L1768"
     },
     {
       "id": "src_main_readingclose",
@@ -2695,7 +2649,7 @@
       "file_type": "code",
       "norm_label": "readingclose",
       "source_file": "src/main.js",
-      "source_location": "L3044"
+      "source_location": "L2952"
     },
     {
       "id": "src_main_readingcounter",
@@ -2706,7 +2660,7 @@
       "file_type": "code",
       "norm_label": "readingcounter",
       "source_file": "src/main.js",
-      "source_location": "L3041"
+      "source_location": "L2949"
     },
     {
       "id": "src_main_readingdim",
@@ -2717,7 +2671,7 @@
       "file_type": "code",
       "norm_label": "readingdim",
       "source_file": "src/main.js",
-      "source_location": "L2028"
+      "source_location": "L1936"
     },
     {
       "id": "src_main_readingnext",
@@ -2728,7 +2682,7 @@
       "file_type": "code",
       "norm_label": "readingnext",
       "source_file": "src/main.js",
-      "source_location": "L3043"
+      "source_location": "L2951"
     },
     {
       "id": "src_main_readingpanel",
@@ -2739,7 +2693,7 @@
       "file_type": "code",
       "norm_label": "readingpanel",
       "source_file": "src/main.js",
-      "source_location": "L3039"
+      "source_location": "L2947"
     },
     {
       "id": "src_main_readingposition",
@@ -2750,7 +2704,7 @@
       "file_type": "code",
       "norm_label": "readingposition",
       "source_file": "src/main.js",
-      "source_location": "L1857"
+      "source_location": "L1765"
     },
     {
       "id": "src_main_readingprev",
@@ -2761,7 +2715,7 @@
       "file_type": "code",
       "norm_label": "readingprev",
       "source_file": "src/main.js",
-      "source_location": "L3042"
+      "source_location": "L2950"
     },
     {
       "id": "src_main_readingtarget",
@@ -2772,7 +2726,7 @@
       "file_type": "code",
       "norm_label": "readingtarget",
       "source_file": "src/main.js",
-      "source_location": "L1861"
+      "source_location": "L1769"
     },
     {
       "id": "src_main_readingtitle",
@@ -2783,7 +2737,7 @@
       "file_type": "code",
       "norm_label": "readingtitle",
       "source_file": "src/main.js",
-      "source_location": "L3040"
+      "source_location": "L2948"
     },
     {
       "id": "src_main_readinguielements",
@@ -2794,7 +2748,7 @@
       "file_type": "code",
       "norm_label": "readinguielements",
       "source_file": "src/main.js",
-      "source_location": "L1997"
+      "source_location": "L1905"
     },
     {
       "id": "src_main_reducemotionquery",
@@ -2860,7 +2814,7 @@
       "file_type": "code",
       "norm_label": "samplebuffers",
       "source_file": "src/main.js",
-      "source_location": "L4046"
+      "source_location": "L3947"
     },
     {
       "id": "src_main_samplepending",
@@ -2871,7 +2825,7 @@
       "file_type": "code",
       "norm_label": "samplepending",
       "source_file": "src/main.js",
-      "source_location": "L4047"
+      "source_location": "L3948"
     },
     {
       "id": "src_main_scene",
@@ -2904,7 +2858,7 @@
       "file_type": "code",
       "norm_label": "shadowoffsetx",
       "source_file": "src/main.js",
-      "source_location": "L1827"
+      "source_location": "L1735"
     },
     {
       "id": "src_main_sharpa",
@@ -2915,7 +2869,7 @@
       "file_type": "code",
       "norm_label": "sharpa",
       "source_file": "src/main.js",
-      "source_location": "L3903"
+      "source_location": "L3804"
     },
     {
       "id": "src_main_sharpb",
@@ -2926,7 +2880,7 @@
       "file_type": "code",
       "norm_label": "sharpb",
       "source_file": "src/main.js",
-      "source_location": "L3904"
+      "source_location": "L3805"
     },
     {
       "id": "src_main_sharplayer",
@@ -2937,7 +2891,7 @@
       "file_type": "code",
       "norm_label": "sharplayer",
       "source_file": "src/main.js",
-      "source_location": "L3896"
+      "source_location": "L3797"
     },
     {
       "id": "src_main_sharpleft",
@@ -2948,7 +2902,7 @@
       "file_type": "code",
       "norm_label": "sharpleft",
       "source_file": "src/main.js",
-      "source_location": "L3897"
+      "source_location": "L3798"
     },
     {
       "id": "src_main_sharpprojected",
@@ -2959,7 +2913,7 @@
       "file_type": "code",
       "norm_label": "sharpprojected",
       "source_file": "src/main.js",
-      "source_location": "L3902"
+      "source_location": "L3803"
     },
     {
       "id": "src_main_sharpright",
@@ -2970,7 +2924,7 @@
       "file_type": "code",
       "norm_label": "sharpright",
       "source_file": "src/main.js",
-      "source_location": "L3898"
+      "source_location": "L3799"
     },
     {
       "id": "src_main_shelfinfobody",
@@ -3036,7 +2990,7 @@
       "file_type": "code",
       "norm_label": "soundtoggle",
       "source_file": "src/main.js",
-      "source_location": "L4246"
+      "source_location": "L4147"
     },
     {
       "id": "src_main_srstatus",
@@ -3080,7 +3034,7 @@
       "file_type": "code",
       "norm_label": "toastel",
       "source_file": "src/main.js",
-      "source_location": "L4236"
+      "source_location": "L4137"
     },
     {
       "id": "src_main_uploadqueue",
@@ -3113,7 +3067,7 @@
       "file_type": "code",
       "norm_label": "zoomtoggle",
       "source_file": "src/main.js",
-      "source_location": "L3873"
+      "source_location": "L3774"
     },
     {
       "id": "src_home_lanyard_lanyard",
@@ -3281,138 +3235,6 @@
       "norm_label": "graphify",
       "source_file": "CLAUDE.md",
       "source_location": "L1"
-    },
-    {
-      "id": "readme",
-      "label": "README.md",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "Portfolio Bookshelf \u2014 Starter",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "readme.md",
-      "source_file": "README.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "readme_adding_real_pages_no_code_editing_required",
-      "label": "Adding real pages (no code editing required)",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "Portfolio Bookshelf \u2014 Starter",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "adding real pages (no code editing required)",
-      "source_file": "README.md",
-      "source_location": "L37"
-    },
-    {
-      "id": "readme_deploying_for_grading",
-      "label": "Deploying for grading",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "Portfolio Bookshelf \u2014 Starter",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "deploying for grading",
-      "source_file": "README.md",
-      "source_location": "L173"
-    },
-    {
-      "id": "readme_editing_the_intro_line",
-      "label": "Editing the intro line",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "Portfolio Bookshelf \u2014 Starter",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "editing the intro line",
-      "source_file": "README.md",
-      "source_location": "L87"
-    },
-    {
-      "id": "readme_editing_the_per_shelf_blurb",
-      "label": "Editing the per-shelf blurb",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "Portfolio Bookshelf \u2014 Starter",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "editing the per-shelf blurb",
-      "source_file": "README.md",
-      "source_location": "L94"
-    },
-    {
-      "id": "readme_grouping_pages_into_sticky_tabs",
-      "label": "Grouping pages into sticky tabs",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "Portfolio Bookshelf \u2014 Starter",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "grouping pages into sticky tabs",
-      "source_file": "README.md",
-      "source_location": "L68"
-    },
-    {
-      "id": "readme_how_the_project_is_organized",
-      "label": "How the project is organized",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "Portfolio Bookshelf \u2014 Starter",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "how the project is organized",
-      "source_file": "README.md",
-      "source_location": "L103"
-    },
-    {
-      "id": "readme_known_simplifications_worth_knowing_about_not_bugs",
-      "label": "Known simplifications (worth knowing about, not bugs)",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "Portfolio Bookshelf \u2014 Starter",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "known simplifications (worth knowing about, not bugs)",
-      "source_file": "README.md",
-      "source_location": "L151"
-    },
-    {
-      "id": "readme_portfolio_bookshelf_starter",
-      "label": "Portfolio Bookshelf \u2014 Starter",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "Portfolio Bookshelf \u2014 Starter",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "portfolio bookshelf \u2014 starter",
-      "source_file": "README.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "readme_running_it",
-      "label": "Running it",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "Portfolio Bookshelf \u2014 Starter",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "running it",
-      "source_file": "README.md",
-      "source_location": "L21"
-    },
-    {
-      "id": "readme_suggested_build_order_from_here",
-      "label": "Suggested build order from here",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "Portfolio Bookshelf \u2014 Starter",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "suggested build order from here",
-      "source_file": "README.md",
-      "source_location": "L160"
     },
     {
       "id": "claude_skills_design_taste_frontend_skill_1_a_dial_inference_design_read_dial_values",
@@ -9771,23 +9593,155 @@
       "label": "shelves",
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "code",
       "norm_label": "shelves",
       "source_file": "src/main.js",
       "source_location": "L1529"
     },
     {
+      "id": "readme",
+      "label": "README.md",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "readme.md",
+      "source_file": "README.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "readme_adding_real_pages_no_code_editing_required",
+      "label": "Adding real pages (no code editing required)",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "adding real pages (no code editing required)",
+      "source_file": "README.md",
+      "source_location": "L37"
+    },
+    {
+      "id": "readme_deploying_for_grading",
+      "label": "Deploying for grading",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "deploying for grading",
+      "source_file": "README.md",
+      "source_location": "L173"
+    },
+    {
+      "id": "readme_editing_the_intro_line",
+      "label": "Editing the intro line",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "editing the intro line",
+      "source_file": "README.md",
+      "source_location": "L87"
+    },
+    {
+      "id": "readme_editing_the_per_shelf_blurb",
+      "label": "Editing the per-shelf blurb",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "editing the per-shelf blurb",
+      "source_file": "README.md",
+      "source_location": "L94"
+    },
+    {
+      "id": "readme_grouping_pages_into_sticky_tabs",
+      "label": "Grouping pages into sticky tabs",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "grouping pages into sticky tabs",
+      "source_file": "README.md",
+      "source_location": "L68"
+    },
+    {
       "id": "readme_how_the_pieces_fit_together",
       "label": "How the pieces fit together",
       "_origin": "ast",
       "community": 73,
-      "community_name": "markLibraryReady",
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "how the pieces fit together",
       "source_file": "README.md",
       "source_location": "L122"
+    },
+    {
+      "id": "readme_how_the_project_is_organized",
+      "label": "How the project is organized",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "how the project is organized",
+      "source_file": "README.md",
+      "source_location": "L103"
+    },
+    {
+      "id": "readme_known_simplifications_worth_knowing_about_not_bugs",
+      "label": "Known simplifications (worth knowing about, not bugs)",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "known simplifications (worth knowing about, not bugs)",
+      "source_file": "README.md",
+      "source_location": "L151"
+    },
+    {
+      "id": "readme_portfolio_bookshelf_starter",
+      "label": "Portfolio Bookshelf \u2014 Starter",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "portfolio bookshelf \u2014 starter",
+      "source_file": "README.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "readme_running_it",
+      "label": "Running it",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "running it",
+      "source_file": "README.md",
+      "source_location": "L21"
+    },
+    {
+      "id": "readme_suggested_build_order_from_here",
+      "label": "Suggested build order from here",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "Portfolio Bookshelf \u2014 Starter",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "suggested build order from here",
+      "source_file": "README.md",
+      "source_location": "L160"
     },
     {
       "id": "src_shelves_bookshelf_1_row_1_chatgpt_cover_readme",
@@ -10792,7 +10746,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4412",
+      "source_location": "L4313",
       "weight": 1.0
     },
     {
@@ -10804,7 +10758,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4414",
+      "source_location": "L4315",
       "weight": 1.0
     },
     {
@@ -10816,7 +10770,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4415",
+      "source_location": "L4316",
       "weight": 1.0
     },
     {
@@ -10828,7 +10782,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4421",
+      "source_location": "L4322",
       "weight": 1.0
     },
     {
@@ -10840,7 +10794,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4447",
+      "source_location": "L4348",
       "weight": 1.0
     },
     {
@@ -10852,7 +10806,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2487",
+      "source_location": "L2395",
       "weight": 1.0
     },
     {
@@ -10864,7 +10818,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2490",
+      "source_location": "L2398",
       "weight": 1.0
     },
     {
@@ -10876,7 +10830,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2493",
+      "source_location": "L2401",
       "weight": 1.0
     },
     {
@@ -10888,7 +10842,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2506",
+      "source_location": "L2414",
       "weight": 1.0
     },
     {
@@ -10900,7 +10854,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2509",
+      "source_location": "L2417",
       "weight": 1.0
     },
     {
@@ -10912,7 +10866,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2513",
+      "source_location": "L2421",
       "weight": 1.0
     },
     {
@@ -11104,7 +11058,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3431",
+      "source_location": "L3334",
       "weight": 1.0
     },
     {
@@ -11200,7 +11154,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2247",
+      "source_location": "L2155",
       "weight": 1.0
     },
     {
@@ -11212,7 +11166,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2253",
+      "source_location": "L2161",
       "weight": 1.0
     },
     {
@@ -11308,7 +11262,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2321",
+      "source_location": "L2229",
       "weight": 1.0
     },
     {
@@ -11320,7 +11274,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2887",
+      "source_location": "L2795",
       "weight": 1.0
     },
     {
@@ -11332,7 +11286,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2889",
+      "source_location": "L2797",
       "weight": 1.0
     },
     {
@@ -11344,7 +11298,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2890",
+      "source_location": "L2798",
       "weight": 1.0
     },
     {
@@ -11356,7 +11310,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2891",
+      "source_location": "L2799",
       "weight": 1.0
     },
     {
@@ -11368,7 +11322,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2893",
+      "source_location": "L2801",
       "weight": 1.0
     },
     {
@@ -11380,7 +11334,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2894",
+      "source_location": "L2802",
       "weight": 1.0
     },
     {
@@ -11392,7 +11346,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2895",
+      "source_location": "L2803",
       "weight": 1.0
     },
     {
@@ -11404,7 +11358,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2902",
+      "source_location": "L2810",
       "weight": 1.0
     },
     {
@@ -11416,7 +11370,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2909",
+      "source_location": "L2817",
       "weight": 1.0
     },
     {
@@ -11428,7 +11382,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2910",
+      "source_location": "L2818",
       "weight": 1.0
     },
     {
@@ -11440,7 +11394,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2911",
+      "source_location": "L2819",
       "weight": 1.0
     },
     {
@@ -11452,7 +11406,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2914",
+      "source_location": "L2822",
       "weight": 1.0
     },
     {
@@ -11464,7 +11418,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2918",
+      "source_location": "L2826",
       "weight": 1.0
     },
     {
@@ -11476,7 +11430,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2919",
+      "source_location": "L2827",
       "weight": 1.0
     },
     {
@@ -11488,7 +11442,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2922",
+      "source_location": "L2830",
       "weight": 1.0
     },
     {
@@ -11500,7 +11454,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2929",
+      "source_location": "L2837",
       "weight": 1.0
     },
     {
@@ -11512,7 +11466,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2937",
+      "source_location": "L2845",
       "weight": 1.0
     },
     {
@@ -11524,7 +11478,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2656",
+      "source_location": "L2564",
       "weight": 1.0
     },
     {
@@ -11536,7 +11490,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2659",
+      "source_location": "L2567",
       "weight": 1.0
     },
     {
@@ -11548,7 +11502,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2660",
+      "source_location": "L2568",
       "weight": 1.0
     },
     {
@@ -11560,7 +11514,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2661",
+      "source_location": "L2569",
       "weight": 1.0
     },
     {
@@ -11572,7 +11526,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2663",
+      "source_location": "L2571",
       "weight": 1.0
     },
     {
@@ -11656,7 +11610,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3544",
+      "source_location": "L3447",
       "weight": 1.0
     },
     {
@@ -11668,7 +11622,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3546",
+      "source_location": "L3449",
       "weight": 1.0
     },
     {
@@ -11680,7 +11634,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3546",
+      "source_location": "L3449",
       "weight": 1.0
     },
     {
@@ -11692,7 +11646,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2116",
+      "source_location": "L2024",
       "weight": 1.0
     },
     {
@@ -11704,7 +11658,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2125",
+      "source_location": "L2033",
       "weight": 1.0
     },
     {
@@ -11716,7 +11670,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2145",
+      "source_location": "L2053",
       "weight": 1.0
     },
     {
@@ -11728,7 +11682,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2184",
+      "source_location": "L2092",
       "weight": 1.0
     },
     {
@@ -11740,7 +11694,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2233",
+      "source_location": "L2141",
       "weight": 1.0
     },
     {
@@ -11752,7 +11706,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2565",
+      "source_location": "L2473",
       "weight": 1.0
     },
     {
@@ -11764,7 +11718,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2570",
+      "source_location": "L2478",
       "weight": 1.0
     },
     {
@@ -11776,7 +11730,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L1908",
+      "source_location": "L1816",
       "weight": 1.0
     },
     {
@@ -11788,7 +11742,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2712",
+      "source_location": "L2620",
       "weight": 1.0
     },
     {
@@ -11800,7 +11754,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4357",
+      "source_location": "L4258",
       "weight": 1.0
     },
     {
@@ -11812,7 +11766,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4358",
+      "source_location": "L4259",
       "weight": 1.0
     },
     {
@@ -11824,7 +11778,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3624",
+      "source_location": "L3527",
       "weight": 1.0
     },
     {
@@ -11836,7 +11790,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2534",
+      "source_location": "L2442",
       "weight": 1.0
     },
     {
@@ -11848,7 +11802,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2542",
+      "source_location": "L2450",
       "weight": 1.0
     },
     {
@@ -11860,7 +11814,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2555",
+      "source_location": "L2463",
       "weight": 1.0
     },
     {
@@ -11872,7 +11826,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2557",
+      "source_location": "L2465",
       "weight": 1.0
     },
     {
@@ -11884,7 +11838,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2558",
+      "source_location": "L2466",
       "weight": 1.0
     },
     {
@@ -11896,7 +11850,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2559",
+      "source_location": "L2467",
       "weight": 1.0
     },
     {
@@ -11908,7 +11862,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2560",
+      "source_location": "L2468",
       "weight": 1.0
     },
     {
@@ -11920,7 +11874,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3759",
+      "source_location": "L3662",
       "weight": 1.0
     },
     {
@@ -11932,7 +11886,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3760",
+      "source_location": "L3663",
       "weight": 1.0
     },
     {
@@ -11956,7 +11910,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4305",
+      "source_location": "L4206",
       "weight": 1.0
     },
     {
@@ -11968,7 +11922,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4308",
+      "source_location": "L4209",
       "weight": 1.0
     },
     {
@@ -11980,7 +11934,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4309",
+      "source_location": "L4210",
       "weight": 1.0
     },
     {
@@ -11992,7 +11946,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4315",
+      "source_location": "L4216",
       "weight": 1.0
     },
     {
@@ -12004,7 +11958,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4316",
+      "source_location": "L4217",
       "weight": 1.0
     },
     {
@@ -12016,7 +11970,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4317",
+      "source_location": "L4218",
       "weight": 1.0
     },
     {
@@ -12028,7 +11982,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4323",
+      "source_location": "L4224",
       "weight": 1.0
     },
     {
@@ -12040,7 +11994,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4323",
+      "source_location": "L4224",
       "weight": 1.0
     },
     {
@@ -12052,91 +12006,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4275",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_navigatecarousel",
-      "target": "src_main_resetshelfinteractionstate",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L1747",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_navigatecarousel",
-      "target": "src_main_updatepreviewpanel",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L1750",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_navigatecarousel",
-      "target": "src_main_updateshelfinfopanel",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L1757",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_navigatecarousel",
-      "target": "src_main_updatecameraframing",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L1761",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_navigatecarousel",
-      "target": "src_main_t",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L1762",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_navigatecarousel",
-      "target": "src_main_dropshelfintoplace",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L1778",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_navigatecarousel",
-      "target": "src_main_dropbooksintoplace",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L1779",
+      "source_location": "L4176",
       "weight": 1.0
     },
     {
@@ -12148,7 +12018,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3415",
+      "source_location": "L3318",
       "weight": 1.0
     },
     {
@@ -12160,7 +12030,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3420",
+      "source_location": "L3323",
       "weight": 1.0
     },
     {
@@ -12184,7 +12054,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3255",
+      "source_location": "L3163",
       "weight": 1.0
     },
     {
@@ -12196,7 +12066,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3261",
+      "source_location": "L3169",
       "weight": 1.0
     },
     {
@@ -12208,7 +12078,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3266",
+      "source_location": "L3174",
       "weight": 1.0
     },
     {
@@ -12220,7 +12090,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3267",
+      "source_location": "L3175",
       "weight": 1.0
     },
     {
@@ -12232,7 +12102,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3275",
+      "source_location": "L3183",
       "weight": 1.0
     },
     {
@@ -12244,19 +12114,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3295",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_onclick",
-      "target": "src_main_navigatecarousel",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L3301",
+      "source_location": "L3203",
       "weight": 1.0
     },
     {
@@ -12268,7 +12126,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3308",
+      "source_location": "L3211",
       "weight": 1.0
     },
     {
@@ -12280,7 +12138,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3321",
+      "source_location": "L3224",
       "weight": 1.0
     },
     {
@@ -12292,7 +12150,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3325",
+      "source_location": "L3228",
       "weight": 1.0
     },
     {
@@ -12304,7 +12162,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3327",
+      "source_location": "L3230",
       "weight": 1.0
     },
     {
@@ -12316,7 +12174,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3772",
+      "source_location": "L3675",
       "weight": 1.0
     },
     {
@@ -12328,7 +12186,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3774",
+      "source_location": "L3677",
       "weight": 1.0
     },
     {
@@ -12340,7 +12198,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3776",
+      "source_location": "L3679",
       "weight": 1.0
     },
     {
@@ -12352,7 +12210,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3780",
+      "source_location": "L3683",
       "weight": 1.0
     },
     {
@@ -12364,7 +12222,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3783",
+      "source_location": "L3686",
       "weight": 1.0
     },
     {
@@ -12376,7 +12234,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3792",
+      "source_location": "L3695",
       "weight": 1.0
     },
     {
@@ -12388,19 +12246,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3794",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_onkeydown",
-      "target": "src_main_navigatecarousel",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L3800",
+      "source_location": "L3697",
       "weight": 1.0
     },
     {
@@ -12412,7 +12258,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3802",
+      "source_location": "L3703",
       "weight": 1.0
     },
     {
@@ -12424,7 +12270,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3808",
+      "source_location": "L3709",
       "weight": 1.0
     },
     {
@@ -12436,7 +12282,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3810",
+      "source_location": "L3711",
       "weight": 1.0
     },
     {
@@ -12448,7 +12294,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3813",
+      "source_location": "L3714",
       "weight": 1.0
     },
     {
@@ -12460,7 +12306,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3552",
+      "source_location": "L3455",
       "weight": 1.0
     },
     {
@@ -12472,7 +12318,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3556",
+      "source_location": "L3459",
       "weight": 1.0
     },
     {
@@ -12484,7 +12330,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3561",
+      "source_location": "L3464",
       "weight": 1.0
     },
     {
@@ -12496,7 +12342,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3667",
+      "source_location": "L3570",
       "weight": 1.0
     },
     {
@@ -12508,7 +12354,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3675",
+      "source_location": "L3578",
       "weight": 1.0
     },
     {
@@ -12520,7 +12366,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3678",
+      "source_location": "L3581",
       "weight": 1.0
     },
     {
@@ -12532,7 +12378,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3680",
+      "source_location": "L3583",
       "weight": 1.0
     },
     {
@@ -12544,7 +12390,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3681",
+      "source_location": "L3584",
       "weight": 1.0
     },
     {
@@ -12556,7 +12402,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3712",
+      "source_location": "L3615",
       "weight": 1.0
     },
     {
@@ -12568,7 +12414,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3730",
+      "source_location": "L3633",
       "weight": 1.0
     },
     {
@@ -12580,7 +12426,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3736",
+      "source_location": "L3639",
       "weight": 1.0
     },
     {
@@ -12592,7 +12438,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3737",
+      "source_location": "L3640",
       "weight": 1.0
     },
     {
@@ -12604,7 +12450,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3569",
+      "source_location": "L3472",
       "weight": 1.0
     },
     {
@@ -12616,7 +12462,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3571",
+      "source_location": "L3474",
       "weight": 1.0
     },
     {
@@ -12628,7 +12474,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3581",
+      "source_location": "L3484",
       "weight": 1.0
     },
     {
@@ -12640,7 +12486,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2742",
+      "source_location": "L2650",
       "weight": 1.0
     },
     {
@@ -12652,7 +12498,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2758",
+      "source_location": "L2666",
       "weight": 1.0
     },
     {
@@ -12664,7 +12510,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2759",
+      "source_location": "L2667",
       "weight": 1.0
     },
     {
@@ -12676,7 +12522,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2763",
+      "source_location": "L2671",
       "weight": 1.0
     },
     {
@@ -12688,7 +12534,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2766",
+      "source_location": "L2674",
       "weight": 1.0
     },
     {
@@ -12700,7 +12546,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2770",
+      "source_location": "L2678",
       "weight": 1.0
     },
     {
@@ -12712,7 +12558,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2778",
+      "source_location": "L2686",
       "weight": 1.0
     },
     {
@@ -12724,7 +12570,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2779",
+      "source_location": "L2687",
       "weight": 1.0
     },
     {
@@ -12736,7 +12582,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2780",
+      "source_location": "L2688",
       "weight": 1.0
     },
     {
@@ -12748,7 +12594,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2781",
+      "source_location": "L2689",
       "weight": 1.0
     },
     {
@@ -12760,7 +12606,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2789",
+      "source_location": "L2697",
       "weight": 1.0
     },
     {
@@ -12772,7 +12618,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2797",
+      "source_location": "L2705",
       "weight": 1.0
     },
     {
@@ -12784,7 +12630,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2800",
+      "source_location": "L2708",
       "weight": 1.0
     },
     {
@@ -12796,7 +12642,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2801",
+      "source_location": "L2709",
       "weight": 1.0
     },
     {
@@ -12808,7 +12654,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2823",
+      "source_location": "L2731",
       "weight": 1.0
     },
     {
@@ -12820,7 +12666,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2848",
+      "source_location": "L2756",
       "weight": 1.0
     },
     {
@@ -12832,7 +12678,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2858",
+      "source_location": "L2766",
       "weight": 1.0
     },
     {
@@ -12844,7 +12690,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2862",
+      "source_location": "L2770",
       "weight": 1.0
     },
     {
@@ -12856,7 +12702,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2863",
+      "source_location": "L2771",
       "weight": 1.0
     },
     {
@@ -12868,7 +12714,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4294",
+      "source_location": "L4195",
       "weight": 1.0
     },
     {
@@ -12880,7 +12726,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2631",
+      "source_location": "L2539",
       "weight": 1.0
     },
     {
@@ -12892,7 +12738,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2632",
+      "source_location": "L2540",
       "weight": 1.0
     },
     {
@@ -12904,7 +12750,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2642",
+      "source_location": "L2550",
       "weight": 1.0
     },
     {
@@ -12916,7 +12762,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2643",
+      "source_location": "L2551",
       "weight": 1.0
     },
     {
@@ -12928,7 +12774,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2644",
+      "source_location": "L2552",
       "weight": 1.0
     },
     {
@@ -12940,7 +12786,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2645",
+      "source_location": "L2553",
       "weight": 1.0
     },
     {
@@ -12952,7 +12798,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2647",
+      "source_location": "L2555",
       "weight": 1.0
     },
     {
@@ -12964,7 +12810,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2649",
+      "source_location": "L2557",
       "weight": 1.0
     },
     {
@@ -13012,7 +12858,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2672",
+      "source_location": "L2580",
       "weight": 1.0
     },
     {
@@ -13024,7 +12870,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2673",
+      "source_location": "L2581",
       "weight": 1.0
     },
     {
@@ -13036,7 +12882,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3927",
+      "source_location": "L3828",
       "weight": 1.0
     },
     {
@@ -13048,7 +12894,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4199",
+      "source_location": "L4100",
       "weight": 1.0
     },
     {
@@ -13060,60 +12906,12 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4201",
+      "source_location": "L4102",
       "weight": 1.0
     },
     {
       "source": "src_main_playclosesound",
       "target": "src_main_noiseburst",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L4203",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_playcoverswish",
-      "target": "src_main_getaudio",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L4140",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_playcoverswish",
-      "target": "src_main_playsample",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L4142",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_playcoverswish",
-      "target": "src_main_noiseburst",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L4145",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_playflipsound",
-      "target": "src_main_getaudio",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -13124,6 +12922,54 @@
       "weight": 1.0
     },
     {
+      "source": "src_main_playcoverswish",
+      "target": "src_main_getaudio",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/main.js",
+      "source_location": "L4041",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_playcoverswish",
+      "target": "src_main_playsample",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/main.js",
+      "source_location": "L4043",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_playcoverswish",
+      "target": "src_main_noiseburst",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/main.js",
+      "source_location": "L4046",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_playflipsound",
+      "target": "src_main_getaudio",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/main.js",
+      "source_location": "L4005",
+      "weight": 1.0
+    },
+    {
       "source": "src_main_playflipsound",
       "target": "src_main_playsample",
       "relation": "calls",
@@ -13132,7 +12978,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4111",
+      "source_location": "L4012",
       "weight": 1.0
     },
     {
@@ -13144,7 +12990,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4117",
+      "source_location": "L4018",
       "weight": 1.0
     },
     {
@@ -13156,7 +13002,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4162",
+      "source_location": "L4063",
       "weight": 1.0
     },
     {
@@ -13168,7 +13014,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4166",
+      "source_location": "L4067",
       "weight": 1.0
     },
     {
@@ -13180,7 +13026,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4187",
+      "source_location": "L4088",
       "weight": 1.0
     },
     {
@@ -13192,7 +13038,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4189",
+      "source_location": "L4090",
       "weight": 1.0
     },
     {
@@ -13204,7 +13050,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4192",
+      "source_location": "L4093",
       "weight": 1.0
     },
     {
@@ -13216,7 +13062,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4075",
+      "source_location": "L3976",
       "weight": 1.0
     },
     {
@@ -13228,7 +13074,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4077",
+      "source_location": "L3978",
       "weight": 1.0
     },
     {
@@ -13240,7 +13086,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4081",
+      "source_location": "L3982",
       "weight": 1.0
     },
     {
@@ -13252,7 +13098,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4219",
+      "source_location": "L4120",
       "weight": 1.0
     },
     {
@@ -13264,7 +13110,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4221",
+      "source_location": "L4122",
       "weight": 1.0
     },
     {
@@ -13276,7 +13122,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2463",
+      "source_location": "L2371",
       "weight": 1.0
     },
     {
@@ -13288,7 +13134,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2466",
+      "source_location": "L2374",
       "weight": 1.0
     },
     {
@@ -13312,7 +13158,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3004",
+      "source_location": "L2912",
       "weight": 1.0
     },
     {
@@ -13324,7 +13170,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3005",
+      "source_location": "L2913",
       "weight": 1.0
     },
     {
@@ -13336,7 +13182,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3006",
+      "source_location": "L2914",
       "weight": 1.0
     },
     {
@@ -13348,7 +13194,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3007",
+      "source_location": "L2915",
       "weight": 1.0
     },
     {
@@ -13360,7 +13206,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3012",
+      "source_location": "L2920",
       "weight": 1.0
     },
     {
@@ -13372,7 +13218,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3024",
+      "source_location": "L2932",
       "weight": 1.0
     },
     {
@@ -13384,7 +13230,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3030",
+      "source_location": "L2938",
       "weight": 1.0
     },
     {
@@ -13396,7 +13242,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4346",
+      "source_location": "L4247",
       "weight": 1.0
     },
     {
@@ -13408,7 +13254,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4350",
+      "source_location": "L4251",
       "weight": 1.0
     },
     {
@@ -13420,7 +13266,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4351",
+      "source_location": "L4252",
       "weight": 1.0
     },
     {
@@ -13436,18 +13282,6 @@
       "weight": 1.0
     },
     {
-      "source": "src_main_resetshelfinteractionstate",
-      "target": "src_main_pushback",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L1729",
-      "weight": 1.0
-    },
-    {
       "source": "src_main_selectbookfromlist",
       "target": "src_main_openbook",
       "relation": "calls",
@@ -13456,7 +13290,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3173",
+      "source_location": "L3081",
       "weight": 1.0
     },
     {
@@ -13468,7 +13302,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3174",
+      "source_location": "L3082",
       "weight": 1.0
     },
     {
@@ -13480,7 +13314,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3178",
+      "source_location": "L3086",
       "weight": 1.0
     },
     {
@@ -13492,7 +13326,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3179",
+      "source_location": "L3087",
       "weight": 1.0
     },
     {
@@ -13504,7 +13338,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2042",
+      "source_location": "L1950",
       "weight": 1.0
     },
     {
@@ -13516,7 +13350,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2044",
+      "source_location": "L1952",
       "weight": 1.0
     },
     {
@@ -13528,7 +13362,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2045",
+      "source_location": "L1953",
       "weight": 1.0
     },
     {
@@ -13540,7 +13374,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3648",
+      "source_location": "L3551",
       "weight": 1.0
     },
     {
@@ -13552,7 +13386,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3148",
+      "source_location": "L3056",
       "weight": 1.0
     },
     {
@@ -13564,7 +13398,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3151",
+      "source_location": "L3059",
       "weight": 1.0
     },
     {
@@ -13576,7 +13410,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3152",
+      "source_location": "L3060",
       "weight": 1.0
     },
     {
@@ -13588,7 +13422,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3163",
+      "source_location": "L3071",
       "weight": 1.0
     },
     {
@@ -13600,7 +13434,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3164",
+      "source_location": "L3072",
       "weight": 1.0
     },
     {
@@ -13612,7 +13446,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3165",
+      "source_location": "L3073",
       "weight": 1.0
     },
     {
@@ -13624,7 +13458,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3639",
+      "source_location": "L3542",
       "weight": 1.0
     },
     {
@@ -13636,7 +13470,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3641",
+      "source_location": "L3544",
       "weight": 1.0
     },
     {
@@ -13648,7 +13482,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3133",
+      "source_location": "L3041",
       "weight": 1.0
     },
     {
@@ -13660,7 +13494,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3139",
+      "source_location": "L3047",
       "weight": 1.0
     },
     {
@@ -13672,7 +13506,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3140",
+      "source_location": "L3048",
       "weight": 1.0
     },
     {
@@ -13684,7 +13518,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3379",
+      "source_location": "L3282",
       "weight": 1.0
     },
     {
@@ -13696,7 +13530,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3382",
+      "source_location": "L3285",
       "weight": 1.0
     },
     {
@@ -13708,7 +13542,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3394",
+      "source_location": "L3297",
       "weight": 1.0
     },
     {
@@ -13720,7 +13554,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2597",
+      "source_location": "L2505",
       "weight": 1.0
     },
     {
@@ -13732,7 +13566,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2598",
+      "source_location": "L2506",
       "weight": 1.0
     },
     {
@@ -13744,7 +13578,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2599",
+      "source_location": "L2507",
       "weight": 1.0
     },
     {
@@ -13756,7 +13590,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L1975",
+      "source_location": "L1883",
       "weight": 1.0
     },
     {
@@ -13768,7 +13602,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3858",
+      "source_location": "L3759",
       "weight": 1.0
     },
     {
@@ -13780,7 +13614,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3861",
+      "source_location": "L3762",
       "weight": 1.0
     },
     {
@@ -13792,7 +13626,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3869",
+      "source_location": "L3770",
       "weight": 1.0
     },
     {
@@ -13804,7 +13638,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3870",
+      "source_location": "L3771",
       "weight": 1.0
     },
     {
@@ -13960,7 +13794,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3631",
+      "source_location": "L3534",
       "weight": 1.0
     },
     {
@@ -13972,7 +13806,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4000",
+      "source_location": "L3901",
       "weight": 1.0
     },
     {
@@ -13984,7 +13818,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3505",
+      "source_location": "L3408",
       "weight": 1.0
     },
     {
@@ -13996,7 +13830,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3506",
+      "source_location": "L3409",
       "weight": 1.0
     },
     {
@@ -14008,7 +13842,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3512",
+      "source_location": "L3415",
       "weight": 1.0
     },
     {
@@ -14020,7 +13854,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3520",
+      "source_location": "L3423",
       "weight": 1.0
     },
     {
@@ -14032,7 +13866,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3521",
+      "source_location": "L3424",
       "weight": 1.0
     },
     {
@@ -14044,7 +13878,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3522",
+      "source_location": "L3425",
       "weight": 1.0
     },
     {
@@ -14056,7 +13890,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L1936",
+      "source_location": "L1844",
       "weight": 1.0
     },
     {
@@ -14068,7 +13902,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L1944",
+      "source_location": "L1852",
       "weight": 1.0
     },
     {
@@ -14080,7 +13914,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2420",
+      "source_location": "L2328",
       "weight": 1.0
     },
     {
@@ -14128,7 +13962,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3203",
+      "source_location": "L3111",
       "weight": 1.0
     },
     {
@@ -14140,7 +13974,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3964",
+      "source_location": "L3865",
       "weight": 1.0
     },
     {
@@ -14152,7 +13986,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3970",
+      "source_location": "L3871",
       "weight": 1.0
     },
     {
@@ -14164,7 +13998,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3971",
+      "source_location": "L3872",
       "weight": 1.0
     },
     {
@@ -14200,7 +14034,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2971",
+      "source_location": "L2879",
       "weight": 1.0
     },
     {
@@ -14212,7 +14046,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2972",
+      "source_location": "L2880",
       "weight": 1.0
     },
     {
@@ -14241,18 +14075,6 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_navigatecarousel",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L1739",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
       "target": "src_main_getviewportsize",
       "relation": "contains",
       "_origin": "ast",
@@ -14272,7 +14094,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L2667",
+      "source_location": "L2575",
       "weight": 1.0
     },
     {
@@ -14284,7 +14106,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3146",
+      "source_location": "L3054",
       "weight": 1.0
     },
     {
@@ -14296,7 +14118,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3372",
+      "source_location": "L3275",
       "weight": 1.0
     },
     {
@@ -14308,7 +14130,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3525",
+      "source_location": "L3428",
       "weight": 1.0
     },
     {
@@ -14320,19 +14142,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L3853",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_assetbystem",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/main.js",
-      "source_location": "L400",
+      "source_location": "L3754",
       "weight": 1.0
     },
     {
@@ -14344,7 +14154,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4102",
+      "source_location": "L4003",
       "weight": 1.0
     },
     {
@@ -14356,7 +14166,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4247",
+      "source_location": "L4148",
       "weight": 1.0
     },
     {
@@ -14368,7 +14178,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/main.js",
-      "source_location": "L4345",
+      "source_location": "L4246",
       "weight": 1.0
     },
     {
@@ -14429,7 +14239,7 @@
       "context": "import",
       "deferred": true,
       "source_file": "src/home/lanyard/lanyard-boot.js",
-      "source_location": "L7",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -21357,46 +21167,13 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_navprevbutton",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L1692",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_navnextbutton",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L1693",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_resetshelfinteractionstate",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L1726",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
       "target": "src_main_shadowoffsetx",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L1827",
+      "source_location": "L1735",
       "weight": 1.0
     },
     {
@@ -21407,7 +21184,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L1849",
+      "source_location": "L1757",
       "weight": 1.0
     },
     {
@@ -21418,7 +21195,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L1857",
+      "source_location": "L1765",
       "weight": 1.0
     },
     {
@@ -21429,7 +21206,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L1858",
+      "source_location": "L1766",
       "weight": 1.0
     },
     {
@@ -21440,7 +21217,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L1859",
+      "source_location": "L1767",
       "weight": 1.0
     },
     {
@@ -21451,7 +21228,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L1860",
+      "source_location": "L1768",
       "weight": 1.0
     },
     {
@@ -21462,7 +21239,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L1861",
+      "source_location": "L1769",
       "weight": 1.0
     },
     {
@@ -21473,7 +21250,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L1871",
+      "source_location": "L1779",
       "weight": 1.0
     },
     {
@@ -21484,7 +21261,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L1872",
+      "source_location": "L1780",
       "weight": 1.0
     },
     {
@@ -21495,7 +21272,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L1873",
+      "source_location": "L1781",
       "weight": 1.0
     },
     {
@@ -21506,7 +21283,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L1874",
+      "source_location": "L1782",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_updatecameraframing",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L1839",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_setreadingsharpness",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L1878",
       "weight": 1.0
     },
     {
@@ -21522,6 +21321,61 @@
     },
     {
       "source": "src_main",
+      "target": "src_main_keyhintel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L1897",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_setkeyhintmode",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L1900",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_readinguielements",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L1905",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_setreadinguireachable",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L1906",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_enterreadingcontrols",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L1911",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
       "target": "src_main_keylight",
       "relation": "contains",
       "_origin": "ast",
@@ -21533,90 +21387,13 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_updatecameraframing",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L1931",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_setreadingsharpness",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L1970",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_keyhintel",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L1989",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_setkeyhintmode",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L1992",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_readinguielements",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L1997",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_setreadinguireachable",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L1998",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_enterreadingcontrols",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L2003",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
       "target": "src_main_exitreadingcontrols",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2017",
+      "source_location": "L1925",
       "weight": 1.0
     },
     {
@@ -21627,7 +21404,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2028",
+      "source_location": "L1936",
       "weight": 1.0
     },
     {
@@ -21638,7 +21415,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2038",
+      "source_location": "L1946",
       "weight": 1.0
     },
     {
@@ -21649,7 +21426,51 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2048",
+      "source_location": "L1956",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_openbookcache",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L1971",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_openbookcachesingle",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L1972",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_applyleafbend",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L1988",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_ensureopenbookbuilt",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L2019",
       "weight": 1.0
     },
     {
@@ -21665,39 +21486,6 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_openbookcache",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L2063",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_openbookcachesingle",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L2064",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_applyleafbend",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L2080",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
       "target": "src_main_rimlight",
       "relation": "contains",
       "_origin": "ast",
@@ -21709,13 +21497,35 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_ensureopenbookbuilt",
+      "target": "src_main_buildopenbook",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2111",
+      "source_location": "L2150",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_createtabtexture",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L2188",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_buildtabs",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L2209",
       "weight": 1.0
     },
     {
@@ -21731,35 +21541,24 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_buildopenbook",
+      "target": "src_main_updatereadingui",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2242",
+      "source_location": "L2260",
       "weight": 1.0
     },
     {
       "source": "src_main",
-      "target": "src_main_createtabtexture",
+      "target": "src_main_getleafshadow",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2280",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_buildtabs",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L2301",
+      "source_location": "L2286",
       "weight": 1.0
     },
     {
@@ -21775,24 +21574,57 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_updatereadingui",
+      "target": "src_main_updateleafshadow",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2352",
+      "source_location": "L2321",
       "weight": 1.0
     },
     {
       "source": "src_main",
-      "target": "src_main_getleafshadow",
+      "target": "src_main_posetabs",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2378",
+      "source_location": "L2342",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_curldepth",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L2360",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_posehinge",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L2365",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_animateflip",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L2380",
       "weight": 1.0
     },
     {
@@ -21808,68 +21640,13 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_updateleafshadow",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L2413",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_posetabs",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L2434",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_curldepth",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L2452",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_posehinge",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L2457",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_animateflip",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L2472",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
       "target": "src_main_jumptoindex",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2525",
+      "source_location": "L2433",
       "weight": 1.0
     },
     {
@@ -21880,7 +21657,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2581",
+      "source_location": "L2489",
       "weight": 1.0
     },
     {
@@ -21891,7 +21668,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2586",
+      "source_location": "L2494",
       "weight": 1.0
     },
     {
@@ -21902,7 +21679,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2590",
+      "source_location": "L2498",
       "weight": 1.0
     },
     {
@@ -21913,7 +21690,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2616",
+      "source_location": "L2524",
       "weight": 1.0
     },
     {
@@ -21924,7 +21701,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2624",
+      "source_location": "L2532",
       "weight": 1.0
     },
     {
@@ -21935,7 +21712,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2686",
+      "source_location": "L2594",
       "weight": 1.0
     },
     {
@@ -21946,7 +21723,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2692",
+      "source_location": "L2600",
       "weight": 1.0
     },
     {
@@ -21957,7 +21734,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2704",
+      "source_location": "L2612",
       "weight": 1.0
     },
     {
@@ -21968,7 +21745,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2724",
+      "source_location": "L2632",
       "weight": 1.0
     },
     {
@@ -21979,7 +21756,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2731",
+      "source_location": "L2639",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_warmopenbookshaders",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L2875",
       "weight": 1.0
     },
     {
@@ -21995,24 +21783,13 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_warmopenbookshaders",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L2967",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
       "target": "src_main_pullout",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L2998",
+      "source_location": "L2906",
       "weight": 1.0
     },
     {
@@ -22023,7 +21800,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3017",
+      "source_location": "L2925",
       "weight": 1.0
     },
     {
@@ -22034,7 +21811,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3039",
+      "source_location": "L2947",
       "weight": 1.0
     },
     {
@@ -22045,7 +21822,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3040",
+      "source_location": "L2948",
       "weight": 1.0
     },
     {
@@ -22056,7 +21833,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3041",
+      "source_location": "L2949",
       "weight": 1.0
     },
     {
@@ -22067,7 +21844,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3042",
+      "source_location": "L2950",
       "weight": 1.0
     },
     {
@@ -22078,7 +21855,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3043",
+      "source_location": "L2951",
       "weight": 1.0
     },
     {
@@ -22089,7 +21866,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3044",
+      "source_location": "L2952",
       "weight": 1.0
     },
     {
@@ -22100,7 +21877,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3050",
+      "source_location": "L2958",
       "weight": 1.0
     },
     {
@@ -22111,7 +21888,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3051",
+      "source_location": "L2959",
       "weight": 1.0
     },
     {
@@ -22122,7 +21899,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3052",
+      "source_location": "L2960",
       "weight": 1.0
     },
     {
@@ -22133,7 +21910,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3053",
+      "source_location": "L2961",
       "weight": 1.0
     },
     {
@@ -22144,7 +21921,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3054",
+      "source_location": "L2962",
       "weight": 1.0
     },
     {
@@ -22155,7 +21932,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3055",
+      "source_location": "L2963",
       "weight": 1.0
     },
     {
@@ -22166,7 +21943,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3068",
+      "source_location": "L2976",
       "weight": 1.0
     },
     {
@@ -22177,7 +21954,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3069",
+      "source_location": "L2977",
       "weight": 1.0
     },
     {
@@ -22188,7 +21965,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3091",
+      "source_location": "L2999",
       "weight": 1.0
     },
     {
@@ -22199,7 +21976,84 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3126",
+      "source_location": "L3034",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_selectbookfromlist",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3076",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_pickpoint",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3092",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_pickbooknear",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3093",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_updatepreviewpanel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3110",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_raycaster",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3131",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_pointer",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3132",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_setpointerfromevent",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3134",
       "weight": 1.0
     },
     {
@@ -22215,79 +22069,13 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_selectbookfromlist",
+      "target": "src_main_activepointers",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3168",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_pickpoint",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3184",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_pickbooknear",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3185",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_updatepreviewpanel",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3202",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_raycaster",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3223",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_pointer",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3224",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_setpointerfromevent",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3226",
+      "source_location": "L3262",
       "weight": 1.0
     },
     {
@@ -22303,13 +22091,24 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_activepointers",
+      "target": "src_main_nudgenextpage",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3359",
+      "source_location": "L3310",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_beginbookdrag",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3331",
       "weight": 1.0
     },
     {
@@ -22325,6 +22124,17 @@
     },
     {
       "source": "src_main",
+      "target": "src_main_dragangle",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3377",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
       "target": "src_main_pageimagemodules",
       "relation": "contains",
       "_origin": "ast",
@@ -22336,24 +22146,13 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_nudgenextpage",
+      "target": "src_main_updatebookdrag",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3407",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_beginbookdrag",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3428",
+      "source_location": "L3385",
       "weight": 1.0
     },
     {
@@ -22369,24 +22168,24 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_dragangle",
+      "target": "src_main_hovertab",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3474",
+      "source_location": "L3526",
       "weight": 1.0
     },
     {
       "source": "src_main",
-      "target": "src_main_updatebookdrag",
+      "target": "src_main_unhovertab",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3482",
+      "source_location": "L3533",
       "weight": 1.0
     },
     {
@@ -22402,6 +22201,39 @@
     },
     {
       "source": "src_main",
+      "target": "src_main_sethoveredtab",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3540",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_sethoveredarrow",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3549",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_setcursor",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3564",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
       "target": "src_main_titleimagemodules",
       "relation": "contains",
       "_origin": "ast",
@@ -22413,57 +22245,13 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_hovertab",
+      "target": "src_main_keyboardpickbook",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3623",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_unhovertab",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3630",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_sethoveredtab",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3637",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_sethoveredarrow",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3646",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_setcursor",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3661",
+      "source_location": "L3657",
       "weight": 1.0
     },
     {
@@ -22479,13 +22267,35 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_keyboardpickbook",
+      "target": "src_main_readingfitdistance",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3754",
+      "source_location": "L3749",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_zoomtoggle",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3774",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_synczoombutton",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3775",
       "weight": 1.0
     },
     {
@@ -22501,46 +22311,13 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_readingfitdistance",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3848",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_zoomtoggle",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3873",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_synczoombutton",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3874",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
       "target": "src_main_sharplayer",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3896",
+      "source_location": "L3797",
       "weight": 1.0
     },
     {
@@ -22551,7 +22328,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3897",
+      "source_location": "L3798",
       "weight": 1.0
     },
     {
@@ -22562,7 +22339,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3898",
+      "source_location": "L3799",
       "weight": 1.0
     },
     {
@@ -22573,7 +22350,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3902",
+      "source_location": "L3803",
       "weight": 1.0
     },
     {
@@ -22584,7 +22361,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3903",
+      "source_location": "L3804",
       "weight": 1.0
     },
     {
@@ -22595,7 +22372,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3904",
+      "source_location": "L3805",
       "weight": 1.0
     },
     {
@@ -22606,7 +22383,51 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L3906",
+      "source_location": "L3807",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_placesharppage",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3817",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_currentsharppages",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3839",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_updatesharppages",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3861",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_getaudio",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L3908",
       "weight": 1.0
     },
     {
@@ -22622,57 +22443,13 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_placesharppage",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3916",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_currentsharppages",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3938",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_updatesharppages",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L3960",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_getaudio",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L4007",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
       "target": "src_main_noiseburst",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L4022",
+      "source_location": "L3923",
       "weight": 1.0
     },
     {
@@ -22683,7 +22460,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L4046",
+      "source_location": "L3947",
       "weight": 1.0
     },
     {
@@ -22694,7 +22471,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L4047",
+      "source_location": "L3948",
       "weight": 1.0
     },
     {
@@ -22705,7 +22482,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L4049",
+      "source_location": "L3950",
       "weight": 1.0
     },
     {
@@ -22716,7 +22493,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L4074",
+      "source_location": "L3975",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_assetbystem",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L400",
       "weight": 1.0
     },
     {
@@ -22727,7 +22515,73 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L4138",
+      "source_location": "L4039",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_playhoversound",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L4054",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_playpageland",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L4086",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_playclosesound",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L4098",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_playthud",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L4118",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_toastel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L4137",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main",
+      "target": "src_main_showtoast",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main.js",
+      "source_location": "L4139",
       "weight": 1.0
     },
     {
@@ -22743,35 +22597,35 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_playhoversound",
+      "target": "src_main_soundtoggle",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L4153",
+      "source_location": "L4147",
       "weight": 1.0
     },
     {
       "source": "src_main",
-      "target": "src_main_playpageland",
+      "target": "src_main_maybeannouncesound",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L4185",
+      "source_location": "L4168",
       "weight": 1.0
     },
     {
       "source": "src_main",
-      "target": "src_main_playclosesound",
+      "target": "src_main_openbookfromurl",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L4197",
+      "source_location": "L4189",
       "weight": 1.0
     },
     {
@@ -22787,61 +22641,6 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_playthud",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L4217",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_toastel",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L4236",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_showtoast",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L4238",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_soundtoggle",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L4246",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
-      "target": "src_main_maybeannouncesound",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L4267",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
       "target": "src_main_slugify",
       "relation": "contains",
       "_origin": "ast",
@@ -22853,24 +22652,13 @@
     },
     {
       "source": "src_main",
-      "target": "src_main_openbookfromurl",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main.js",
-      "source_location": "L4288",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main",
       "target": "src_main_orbitoffset",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L4396",
+      "source_location": "L4297",
       "weight": 1.0
     },
     {
@@ -22881,7 +22669,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L4397",
+      "source_location": "L4298",
       "weight": 1.0
     },
     {
@@ -22892,7 +22680,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L4398",
+      "source_location": "L4299",
       "weight": 1.0
     },
     {
@@ -22903,7 +22691,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main.js",
-      "source_location": "L4410",
+      "source_location": "L4311",
       "weight": 1.0
     },
     {
@@ -23542,7 +23330,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/home/lanyard/lanyard-boot.js",
-      "source_location": "L14",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -23566,7 +23354,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L3046",
+      "source_location": "L2954",
       "weight": 1.0
     },
     {
@@ -23578,7 +23366,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L3047",
+      "source_location": "L2955",
       "weight": 1.0
     },
     {
@@ -23590,7 +23378,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L3048",
+      "source_location": "L2956",
       "weight": 1.0
     },
     {
@@ -23602,7 +23390,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L3059",
+      "source_location": "L2967",
       "weight": 1.0
     },
     {
@@ -23614,7 +23402,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L3087",
+      "source_location": "L2995",
       "weight": 1.0
     },
     {
@@ -23626,7 +23414,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L3337",
+      "source_location": "L3240",
       "weight": 1.0
     },
     {
@@ -23638,7 +23426,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L3605",
+      "source_location": "L3508",
       "weight": 1.0
     },
     {
@@ -23650,7 +23438,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L3606",
+      "source_location": "L3509",
       "weight": 1.0
     },
     {
@@ -23662,7 +23450,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L3741",
+      "source_location": "L3644",
       "weight": 1.0
     },
     {
@@ -23674,7 +23462,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L3821",
+      "source_location": "L3722",
       "weight": 1.0
     },
     {
@@ -23686,7 +23474,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L3980",
+      "source_location": "L3881",
       "weight": 1.0
     },
     {
@@ -23698,7 +23486,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L4002",
+      "source_location": "L3903",
       "weight": 1.0
     },
     {
@@ -23710,7 +23498,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L4329",
+      "source_location": "L4230",
       "weight": 1.0
     },
     {
@@ -23722,7 +23510,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L4368",
+      "source_location": "L4269",
       "weight": 1.0
     },
     {
@@ -23758,7 +23546,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/main.js",
-      "source_location": "L3093",
+      "source_location": "L3001",
       "weight": 1.0
     },
     {
@@ -23782,19 +23570,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "src/main.js",
-      "source_location": "L2949",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_navigatecarousel",
-      "target": "src_main_invalidate",
-      "relation": "indirect_call",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "context": "collection",
-      "source_file": "src/main.js",
-      "source_location": "L1762",
+      "source_location": "L2857",
       "weight": 1.0
     },
     {
@@ -23806,7 +23582,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "src/main.js",
-      "source_location": "L2810",
+      "source_location": "L2718",
       "weight": 1.0
     },
     {
@@ -23818,7 +23594,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "src/main.js",
-      "source_location": "L3862",
+      "source_location": "L3763",
       "weight": 1.0
     },
     {
@@ -23868,32 +23644,8 @@
       "source_file": "src/home/projects/README.md",
       "source_location": "L27",
       "weight": 1.0
-    },
-    {
-      "source": "readme_how_the_pieces_fit_together",
-      "target": "src_main_navigatecarousel",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "context": "navigateCarousel()",
-      "source_file": "README.md",
-      "source_location": "L141",
-      "weight": 1.0
-    },
-    {
-      "source": "readme_how_the_project_is_organized",
-      "target": "src_main_navigatecarousel",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "context": "navigateCarousel()",
-      "source_file": "README.md",
-      "source_location": "L118",
-      "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d0a2e6000040603bf925ca3d934a4ea201d491a3"
+  "built_at_commit": "3cc43e6d49bb79827772100be4ffacb8e127cb91"
 }

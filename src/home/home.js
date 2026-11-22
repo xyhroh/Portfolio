@@ -93,6 +93,9 @@ function buildCard(folder, data) {
   if (data.tags?.length) body.append(el("p", "project-tags", data.tags.slice(0, 3).join(" • ")));
 
   // no process book yet = plain label, never a button that leads nowhere
+  // a project still being worked on says so, right above its buttons
+  if (data.status) body.append(el("p", "project-status", data.status));
+
   const actions = el("div", "project-actions");
   if (data.link) {
     const b = link("project-button", data.link);
