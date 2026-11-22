@@ -230,7 +230,7 @@ const introHoldFullMs = 2800; // how long a finished word is left to be read
 const introHoldEmptyMs = 450; // the pause on an empty line
 
 async function startIntroRoleRotation() {
-  let roles = ["UX Strategist"]; // used only if roles.txt is missing/empty
+  let roles = ["UX Designer"]; // used only if roles.txt is missing/empty
   try {
     // BASE_URL (not a hardcoded "/") so this still resolves once deployed
     // under a subpath, e.g. GitHub Pages serving from /Portfolio/.
@@ -1192,6 +1192,32 @@ function applyCoverWrap(book, imageUrl) {
 // was giving pages and spines a dark, shadowed, hard-to-read tint).
 const pageEdgeMaterial = new THREE.MeshBasicMaterial({ color: 0xe6e6e3, toneMapped: false });
 
+// Row lighting. Books are unlit materials (readable cover art), so "light" is
+// their colour scaled between bookDim (off) and full (on).
+const bookDim = 0.6;
+const rowHitMaterial = new THREE.MeshBasicMaterial();
+const ledOffColour = new THREE.Color(0x5a5d63);
+const ledOnColour = new THREE.Color(0xfff1dc); // a warm white
+function setBookLight(book, level) {
+  const k = bookDim + (1 - bookDim) * level;
+  book.userData.litMaterials.forEach((m) => m.color.copy(m.userData.base).multiplyScalar(k));
+}
+// bright at the top (by the LED), fading out halfway down the books
+const lightWashTexture = (() => {
+  const c = document.createElement("canvas");
+  c.width = 4;
+  c.height = 128;
+  const ctx = c.getContext("2d");
+  const g = ctx.createLinearGradient(0, 0, 0, 128);
+  g.addColorStop(0, "rgba(255,255,255,1)");
+  g.addColorStop(0.6, "rgba(255,255,255,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 4, 128);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+})();
+
 // -----------------------------------------------------------------------
 // 5. BOOKSHELF FACTORY
 // Builds one complete, independent cabinet — boards, panels
@@ -1300,12 +1326,15 @@ function buildBookshelf(shelfData) {
           map: createSpineTexture(project.title, project.color),
         });
 
+    // own copy of the page-edge material, so each row can be lit on its own
+    const edgeMaterial = pageEdgeMaterial.clone();
+
     // Face order for Box/RoundedBox geometry: [+x, -x, +y, -y, +z, -z]
     const materials = [
       frontCoverMaterial, // +x, front cover
       backCoverMaterial, // -x, back cover
-      pageEdgeMaterial,
-      pageEdgeMaterial,
+      edgeMaterial,
+      edgeMaterial,
       spineMaterial, // +z, facing the viewer
       backCoverMaterial,
     ];
@@ -1335,9 +1364,59 @@ function buildBookshelf(shelfData) {
       homeGroup: shelfGroup,
     };
 
+    // the row light (see rowLights below) scales these colours; base is full brightness
+    book.userData.shelfRow = row;
+    book.userData.litMaterials = [frontCoverMaterial, backCoverMaterial, edgeMaterial, spineMaterial];
+    book.userData.litMaterials.forEach((m) => (m.userData.base = m.color.clone()));
+    setBookLight(book, 0);
+
     shelfGroup.add(book);
     shelfBooks.push(book);
   });
+
+  // ---- row lights ----
+  // A slim LED strip under the board above each row, plus a soft wash of light
+  // falling down the spines. Off, the books sit dimmed; hovering a book turns
+  // its row's light on (setLitRow).
+  const rowLights = [];
+  const rowHits = [];
+  for (let row = 0; row < numberOfRows; row++) {
+    const rowTopY = shelfBaseY + row * (bookAreaHeight + frameThickness) + bookAreaHeight;
+    const led = new THREE.Mesh(
+      new THREE.BoxGeometry(shelfWidth - 0.12, 0.012, 0.018),
+      new THREE.MeshBasicMaterial({ color: ledOffColour, toneMapped: false })
+    );
+    led.position.set(0, rowTopY - 0.008, shelfDepth / 2 - 0.05);
+    shelfGroup.add(led);
+
+    const wash = new THREE.Mesh(
+      new THREE.PlaneGeometry(shelfWidth, bookAreaHeight),
+      new THREE.MeshBasicMaterial({
+        map: lightWashTexture,
+        color: ledOnColour,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        toneMapped: false,
+      })
+    );
+    wash.position.set(0, rowTopY - bookAreaHeight / 2, bookDepth / 2 + 0.01);
+    wash.raycast = () => {}; // never steals a hover from the books behind it
+    shelfGroup.add(wash);
+
+    // The row's hover target: the whole opening, empty slots included. Never
+    // drawn (visible = false), but raycasts still hit it.
+    const hitArea = new THREE.Mesh(new THREE.PlaneGeometry(shelfWidth, bookAreaHeight), rowHitMaterial);
+    hitArea.visible = false;
+    hitArea.position.set(0, rowTopY - bookAreaHeight / 2, shelfDepth / 2);
+    // physical rows count up from the bottom; Row 1 (info.txt) is the top one
+    hitArea.userData = { shelfRow: row, infoRow: numberOfRows - row };
+    shelfGroup.add(hitArea);
+    rowHits.push(hitArea);
+
+    rowLights.push({ level: 0, led, wash, books: shelfBooks.filter((b) => b.userData.shelfRow === row) });
+  }
 
   // No drawer any more. These stand-ins keep the drawer/paper code paths
   // elsewhere inert: an empty group is never hit by a raycast.
@@ -1359,6 +1438,8 @@ function buildBookshelf(shelfData) {
     name: shelfData.name,
     info: shelfData.info,
     rowInfo: shelfData.rowInfo,
+    rowLights,
+    rowHits,
     group: shelfGroup,
     shelfBooks,
     drawerGroup,
@@ -3041,6 +3122,27 @@ function syncBookList(rebuild = false) {
 // one of them now goes through here, and the sweep below makes the rule
 // "exactly one book out at a time" true by construction rather than by every
 // caller remembering to tidy up.
+// Turns one row's light on (fading the others off); null turns them all off.
+function setLitRow(row) {
+  activeShelf.rowLights.forEach((light, i) => {
+    const target = i === row ? 1 : 0;
+    if (light.target === target) return;
+    light.target = target;
+    gsap.to(light, {
+      level: target,
+      duration: T(target ? 0.35 : 0.6),
+      ease: "power2.out",
+      overwrite: true,
+      onUpdate: () => {
+        light.led.material.color.copy(ledOffColour).lerp(ledOnColour, light.level);
+        light.wash.material.opacity = light.level * 0.22;
+        light.books.forEach((book) => setBookLight(book, light.level));
+        invalidate(2);
+      },
+    });
+  });
+}
+
 function setHoveredBook(book, { sound = false } = {}) {
   if (hoveredBook === book) return;
   if (hoveredBook && hoveredBook.userData.state === "out") pushBack(hoveredBook);
@@ -3059,6 +3161,7 @@ function setHoveredBook(book, { sound = false } = {}) {
     pushBack(other);
   }
   if (hoveredBook) showInfoForRow(hoveredBook.userData.project.row ?? 1);
+  setLitRow(hoveredBook ? hoveredBook.userData.shelfRow : null);
   updatePreviewPanel();
 }
 
@@ -3625,6 +3728,14 @@ function onPointerMove(event) {
   setCursor(hovered || overDrawer || arrowHits.length > 0 ? "pointer" : event.buttons ? "grabbing" : "grab");
 
   setHoveredBook(hovered, { sound: true });
+
+  // Between books, or over an empty slot: the row still lights up and shows
+  // its text, it just has no book to pull out.
+  if (!hovered) {
+    const rowHit = raycaster.intersectObjects(activeShelf.rowHits)[0]?.object;
+    setLitRow(rowHit ? rowHit.userData.shelfRow : null);
+    if (rowHit) showInfoForRow(rowHit.userData.infoRow);
+  }
 }
 
 renderer.domElement.addEventListener("pointermove", onPointerMove);

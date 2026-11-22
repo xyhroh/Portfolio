@@ -1,5 +1,5 @@
 {
-  "role": "UX/UI Designer · School project · 2025",
+  "role": "Sole UI/UX Designer & UX Researcher · School project · 2025",
   "title": "HealthBuddy — SingHealth app redesign",
   "problem": "Patients found the app helpful but cluttered: appointments, queue status and payments were buried across screens.",
   "stats": [
@@ -9,5 +9,6 @@
   ],
   "finding": "Every user books appointments in the app, yet nothing on the home screen shows them at a glance.",
   "tags": ["UX Research", "Personas", "Hi-fi Prototyping"],
-  "link": "library.html?book=HealthBuddy"
+  "link": "library.html?book=HealthBuddy",
+  "prototype": "https://www.figma.com/proto/FifwjEiya0byeBXGzeU0pl/HealthBuddy?node-id=0-1"
 }

@@ -297,10 +297,20 @@ body::before {
 #lanyard {
   position: absolute;
   top: 0;
-  right: -1vw;
+  right: 0; /* -1vw here pushed the page ~10px wider than the window */
   bottom: 0;
-  width: clamp(300px, 30vw, 480px);
+  width: var(--badge-w);
 }
+
+/* The hero copy stops short of the badge, so the two never collide
+   (they did between ~1000 and 1150px wide). 100% + 10vw is the hero's full
+   width (its padding is 5vw a side); the badge box sits at its right edge. */
+.hero {
+  --badge-w: clamp(300px, 30vw, 480px);
+  --beside-badge: calc(100% + 5vw - var(--badge-w) - 24px);
+}
+.hero h1 { max-width: min(760px, var(--beside-badge)); }
+.hero-sub { max-width: min(600px, var(--beside-badge)); }
 
 #lanyard-layer {
   position: fixed;
@@ -337,6 +347,20 @@ main {
   grid-template-columns: minmax(300px, 38fr) 62fr;
   overflow: hidden;
   border-radius: 28px;
+}
+
+.project-media {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin: 0;
+}
+
+.project-caption {
+  margin: -2px 12px 16px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
 }
 
 .project-body {
@@ -438,6 +462,73 @@ main {
 .project-soon {
   border: 1px dashed var(--line);
   color: var(--muted);
+}
+
+.project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.project-button.secondary {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.project-button.secondary:hover {
+  background: var(--glass);
+}
+
+/* screens as a button (opens the prototype): drop the button chrome */
+button.project-stage {
+  width: calc(100% - 24px);
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ---------- Figma prototype popup ---------- */
+
+.proto-dialog {
+  width: min(1100px, 94vw);
+  height: min(860px, 88dvh);
+  padding: 0;
+  border: 1px solid var(--glass-edge);
+  border-radius: 24px;
+  background: var(--bg);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+}
+
+.proto-dialog::backdrop {
+  background: rgba(10, 12, 16, 0.6);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.proto-dialog iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.proto-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+}
+
+.proto-close svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* Screenshots: flat, sharp, nothing laid over them. Entry → key screen →
@@ -661,11 +752,16 @@ main {
     padding-top: 40px;
     min-height: 0;
   }
-  #lanyard {
-    position: relative;
-    inset: auto;
-    width: 100%;
-    height: 420px;
+  /* No badge on phones: it hung over the nav and the headline, and it is
+     ~2.4 MB of JavaScript (lanyard-boot.js skips loading it here too). The
+     email it carries is in the footer. */
+  #lanyard,
+  #lanyard-layer {
+    display: none;
+  }
+  .hero h1,
+  .hero-sub {
+    max-width: none;
   }
   main {
     padding-top: 24px;

@@ -3,7 +3,6 @@
   "1": "Lanyard.jsx",
   "2": "package.json",
   "3": "openBook",
-  "4": "updateCameraFraming",
   "5": "buildProjectsForShelf",
   "6": "ensureOpenBookBuilt",
   "7": "brandkit/SKILL.md",
@@ -14,10 +13,9 @@
   "12": "ChatGPT/title/README.md",
   "13": "CORE DIRECTIVE: PREMIUM MOBILE APP IMAGE DIRECTION",
   "14": "High-Agency Frontend Skill",
-  "15": "7. DIAL DEFINITIONS (Technical Reference)",
   "16": "public/pages/README.md",
   "17": "Claude/title/README.md",
-  "18": "Portfolio Bookshelf — Starter",
+  "18": "updateCameraFraming",
   "19": "Lovable/title/README.md",
   "20": "playSample",
   "21": "Facebook/title/README.md",
@@ -72,6 +70,7 @@
   "70": "15. DEFAULT SITE PACKS",
   "71": "20. EXAMPLE INTERPRETATIONS",
   "72": "imagegen-frontend-web/SKILL.md",
+  "73": "markLibraryReady",
   "74": "ChatGPT/cover/README.md",
   "75": "devDependencies",
   "76": "Arrows",
@@ -97,7 +96,6 @@
   "97": "OneMoreCast/pages/README.md",
   "98": "Project Two/cover/README.md",
   "99": "Project Two/pages/README.md",
-  "104": "markLibraryReady",
-  "105": "1. THE THREE DIALS (Core Configuration)",
-  "106": "animateFlip"
+  "104": "Portfolio Bookshelf — Starter",
+  "105": "1. THE THREE DIALS (Core Configuration)"
 }

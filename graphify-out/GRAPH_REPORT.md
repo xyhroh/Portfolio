@@ -1,17 +1,17 @@
 # Graph Report - Portfolio  (2026-11-22)
 
 ## Corpus Check
-- 78 files · ~1,192,463 words
+- 78 files · ~1,189,632 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 4 file(s) not represented in the graph (top: .css 3, (none) 1)
 
 ## Summary
-- 895 nodes · 1148 edges · 98 communities (61 shown, 37 thin omitted)
+- 902 nodes · 1164 edges · 99 communities (62 shown, 37 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f240cfbe`
+- Built from commit: `d0a2e600`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -20,7 +20,6 @@
 - Lanyard.jsx
 - package.json
 - openBook
-- updateShelfInfoPanel
 - buildProjectsForShelf
 - ensureOpenBookBuilt
 - brandkit/SKILL.md
@@ -32,6 +31,7 @@
 - CORE DIRECTIVE: PREMIUM MOBILE APP IMAGE DIRECTION
 - High-Agency Frontend Skill
 - Claude/title/README.md
+- updateCameraFraming
 - Lovable/title/README.md
 - playSample
 - Facebook/title/README.md
@@ -56,7 +56,7 @@
 - Protocol: Premium Utilitarian Minimalism UI Architect
 - 11. COMPONENT EXECUTION GUIDELINES
 - 18. EXTRA CREATIVITY & IMPLEMENTATION EDGE
-- animate
+- updateSharpPages
 - 9. AI TELLS (Forbidden Patterns)
 - 12. THE COMBINATORIAL VARIATION ENGINE
 - 8. ANTI-AI-SLOP RULES
@@ -86,6 +86,7 @@
 - 15. DEFAULT SITE PACKS
 - 20. EXAMPLE INTERPRETATIONS
 - imagegen-frontend-web/SKILL.md
+- markLibraryReady
 - devDependencies
 - Arrows
 - Sounds
@@ -93,17 +94,17 @@
 - CV/title/README.md
 - Bookshelf 1/Row 1/README.md
 - Bookshelf 1/Row 2/README.md
-- navigateCarousel
+- Portfolio Bookshelf — Starter
 - 1. THE THREE DIALS (Core Configuration)
 
 ## God Nodes (most connected - your core abstractions)
 1. `CORE DIRECTIVE: IMAGE-FIRST WEBSITE DESIGN TO CODE` - 39 edges
 2. `CORE DIRECTIVE: PREMIUM MOBILE APP IMAGE DIRECTION` - 39 edges
 3. `openBook()` - 24 edges
-4. `closeBook()` - 22 edges
-5. `CORE DIRECTIVE: AWWWARDS-LEVEL IMAGE ART DIRECTION` - 22 edges
-6. `invalidate()` - 21 edges
-7. `T()` - 17 edges
+4. `invalidate()` - 22 edges
+5. `closeBook()` - 22 edges
+6. `CORE DIRECTIVE: AWWWARDS-LEVEL IMAGE ART DIRECTION` - 22 edges
+7. `T()` - 18 edges
 8. `tasteskill: Anti-Slop Frontend Skill` - 16 edges
 9. `Appendix B - Canonical Sources (read these before reinventing)` - 15 edges
 10. `jumpToIndex()` - 14 edges
@@ -111,23 +112,23 @@
 ## Surprising Connections (you probably didn't know these)
 - `How the project is organized` --references--> `navigateCarousel()`  [INFERRED]
   README.md → src/main.js
-- `How the pieces fit together` --references--> `buildOpenBook()`  [INFERRED]
+- `How the pieces fit together` --references--> `navigateCarousel()`  [INFERRED]
   README.md → src/main.js
 - `How the pieces fit together` --references--> `createSpineTexture()`  [INFERRED]
   README.md → src/main.js
 - `How the pieces fit together` --references--> `buildBookshelf()`  [INFERRED]
   README.md → src/main.js
-- `How the pieces fit together` --references--> `navigateCarousel()`  [INFERRED]
+- `How the pieces fit together` --references--> `buildOpenBook()`  [INFERRED]
   README.md → src/main.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (98 total, 37 thin omitted)
+## Communities (99 total, 37 thin omitted)
 
 ### Community 0 - "main.js"
 Cohesion: 0.02
-Nodes (105): activePointers, appEl, applyTheme(), arrowImageModules, backWoodMaterial, blankPixel, bookBoxTmp, bookListEl (+97 more)
+Nodes (103): activePointers, appEl, arrowImageModules, backWoodMaterial, blankPixel, bookBoxTmp, bookListEl, bookOpenPivot (+95 more)
 
 ### Community 1 - "Lanyard.jsx"
 Cohesion: 0.11
@@ -138,20 +139,16 @@ Cohesion: 0.15
 Nodes (12): name, private, type, version, gsap, meshline, react, react-dom (+4 more)
 
 ### Community 3 - "openBook"
-Cohesion: 0.07
-Nodes (68): animateFlip(), announce(), useTexture(), applyPixelRatio(), beginBookDrag(), buildOpenBook(), closeBook(), closePaperView() (+60 more)
-
-### Community 4 - "updateShelfInfoPanel"
-Cohesion: 0.67
-Nodes (3): infoFor(), showInfoForRow(), updateShelfInfoPanel()
+Cohesion: 0.05
+Nodes (83): animate(), animateFlip(), announce(), useTexture(), applyPixelRatio(), applyTheme(), beginBookDrag(), clampOrbitAzimuth() (+75 more)
 
 ### Community 5 - "buildProjectsForShelf"
 Cohesion: 0.19
 Nodes (14): buildInfoForShelf(), buildPapersForShelf(), buildProjectsForShelf(), buildRowInfoForShelf(), coverForFolder(), leadingNumber(), naturalCompare(), pagesAndSectionsForFolder() (+6 more)
 
 ### Community 6 - "ensureOpenBookBuilt"
-Cohesion: 0.17
-Nodes (13): applyLeafBend(), applyLeafContent(), applyPageSide(), buildLeaves(), buildTabs(), createPagePlaceholderTexture(), createTabTexture(), ensureOpenBookBuilt() (+5 more)
+Cohesion: 0.18
+Nodes (12): applyLeafBend(), applyLeafContent(), applyPageSide(), buildLeaves(), buildTabs(), createPagePlaceholderTexture(), createTabTexture(), ensureOpenBookBuilt() (+4 more)
 
 ### Community 7 - "brandkit/SKILL.md"
 Cohesion: 0.04
@@ -163,7 +160,7 @@ Nodes (34): 10. IMAGE-FIRST CODEX WEBSITE WORKFLOW, 11. WHEN TO TRIGGER IMAGE GE
 
 ### Community 9 - "home.js"
 Cohesion: 0.29
-Nodes (8): buildCard(), byName(), cardFiles, el(), imageFiles, link(), projects, Selected work
+Nodes (9): buildCard(), byName(), cardFiles, el(), imageFiles, link(), openPrototype(), projects (+1 more)
 
 ### Community 13 - "CORE DIRECTIVE: PREMIUM MOBILE APP IMAGE DIRECTION"
 Cohesion: 0.06
@@ -172,6 +169,10 @@ Nodes (34): 10. DEVICE MOCKUP FRAME RULE, 11. ONBOARDING FLOW RULE, 12. FIRST SC
 ### Community 14 - "High-Agency Frontend Skill"
 Cohesion: 0.06
 Nodes (30): 10. FINAL PRE-FLIGHT CHECK, 1. ACTIVE BASELINE CONFIGURATION, 2. DEFAULT ARCHITECTURE & CONVENTIONS, 3. DESIGN ENGINEERING DIRECTIVES (Bias Correction), 4. CREATIVE PROACTIVITY (Anti-Slop Implementation), 5. PERFORMANCE GUARDRAILS, 6. TECHNICAL REFERENCE (Dial Definitions), 7. AI TELLS (Forbidden Patterns) (+22 more)
+
+### Community 18 - "updateCameraFraming"
+Cohesion: 1.00
+Nodes (3): fitDistance(), framePortraitOnBooks(), updateCameraFraming()
 
 ### Community 20 - "playSample"
 Cohesion: 0.35
@@ -245,9 +246,9 @@ Nodes (9): 11. COMPONENT EXECUTION GUIDELINES, 3D Cascading Card Deck, Diagonal 
 Cohesion: 0.22
 Nodes (9): 18. EXTRA CREATIVITY & IMPLEMENTATION EDGE, Composition variety check, Conversion focus, Cross-section contrast, CTA specificity, Cultural / tonal alignment, Data-viz restraint, Image variety inside one comp (+1 more)
 
-### Community 43 - "animate"
-Cohesion: 0.25
-Nodes (8): animate(), clampOrbitAzimuth(), currentSharpPages(), hideSharpPages(), placeSharpPage(), processUploadQueue(), projectToScreen(), updateSharpPages()
+### Community 43 - "updateSharpPages"
+Cohesion: 0.40
+Nodes (5): currentSharpPages(), hideSharpPages(), placeSharpPage(), projectToScreen(), updateSharpPages()
 
 ### Community 44 - "9. AI TELLS (Forbidden Patterns)"
 Cohesion: 0.25
@@ -357,21 +358,25 @@ Nodes (4): 12-section pack, 15. DEFAULT SITE PACKS, 4-section pack, 8-section pa
 Cohesion: 0.50
 Nodes (4): 20. EXAMPLE INTERPRETATIONS, Example 1, Example 2, Example 3
 
+### Community 73 - "markLibraryReady"
+Cohesion: 0.14
+Nodes (18): How the pieces fit together, applyCoverWrap(), slice(), buildBookshelf(), buildOpenBook(), coverSettled(), createSpineTexture(), dominantCoverColour() (+10 more)
+
 ### Community 75 - "devDependencies"
 Cohesion: 0.67
 Nodes (3): devDependencies, sharp, vite
 
-### Community 104 - "navigateCarousel"
-Cohesion: 0.08
-Nodes (31): Adding real pages (no code editing required), Deploying for grading, Editing the intro line, Editing the per-shelf blurb, Grouping pages into sticky tabs, How the pieces fit together, How the project is organized, Known simplifications (worth knowing about, not bugs) (+23 more)
+### Community 104 - "Portfolio Bookshelf — Starter"
+Cohesion: 0.18
+Nodes (10): Adding real pages (no code editing required), Deploying for grading, Editing the intro line, Editing the per-shelf blurb, Grouping pages into sticky tabs, How the project is organized, Known simplifications (worth knowing about, not bugs), Portfolio Bookshelf — Starter (+2 more)
 
 ### Community 105 - "1. THE THREE DIALS (Core Configuration)"
 Cohesion: 0.50
 Nodes (4): 1.A Dial Inference (design read → dial values), 1.B Use-Case Presets, 1.C How the Dials Drive Output, 1. THE THREE DIALS (Core Configuration)
 
 ## Knowledge Gaps
-- **582 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+577 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 643 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **586 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+581 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 647 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **37 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
@@ -383,11 +388,11 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **Why does `gsap` connect `package.json` to `main.js`?**
   _High betweenness centrality (0.012) - this node is a cross-community bridge._
+- **Are the 4 inferred relationships involving `invalidate()` (e.g. with `closeBook()` and `navigateCarousel()`) actually correct?**
+  _`invalidate()` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 2 inferred relationships involving `closeBook()` (e.g. with `main.js` and `invalidate()`) actually correct?**
   _`closeBook()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _582 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _586 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `main.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.01834862385321101 - nodes in this community are weakly interconnected._
-- **Should `Lanyard.jsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.1111111111111111 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.018691588785046728 - nodes in this community are weakly interconnected._

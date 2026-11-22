@@ -28,6 +28,9 @@ Each folder holds:
     that book straight away. Leave it out and the card says "Process book in
     progress" instead of showing a button. `library.html` stays in the same
     tab; a full `https://...` URL opens a new one.
+  - `prototype`: a Figma prototype link (Share > Copy prototype link, with
+    access set to "Anyone with the link can view"). Adds a "Try prototype"
+    button, and clicking the screens opens it in a popup on the page.
   - `hidden: true` keeps the card off the page (for unfinished projects).
 
 - Screenshots: any png/jpg/jpeg/webp in the folder. Up to 3, in filename

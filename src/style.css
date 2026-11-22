@@ -227,9 +227,18 @@ canvas {
   font-weight: 600;
   font-size: clamp(32px, 4.4vw, 64px);
   letter-spacing: -0.02em;
+  /* wide enough for "Design Thinker" on one line, too narrow for "Experience
+     Architect", so the long role breaks onto two lines instead of running
+     under the shelf. Sized in em so it holds at every font size. */
+  max-width: 9.5em;
   color: var(--ink);
   opacity: 1;
   transition: opacity 0.25s ease;
+}
+@media (orientation: portrait) {
+  #intro-role {
+    max-width: none; /* a centred banner there, nothing to run under */
+  }
 }
 
 /* The role types itself in and rubs itself out again (main.js section 1b).
@@ -277,7 +286,7 @@ canvas {
   left: 0;
   right: 0;
   transform: translateY(-50%);
-  z-index: 1;
+  z-index: 11; /* above the canvas (10): a pulled-out book used to hide this text; clicks still pass through (pointer-events: none) */
   display: flex;
   flex-direction: column;
   align-items: flex-end;

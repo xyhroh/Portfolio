@@ -1,5 +1,5 @@
 {
-  "role": "Product Designer · End-to-end · 2026",
+  "role": "Product Manager & UX Researcher · 2026",
   "title": "Pinpoint — bowling coach app",
   "problem": "Casual bowlers without a coach can't see what's going wrong in their throw, or where to start fixing it.",
   "stats": [
@@ -8,6 +8,8 @@
     ["6", "competitors analysed"]
   ],
   "finding": "71% of surveyed bowlers worried about camera setup, so the app opens with a guided tripod setup and a frame check.",
-  "tags": ["Product Design", "Prototyping", "Android"],
-  "link": "library.html?book=GAM"
+  "outcome": "The first prototype tested as too clean and too game-like for a utility app, so I rebuilt it around a bowling-alley theme with scoresheet frames for error tracking.",
+  "tags": ["Product Management", "UX Research", "Android"],
+  "link": "library.html?book=GAM",
+  "prototype": "https://www.figma.com/proto/PwczoqT0OiW7FZuavtLUh6/Pinpoint?node-id=330-54"
 }

@@ -4,6 +4,9 @@
 // it is loaded as its own chunk once the page has painted and the browser has
 // a spare moment. The badge simply appears a beat later than the text.
 function loadLanyard() {
+  // phones don't show the badge (see the max-width: 860px block in home.css),
+  // so they don't download it either
+  if (matchMedia("(max-width: 860px)").matches) return;
   import("./Lanyard.jsx");
 }
 

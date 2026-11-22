@@ -5,8 +5,9 @@ import optimiseImages from "./vite-plugins/optimise-images.js";
 // base keeps asset URLs working under any repo name (it broke once on a
 // rename: the old hardcoded prefix 404ed every JS/CSS file).
 //
-// Two pages: index.html (home + lanyard) and library.html (the bookshelf).
-// Vite only builds pages listed in `input`. The lanyard is written in JSX,
+// Three pages: index.html (home + lanyard), about.html and library.html (the
+// bookshelf). Vite only builds pages listed in `input`: a page missing here
+// is left out of dist/ and 404s on the live site. The lanyard is written in JSX,
 // so esbuild needs the automatic runtime (no `import React` in each file).
 export default defineConfig({
   base: "./",
@@ -14,7 +15,7 @@ export default defineConfig({
   plugins: [optimiseImages()],
   build: {
     rollupOptions: {
-      input: { main: "index.html", library: "library.html" },
+      input: { main: "index.html", about: "about.html", library: "library.html" },
     },
   },
 });

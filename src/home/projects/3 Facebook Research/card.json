@@ -1,5 +1,5 @@
 {
-  "role": "UX Researcher · Team project",
+  "role": "UI/UX Designer · Team project",
   "title": "Facebook usability audit",
   "problem": "Years of added features make simple tasks a fight: users struggle to post, curate their feed and find things.",
   "stats": [
@@ -9,5 +9,6 @@
   ],
   "finding": "Facebook scored severity 2–3 on all 9 heuristics tested; Instagram and TikTok scored 0 on 8 of 9.",
   "tags": ["Usability Testing", "Heuristic Evaluation", "Research"],
-  "link": "library.html?book=Facebook"
+  "link": "library.html?book=Facebook",
+  "prototype": "https://www.figma.com/proto/ibj2CYHgr4XSnwOENJKMmF/A2-UXG?node-id=273-4046&starting-point-node-id=273%3A4046"
 }
