@@ -1,14 +1,14 @@
 {
   "role": "Product Manager & UX Researcher · 2026",
   "title": "Pinpoint — bowling coach app",
-  "problem": "Casual bowlers without a coach can't see what's going wrong in their throw, or where to start fixing it.",
+  "problem": "Casual bowlers without a coach can't see what's going wrong in their throw, or where to start fixing it. Phone cameras in a working alley ruled out precise motion capture, so the comparison had to run off one fixed side-on angle.",
   "stats": [
     ["5/5", "bowlers chose the new build"],
     ["2.4s", "from menu to recording"],
     ["6", "competitors analysed"]
   ],
   "finding": "71% of surveyed bowlers worried about camera setup, so the app opens with a guided tripod setup and a frame check.",
-  "outcome": "The first prototype tested as too clean and too game-like for a utility app, so I rebuilt it around a bowling-alley theme with scoresheet frames for error tracking.",
+  "outcome": "The first prototype tested as too clean and too game-like for a utility app, so I rebuilt it around a bowling-alley theme with scoresheet frames for error tracking. All 5 bowlers then chose the new build, at 2.4 seconds from menu to recording.",
   "tags": ["Product Management", "UX Research", "Android"],
   "link": "library.html?book=GAM",
   "prototype": "https://www.figma.com/proto/PwczoqT0OiW7FZuavtLUh6/Pinpoint?node-id=330-54"

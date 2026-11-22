@@ -1,13 +1,14 @@
 {
   "role": "Sole UI/UX Designer & UX Researcher · School project · 2025",
   "title": "HealthBuddy — SingHealth app redesign",
-  "problem": "Patients found the app helpful but cluttered: appointments, queue status and payments were buried across screens.",
+  "problem": "Patients found the app helpful but cluttered: appointments, queue status and payments were buried across screens. A live public healthcare service, so features could be reorganised but not removed, and one home screen had to serve outpatients, elderly users and general Singaporeans.",
   "stats": [
     ["17", "people surveyed"],
     ["3", "personas"],
     ["43%", "rated navigation bad"]
   ],
-  "finding": "Every user books appointments in the app, yet nothing on the home screen shows them at a glance.",
+  "finding": "All three personas hit the same wall: appointments mattered to 100% of respondents and queue status to 64.3%, yet 35.7% could not find queue tracking.",
+  "outcome": "My paper sketch gave payment its own section, and the home screen still read as unrelated blocks. Iteration 2 merged queue and payment into one row and pulled Medicine, Results and Dependants into view; iteration 3 added colour, scale and status feedback. Scan went from three taps to one, and touch targets grew for elderly users who said they misclick.",
   "tags": ["UX Research", "Personas", "Hi-fi Prototyping"],
   "link": "library.html?book=HealthBuddy",
   "prototype": "https://www.figma.com/proto/FifwjEiya0byeBXGzeU0pl/HealthBuddy?node-id=0-1"

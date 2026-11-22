@@ -344,7 +344,7 @@ main {
 
 .project {
   display: grid;
-  grid-template-columns: minmax(300px, 38fr) 62fr;
+  grid-template-columns: minmax(320px, 50fr) 50fr;
   overflow: hidden;
   border-radius: 28px;
 }
@@ -352,6 +352,9 @@ main {
 .project-media {
   display: flex;
   flex-direction: column;
+  /* the text column is usually the taller one, so centre the screens against
+     it instead of letting them sit at the top over a tall empty panel */
+  justify-content: center;
   min-width: 0;
   margin: 0;
 }
@@ -367,7 +370,12 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 44px 40px;
+  padding: 40px 28px;
+}
+
+/* keep paragraphs at a readable measure even when the column is wide */
+.project-body > p {
+  max-width: 70ch;
 }
 
 .project-role {

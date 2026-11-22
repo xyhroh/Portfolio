@@ -1,13 +1,14 @@
 {
   "role": "UI/UX Designer · Team project",
   "title": "Facebook usability audit",
-  "problem": "Years of added features make simple tasks a fight: users struggle to post, curate their feed and find things.",
+  "problem": "Years of added features make simple tasks a fight: users struggle to post, curate their feed and find things. An audit of a product we could not change, so fixes had to sit inside the existing navigation, and 9 tasks across 3 personas had to be cut to what mattered most.",
   "stats": [
     ["27", "users surveyed"],
-    ["3", "personas mapped"],
-    ["3", "task flows redesigned"]
+    ["9", "heuristics tested"],
+    ["7→3", "steps to curate a feed"]
   ],
-  "finding": "Facebook scored severity 2–3 on all 9 heuristics tested; Instagram and TikTok scored 0 on 8 of 9.",
+  "finding": "Facebook scored severity 2–3 on all 9 heuristics tested; Instagram and TikTok scored 0 on 8 of 9. Uploading a post shows only a vague \"Posting...\" message, with no progress bar.",
+  "outcome": "Feed curation was the only task all three personas shared, so it went first. We rejected making dismissal faster, because that still leaves the work with the user, and removed the need to curate instead: a For You tab of followed accounts only, a shrunken Stories row, People You May Know moved to Friends. Curating went from 7 steps to 3.",
   "tags": ["Usability Testing", "Heuristic Evaluation", "Research"],
   "link": "library.html?book=Facebook",
   "prototype": "https://www.figma.com/proto/ibj2CYHgr4XSnwOENJKMmF/A2-UXG?node-id=273-4046&starting-point-node-id=273%3A4046"
