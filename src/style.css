@@ -924,10 +924,12 @@ body.reading-active #hero, body.reading-active #shelf-info { opacity: 0; pointer
    until closeBook's timeline actually finishes (main.js adds and removes
    .closing-book around it). */
 body.closing-book #shelf-info { opacity: 0; pointer-events: none; }
-/* The reading hint names the page-turn keys: a second is enough to read it,
-   and after that it is just text sitting under the book. */
-body.reading-active.hint-faded #key-hint { opacity: 0; }
-#hero, #shelf-info, #key-hint { transition: opacity .4s ease; }
+/* The reading hint names the page-turn keys and the panel names the book you
+   are already looking at: a second is enough for both, and after that they are
+   just text competing with the page. The controls stay — only the words go. */
+body.reading-active.hint-faded #key-hint,
+body.reading-active.hint-faded #reading-panel { opacity: 0; }
+#hero, #shelf-info, #key-hint, #reading-panel { transition: opacity .4s ease; }
 
 .reading-edge, .tool-btn {
   display: inline-flex; align-items: center; justify-content: center;

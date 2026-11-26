@@ -2997,17 +2997,37 @@ function siteRoot(pathname = location.pathname) {
   return at === -1 ? pathname.replace(/[^/]*$/, "") : pathname.slice(0, at + 1);
 }
 
-function bookUrl(project) {
+// Two forms of the same link, and the split is deliberate:
+//   shareUrl()    <root>/book/<slug>            tidy, what the link button gives out
+//   addressUrl()  <root>/library.html?book=…    what actually sits in the address bar
+//
+// They differ because vite's base is "./": the page images come from an eager
+// import.meta.glob and are emitted as RELATIVE strings, which the browser
+// resolves against the document URL at the moment they are assigned to img.src.
+// Putting /book/<slug> in the bar adds a directory level, so every page image
+// resolves to /book/assets/… and 404s — the book opens on two blank pages.
+// Keeping the document at library.html keeps those relative URLs correct;
+// public/404.html still bounces the tidy path here, so a shared link reads
+// /book/<slug> and only normalises once it has landed.
+function shareUrl(project) {
   const url = new URL(location.href);
   url.search = "";
-  const root = siteRoot();
-  url.pathname = project ? `${root}book/${project.slug}` : `${root}library.html`;
+  url.hash = "";
+  url.pathname = `${siteRoot()}book/${project.slug}`;
+  return url;
+}
+
+function addressUrl(project) {
+  const url = new URL(location.href);
+  url.pathname = `${siteRoot()}library.html`;
+  if (project) url.searchParams.set("book", project.slug);
+  else url.searchParams.delete("book");
   return url;
 }
 
 function syncBookUrl(project) {
   try {
-    history.replaceState(history.state, "", bookUrl(project));
+    history.replaceState(history.state, "", addressUrl(project));
   } catch {
     /* file:// and the like have no session history to write to */
   }
@@ -3017,7 +3037,7 @@ const readingLink = document.getElementById("reading-link");
 readingLink?.addEventListener("click", async () => {
   const project = readingState?.project;
   if (!project) return;
-  const href = bookUrl(project).href;
+  const href = shareUrl(project).href; // hand out the tidy form, not the bar's
   try {
     await navigator.clipboard.writeText(href);
     showToast(`Link copied. It opens ${project.title} straight away.`);
@@ -3859,11 +3879,18 @@ if (zoomToggle) {
 // Which half of the screen the reader last pointed at, so zooming goes to the
 // page they were looking at rather than always the right-hand one.
 let lastReadSide = 1;
-renderer.domElement.addEventListener("dblclick", (event) => {
-  if (!readingState || readingState.busy) return;
-  lastReadSide = event.clientX < window.innerWidth / 2 ? -1 : 1;
-  setReadingZoom(!readingZoomed, lastReadSide);
-});
+// Double-tap zooms on touch, where there is no zoom button worth hunting for
+// mid-read. With a mouse it does not: a double click while reading is usually
+// someone trying to select or just clicking twice, and having the view lurch
+// is worse than making them use the zoom button. Hence the pointer query
+// rather than removing the handler outright.
+if (window.matchMedia?.("(pointer: coarse)").matches) {
+  renderer.domElement.addEventListener("dblclick", (event) => {
+    if (!readingState || readingState.busy) return;
+    lastReadSide = event.clientX < window.innerWidth / 2 ? -1 : 1;
+    setReadingZoom(!readingZoomed, lastReadSide);
+  });
+}
 
 // ---- the crisp overlay
 
@@ -4274,12 +4301,29 @@ function openBookFromUrl() {
     syncBookUrl(null); // nothing by that name: don't leave a dead link in the bar
     return;
   }
-  syncBookUrl(book.userData.project); // ?book=… becomes /book/… before anything animates
+  syncBookUrl(book.userData.project); // normalise the bar to ?book=<slug>
+
+  // Pull it out, then open it, onto page one. Deliberately NOT two
+  // selectBookFromList() calls: that path only opens on the second tap when
+  // hoveredBook is still this book, and the render loop's hover raycast clears
+  // hoveredBook as soon as the pointer is anywhere but over the spine — which,
+  // on a page nobody has touched yet, it always is. The link then left the book
+  // pulled out and never opened. These are the same two steps that function
+  // takes, driven directly so the outcome does not depend on the cursor.
+  const openPulledBook = () => {
+    if (readingState || paperReadingState) return; // the reader got there first
+    if (book.userData.state !== "out") return; // pull-out was interrupted
+    hoveredBook = null;
+    keyboardBookIndex = -1;
+    openBook(book); // starts on the first spread
+    syncBookList();
+  };
+
   setTimeout(() => {
-    selectBookFromList(book);
-    setTimeout(() => {
-      if (hoveredBook === book) selectBookFromList(book);
-    }, 600);
+    if (readingState || paperReadingState || isCarouselRotating) return;
+    keyboardBookIndex = activeShelf.shelfBooks.indexOf(book);
+    setHoveredBook(book, { sound: true });
+    setTimeout(openPulledBook, 600); // let the pull-out finish before it swings open
   }, 1200);
 }
 
