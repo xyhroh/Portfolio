@@ -3972,14 +3972,22 @@ function hideSharpPages() {
 
 function updateSharpPages(now, animating, moved) {
   if (!sharpLayer) return;
-  const steady = readingState && !readingState.busy && !bookDrag && !peekHinge && !animating;
+  // `moved` (the camera itself moving: scroll zoom, pinch, pan) counts as not
+  // steady. It used to only trigger a reposition, which meant that through a
+  // whole scroll-zoom the overlay stayed up and chased the 3D page frame by
+  // frame — and it cannot keep up, because it is a flat DOM image being fitted
+  // to a perspective-projected quad, so it visibly slid and shimmered against
+  // the page underneath. Hiding it is the same thing a page drag already does
+  // via the pointerdown handler below; hideSharpPages() resets the settle
+  // timer, so it comes back sharp 140 ms after the view stops.
+  const steady = readingState && !readingState.busy && !bookDrag && !peekHinge && !animating && !moved;
   if (!steady) {
     hideSharpPages();
     return;
   }
   if (!sharpStillSince) sharpStillSince = now;
   if (now - sharpStillSince < 140) return; // let the page actually settle first
-  if (sharpShown && !moved) return; // nothing has changed, nothing to reposition
+  if (sharpShown) return; // already up and the view is still: nothing to redo
   const { left, right } = currentSharpPages();
   placeSharpPage(sharpLeft, left, -0.01 - pageWidth, -0.01);
   placeSharpPage(sharpRight, right, 0.01, 0.01 + pageWidth);
