@@ -2930,7 +2930,10 @@ function warmOpenBookShaders(built) {
   });
 }
 
-function pullOut(book) {
+// `instant` places the book at its pulled-out position without the slide.
+// Used by deep links, where the reader asked for one specific book and the
+// slide-out is scene-setting they did not ask to sit through.
+function pullOut(book, { instant = false } = {}) {
   book.userData.state = "out";
   // start building this book's pages (and loading their images) the
   // moment it's pulled out, well before the reader clicks to actually
@@ -2940,10 +2943,19 @@ function pullOut(book) {
   updateLeafWindow(builtForHover, 0, true);
   warmOpenBookShaders(builtForHover);
   dirtyShadows();
-  gsap.to(book.position, {
+  const out = {
     x: book.userData.restPosition.x,
     y: book.userData.restPosition.y,
     z: book.userData.restPosition.z + 1.3,
+  };
+  if (instant) {
+    gsap.killTweensOf(book.position); // drop any slide already in flight
+    book.position.set(out.x, out.y, out.z);
+    invalidate(2);
+    return;
+  }
+  gsap.to(book.position, {
+    ...out,
     duration: T(motion.pull),
     ease: motion.settle, // slides out with a small, soft overshoot
   });
@@ -4319,12 +4331,18 @@ function openBookFromUrl() {
     syncBookList();
   };
 
+  // Straight into the open book. Someone following a link to one project has
+  // already chosen it, so the slide-out and the pause after it are ceremony
+  // between them and the thing they came for. setHoveredBook is skipped too:
+  // all it would add here is the hover sound and a preview label for a book
+  // that is about to fill the screen. The wait is only for the loader to clear.
   setTimeout(() => {
     if (readingState || paperReadingState || isCarouselRotating) return;
-    keyboardBookIndex = activeShelf.shelfBooks.indexOf(book);
-    setHoveredBook(book, { sound: true });
-    setTimeout(openPulledBook, 600); // let the pull-out finish before it swings open
-  }, 1200);
+    hoveredBook = null;
+    keyboardBookIndex = -1;
+    pullOut(book, { instant: true });
+    openPulledBook();
+  }, 700);
 }
 
 let libraryReady = false;
