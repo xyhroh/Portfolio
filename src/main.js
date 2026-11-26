@@ -2670,6 +2670,7 @@ function openBook(book) {
   lastReadSide = 1;
   syncZoomButton();
   readingTitle.textContent = project.title;
+  syncBookUrl(project); // this book now has its own address
   readingPanel.classList.add("visible");
   updatePreviewPanel(); // readingState is set above, so this hides the preview panel
 
@@ -2793,6 +2794,7 @@ function closeBook() {
   state.closing = true; // any still-running opening callback must now stand down
   bookDrag = null;
   setCabinetVisible(true); // the book is about to fly back into it
+  syncBookUrl(null); // back to the plain library address
   readingPanel.classList.remove("visible");
   exitReadingControls();
   setHoveredTab(null); // reset any tab left mid-glow/scaled from hovering
@@ -2954,6 +2956,40 @@ const readingClose = document.getElementById("reading-close");
 readingPrev.addEventListener("click", flipPrev);
 readingNext.addEventListener("click", flipNext);
 readingClose.addEventListener("click", closeBook);
+
+// Every book is addressable: library.html?book=<slug>. openBook/closeBook keep
+// the address bar in step with what's open, via replaceState so the back button
+// still leaves the library rather than walking back through books one by one.
+// The link button copies whatever that address currently is.
+function bookUrl(project) {
+  const url = new URL(location.href);
+  if (project) url.searchParams.set("book", project.slug);
+  else url.searchParams.delete("book");
+  return url;
+}
+
+function syncBookUrl(project) {
+  try {
+    history.replaceState(history.state, "", bookUrl(project));
+  } catch {
+    /* file:// and the like have no session history to write to */
+  }
+}
+
+const readingLink = document.getElementById("reading-link");
+readingLink?.addEventListener("click", async () => {
+  const project = readingState?.project;
+  if (!project) return;
+  const href = bookUrl(project).href;
+  try {
+    await navigator.clipboard.writeText(href);
+    showToast(`Link copied. It opens ${project.title} straight away.`);
+  } catch {
+    // clipboard blocked (insecure context or permission denied): show the link
+    // so it can still be copied by hand
+    showToast(href, 9000);
+  }
+});
 
 const paperPanel = document.getElementById("paper-panel");
 const paperTitle = document.getElementById("paper-title");
@@ -4183,13 +4219,17 @@ function maybeAnnounceSound() {
 // in, instead of the shelf popping in half-textured.
 // -----------------------------------------------------------------------
 
-// library.html?book=<folder name> (the home page's "View process book"
-// buttons) opens that book once the shelf has settled: the first tap pulls
-// it out, the second opens it, same as tapping its chip twice.
+// library.html?book=<slug> opens that book once the shelf has settled: the
+// first tap pulls it out, the second opens it, same as tapping its chip twice.
+// Matched through slugify() on both sides, so the tidy form this page now puts
+// in the address bar ("bookshelf-portfolio") and the raw folder name
+// ("Bookshelf%20Portfolio") both land on the same book.
 function openBookFromUrl() {
-  const wanted = new URLSearchParams(location.search).get("book")?.toLowerCase();
+  const raw = new URLSearchParams(location.search).get("book");
+  if (!raw) return;
+  const wanted = slugify(raw);
   if (!wanted) return;
-  const book = activeShelf.shelfBooks.find((b) => b.userData.project.folder.toLowerCase() === wanted);
+  const book = activeShelf.shelfBooks.find((b) => b.userData.project.slug === wanted);
   if (!book) return;
   setTimeout(() => {
     selectBookFromList(book);
