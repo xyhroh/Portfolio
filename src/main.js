@@ -1902,6 +1902,22 @@ function setKeyHintMode(reading) {
   keyHintEl.textContent = reading ? readingKeyHintText : shelfKeyHintText;
 }
 
+// The reading hint has done its job after a second: it names the keys, you read
+// it once, and from then on it is just text sitting under the book. Fading it
+// is CSS (body.hint-faded) so it reuses #key-hint's existing opacity
+// transition; this only schedules the class.
+let hintFadeTimer = 0;
+function fadeKeyHintAfter(ms = 1000) {
+  clearTimeout(hintFadeTimer);
+  document.body.classList.remove("hint-faded");
+  hintFadeTimer = setTimeout(() => document.body.classList.add("hint-faded"), ms);
+}
+
+function cancelKeyHintFade() {
+  clearTimeout(hintFadeTimer);
+  document.body.classList.remove("hint-faded");
+}
+
 const readingUiElements = Array.from(document.querySelectorAll(".reading-ui"));
 function setReadingUiReachable(reachable) {
   for (const element of readingUiElements) element.inert = !reachable;
@@ -2683,9 +2699,11 @@ function openBook(book) {
   openBookGroup.add(cover.hinge);
   openBookGroup.visible = false;
 
+  document.body.classList.remove("closing-book"); // reopening mid-close: that close is moot now
   document.body.classList.add("reading-active");
   setReadingUiReachable(true);
   setKeyHintMode(true);
+  fadeKeyHintAfter(1000); // read it, then let it go
   refitCameraFraming();
   enterReadingControls();
 
@@ -2800,8 +2818,14 @@ function closeBook() {
   setHoveredTab(null); // reset any tab left mid-glow/scaled from hovering
   setPagePeek(null);
   document.body.classList.remove("reading-active");
+  // reading-active comes off now so the room undims and #app resizes with the
+  // fly-back, but the shelf blurb ("My Projects!") must not reappear over a
+  // book still in mid-air: body.closing-book keeps it out until the timeline
+  // below actually finishes.
+  document.body.classList.add("closing-book");
   setReadingUiReachable(false);
   setKeyHintMode(false);
+  cancelKeyHintFade(); // the shelf hint is wanted again, at full strength
   refitCameraFraming();
 
   // The opening played backwards: pages turn back to the start (if you were
@@ -2825,6 +2849,7 @@ function closeBook() {
       openBookGroup.visible = false;
       activeShelfBook = null;
       readingState = null;
+      document.body.classList.remove("closing-book"); // closed properly: the shelf blurb can come back
       syncBookList();
       announce("Closed the book.");
     },
@@ -2957,14 +2982,26 @@ readingPrev.addEventListener("click", flipPrev);
 readingNext.addEventListener("click", flipNext);
 readingClose.addEventListener("click", closeBook);
 
-// Every book is addressable: library.html?book=<slug>. openBook/closeBook keep
-// the address bar in step with what's open, via replaceState so the back button
-// still leaves the library rather than walking back through books one by one.
-// The link button copies whatever that address currently is.
+// Every book is addressable as <base>/book/<slug> — a tidy path rather than a
+// query string. GitHub Pages has no server-side routing, so that path 404s and
+// public/404.html bounces it to library.html?book=<slug>; openBookFromUrl()
+// then rewrites the address bar back to the tidy form. Shared links and the
+// address bar therefore both read /book/<slug>, and ?book=<slug> keeps working
+// as the internal form that survives the bounce.
+//
+// Both ends derive the site root from the current path instead of hardcoding
+// "/Portfolio/", because vite's base is "./" precisely so a repo rename can't
+// break the URLs again.
+function siteRoot(pathname = location.pathname) {
+  const at = pathname.indexOf("/book/");
+  return at === -1 ? pathname.replace(/[^/]*$/, "") : pathname.slice(0, at + 1);
+}
+
 function bookUrl(project) {
   const url = new URL(location.href);
-  if (project) url.searchParams.set("book", project.slug);
-  else url.searchParams.delete("book");
+  url.search = "";
+  const root = siteRoot();
+  url.pathname = project ? `${root}book/${project.slug}` : `${root}library.html`;
   return url;
 }
 
@@ -4225,12 +4262,19 @@ function maybeAnnounceSound() {
 // in the address bar ("bookshelf-portfolio") and the raw folder name
 // ("Bookshelf%20Portfolio") both land on the same book.
 function openBookFromUrl() {
-  const raw = new URLSearchParams(location.search).get("book");
+  // either form: the tidy /book/<slug> path (after 404.html bounces it here)
+  // or ?book=<slug> straight up
+  const fromPath = location.pathname.match(/\/book\/([^/]+)\/?$/)?.[1];
+  const raw = fromPath ?? new URLSearchParams(location.search).get("book");
   if (!raw) return;
-  const wanted = slugify(raw);
+  const wanted = slugify(decodeURIComponent(raw));
   if (!wanted) return;
   const book = activeShelf.shelfBooks.find((b) => b.userData.project.slug === wanted);
-  if (!book) return;
+  if (!book) {
+    syncBookUrl(null); // nothing by that name: don't leave a dead link in the bar
+    return;
+  }
+  syncBookUrl(book.userData.project); // ?book=… becomes /book/… before anything animates
   setTimeout(() => {
     selectBookFromList(book);
     setTimeout(() => {

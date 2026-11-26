@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Javier Low</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <meta name="robots" content="noindex" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #f5f6f8;
+        color: #0d0d0d;
+        font: 400 16px/1.5 Geist, Inter, system-ui, sans-serif;
+        text-align: center;
+        padding: 24px;
+      }
+      h1 { font-size: 34px; margin: 0 0 8px; }
+      p { color: #5c5c5c; margin: 0 0 20px; }
+      a { color: #4a5a72; }
+    </style>
+    <script>
+      // GitHub Pages serves project sites as static files with no routing, so a
+      // tidy book link (/Portfolio/book/bookshelf-portfolio) has no file behind
+      // it and lands here. Bounce it to the real shelf page with the book as a
+      // query; main.js rewrites the address bar back to the tidy path once the
+      // shelf has loaded, so the pretty URL is what the reader keeps seeing.
+      //
+      // The site root is derived from the path rather than hardcoded, to match
+      // vite's relative base (a hardcoded prefix broke once on a repo rename).
+      //
+      // replace(), not assign(), so the bounce leaves no entry in history: Back
+      // from the library goes wherever the reader came from, not into a loop.
+      (function () {
+        var path = location.pathname;
+        var at = path.indexOf("/book/");
+        if (at === -1) return; // a genuine 404: fall through to the message below
+        var root = path.slice(0, at + 1);
+        var slug = path.slice(at + 6).replace(/\/+$/, "");
+        if (!slug) {
+          location.replace(root + "library.html");
+          return;
+        }
+        location.replace(root + "library.html?book=" + encodeURIComponent(slug) + location.hash);
+      })();
+    </script>
+  </head>
+  <body>
+    <h1>Not found</h1>
+    <p>That page does not exist.</p>
+    <p><a href="./library.html">Go to the library</a></p>
+  </body>
+</html>

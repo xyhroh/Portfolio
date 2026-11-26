@@ -918,6 +918,15 @@ body.reading-active .nav-arrow {
 .reading-ui { opacity: 0; pointer-events: none; transition: opacity .35s ease .45s, transform .15s ease, background-color .15s ease; z-index: 30; }
 body.reading-active .reading-ui { opacity: 1; pointer-events: auto; }
 body.reading-active #hero, body.reading-active #shelf-info { opacity: 0; pointer-events: none; }
+/* reading-active comes off the moment a close starts, so the room can undim
+   while the book flies home. The shelf blurb ("My Projects!") would otherwise
+   fade straight back in underneath a book still in mid-air; this holds it out
+   until closeBook's timeline actually finishes (main.js adds and removes
+   .closing-book around it). */
+body.closing-book #shelf-info { opacity: 0; pointer-events: none; }
+/* The reading hint names the page-turn keys: a second is enough to read it,
+   and after that it is just text sitting under the book. */
+body.reading-active.hint-faded #key-hint { opacity: 0; }
 #hero, #shelf-info, #key-hint { transition: opacity .4s ease; }
 
 .reading-edge, .tool-btn {
